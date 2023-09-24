@@ -1,5 +1,5 @@
 import logo from "./logo.svg";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import {
   Container,
@@ -23,6 +23,8 @@ import { DangoSetting } from "./components/DangoSetting";
 import { MelodySetting } from "./components/MelodySetting";
 import { RampageDecoSetting } from "./components/RampageDecoSetting";
 
+import { DmaxOutput } from "./components/DmaxOutput";
+
 import { skillData } from "./data/SkillData";
 import { UserInputData } from "./data/UserInputData";
 
@@ -31,6 +33,100 @@ import { UserInputData } from "./data/UserInputData";
  *   - スキルの検索ボックス。文字列がヒットしたもののみ残る
  *   - state 更新の軽量化
  */
+
+// dmax-core を呼び出すための処理
+let startWasmWorker;
+
+function supportsNestedWebWorkers() {
+  console.log("supportsNestedWebWorkers() called");
+  try {
+    var blob = new Blob(
+      [
+        "var worker = new Worker(URL.createObjectURL(new Blob(['self.postMessage(1);'], {type: 'text/javascript'}))); worker.onmessage = function(e) { self.postMessage(e.data); }",
+      ],
+      { type: "text/javascript" }
+    );
+
+    var url = URL.createObjectURL(blob);
+    var worker = new Worker(url);
+
+    worker.onmessage = function (e) {
+      worker.terminate();
+      URL.revokeObjectURL(url);
+      if (e.data === 1) {
+        console.log("Nested Web Workers are supported");
+      } else {
+        console.log("Nested Web Workers are not supported");
+      }
+    };
+
+    worker.onerror = function () {
+      worker.terminate();
+      URL.revokeObjectURL(url);
+      console.log("Nested Web Workers are not supported");
+    };
+  } catch (e) {
+    console.log("Nested Web Workers are not supported");
+  }
+}
+
+function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) {
+  supportsNestedWebWorkers();
+
+  // gonextbench = false;
+  if (window.Worker) {
+    console.log("webworker enable");
+
+    if (startWasmWorker) {
+      startWasmWorker.terminate();
+    }
+    startWasmWorker = new Worker(process.env.PUBLIC_URL + "/dmax-core/worker3.js", {
+      name: "startWasmWorker",
+    });
+
+    startWasmWorker.postMessage(["file.nl", 4, 3072, problem_data]);
+    console.log("Message posted to worker");
+
+    startWasmWorker.onmessage = function (e) {
+      let worker_response = e.data;
+      //console.log("message received from worker: " + worker_response);
+      // console.log(worker_response);
+      updateDmaxOutput(worker_response);
+
+      const lines = worker_response.trim().split("\n");
+
+      for (const line of lines) {
+        if (line.includes("s|")) {
+          const [time, usedMemory, upperLimit, lowerLimit, gap] = line
+            .split("|")
+            .map((item) => item.trim());
+          console.log({
+            time: parseFloat(time.replace("$", "").replace("s", "")),
+            usedMemory: usedMemory.replace("M", ""),
+            upperLimit: parseFloat(upperLimit),
+            lowerLimit: parseFloat(lowerLimit),
+            gap: parseFloat(gap),
+          });
+          updateChartData({
+            time: parseFloat(time.replace("$", "").replace("s", "")),
+            upperLimit: parseFloat(upperLimit),
+            lowerLimit: parseFloat(lowerLimit),
+          });
+        }
+      }
+
+      // output.value += worker_response + "\n";
+      // output.scrollTop = output.scrollHeight;
+      // getBenchmarkData(worker_response);
+      // console.log("benchmarkdData = ");
+      // console.log(benchmarkdData);
+    };
+  } else {
+    console.log("Your browser doesn't support web workers.");
+  }
+}
+
+// dmax-core を呼び出すための処理 ここまで
 
 // initSkillData: skillData の各オブジェクトに新しい key-value を追加したデータ構造
 const initSkillData = Object.keys(skillData).reduce((acc, key) => {
@@ -75,6 +171,15 @@ function App() {
     setDmaxOutput((prevString) => prevString + "\n" + newString);
   };
 
+  // 常に最終行を表示
+  const boxRef = useRef(null);
+
+  useEffect(() => {
+    if (boxRef.current) {
+      boxRef.current.scrollTop = boxRef.current.scrollHeight;
+    }
+  }, [dmaxOutput]);
+
   // dmax 最適化の最終結果を管理
   const [dmaxResult, setDmaxResult] = useState("");
   const updateDmaxResult = (newString) => {
@@ -99,6 +204,17 @@ function App() {
     if (100 - i === i) break;
     data.push({ time: i, uv: 100 - i, pv: i });
   }
+
+  // dmax からの中間出力データを管理
+  const [chartData, setChartData] = useState([]);
+  const updateChartData = (newData) => {
+    setChartData((prevData) => {
+      console.log(
+        "prevData = " + JSON.stringify(prevData) + " newData = " + JSON.stringify(newData)
+      );
+      return [...prevData, newData];
+    });
+  };
 
   return (
     <div className="App">
@@ -216,6 +332,7 @@ function App() {
           <Grid item xs={2}>
             <Button
               onClick={() => {
+                call_worker_wasm_main({});
                 // デバッグ用
                 console.log(
                   "デバッグ出力: userInputData = \n" + JSON.stringify(userInputData, null, 4)
@@ -282,6 +399,8 @@ function App() {
                   .then((data) => {
                     console.log(data);
                     updateDmaxResult(JSON.stringify(data, null, 4));
+                    call_worker_wasm_main(data, updateDmaxOutput, updateChartData);
+                    console.log("chartData = \n" + chartData);
                   })
                   .catch((error) => {
                     console.log(`Fetching from ${apiUrl} failed: ${error.message}`);
@@ -295,6 +414,8 @@ function App() {
         </Grid>
 
         <Grid container spacing={1} marginY={1}>
+          <DmaxOutput dmaxOutput={dmaxOutput} />
+          {/*
           <Grid item xs={6}>
             <Paper elevation={2}>
               <Box
@@ -309,12 +430,13 @@ function App() {
               </Box>
             </Paper>
           </Grid>
+          */}
 
           <Grid item xs={6}>
             <LineChart
               width={600}
               height={450}
-              data={data}
+              data={chartData}
               margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
             >
               <XAxis dataKey="time" unit="s" type="number" />
@@ -322,8 +444,20 @@ function App() {
               <Tooltip />
               <Legend />
               <CartesianGrid stroke="#f5f5f5" />
-              <Line type="linear" dataKey="uv" stroke="#ff7300" yAxisId={0} />
-              <Line type="linear" dataKey="pv" stroke="#387908" yAxisId={0} />
+              <Line
+                type="linear"
+                dataKey="upperLimit"
+                stroke="#ff7300"
+                yAxisId={0}
+                animationDuration={300}
+              />
+              <Line
+                type="linear"
+                dataKey="lowerLimit"
+                stroke="#387908"
+                yAxisId={0}
+                animationDuration={300}
+              />
             </LineChart>
           </Grid>
         </Grid>
@@ -331,6 +465,7 @@ function App() {
           <Grid item xs={6}>
             <Paper elevation={2}>
               <Box
+                ref={boxRef}
                 style={{
                   height: "450px", // ここに所望の高さを設定
                   overflowY: "auto",

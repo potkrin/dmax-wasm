@@ -12,7 +12,6 @@ import {
   Button,
   Paper,
 } from "@mui/material";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
 import Skill from "./components/Skill";
 import NonDamageSkill from "./components/NonDamageSkill";
@@ -24,6 +23,7 @@ import { MelodySetting } from "./components/MelodySetting";
 import { RampageDecoSetting } from "./components/RampageDecoSetting";
 
 import { DmaxOutput } from "./components/DmaxOutput";
+import { DmaxGraph } from "./components/DmaxGraph";
 
 import { skillData } from "./data/SkillData";
 import { UserInputData } from "./data/UserInputData";
@@ -109,6 +109,7 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
           });
           updateChartData({
             time: parseFloat(time.replace("$", "").replace("s", "")),
+            usedMemory: parseInt(usedMemory.replace("M", "")),
             upperLimit: parseFloat(upperLimit),
             lowerLimit: parseFloat(lowerLimit),
           });
@@ -214,6 +215,10 @@ function App() {
       );
       return [...prevData, newData];
     });
+  };
+
+  const eraseChartData = (newData) => {
+    setChartData([]);
   };
 
   return (
@@ -399,6 +404,7 @@ function App() {
                   .then((data) => {
                     console.log(data);
                     updateDmaxResult(JSON.stringify(data, null, 4));
+                    eraseChartData();
                     call_worker_wasm_main(data, updateDmaxOutput, updateChartData);
                     console.log("chartData = \n" + chartData);
                   })
@@ -415,51 +421,7 @@ function App() {
 
         <Grid container spacing={1} marginY={1}>
           <DmaxOutput dmaxOutput={dmaxOutput} />
-          {/*
-          <Grid item xs={6}>
-            <Paper elevation={2}>
-              <Box
-                style={{
-                  height: "450px", // ここに所望の高さを設定
-                  overflowY: "auto",
-                  padding: "8px",
-                  textAlign: "left",
-                }}
-              >
-                <pre>{dmaxOutput}</pre>
-              </Box>
-            </Paper>
-          </Grid>
-          */}
-
-          <Grid item xs={6}>
-            <LineChart
-              width={600}
-              height={450}
-              data={chartData}
-              margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-            >
-              <XAxis dataKey="time" unit="s" type="number" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <CartesianGrid stroke="#f5f5f5" />
-              <Line
-                type="linear"
-                dataKey="upperLimit"
-                stroke="#ff7300"
-                yAxisId={0}
-                animationDuration={300}
-              />
-              <Line
-                type="linear"
-                dataKey="lowerLimit"
-                stroke="#387908"
-                yAxisId={0}
-                animationDuration={300}
-              />
-            </LineChart>
-          </Grid>
+          <DmaxGraph chartData={chartData} />
         </Grid>
         <Grid container spacing={1} marginY={1}>
           <Grid item xs={6}>
@@ -467,7 +429,7 @@ function App() {
               <Box
                 ref={boxRef}
                 style={{
-                  height: "450px", // ここに所望の高さを設定
+                  height: "450px",
                   overflowY: "auto",
                   padding: "8px",
                   textAlign: "left",
@@ -481,7 +443,7 @@ function App() {
             <Paper elevation={2}>
               <Box
                 style={{
-                  height: "450px", // ここに所望の高さを設定
+                  height: "450px",
                   overflowY: "auto",
                   padding: "8px",
                   textAlign: "left",

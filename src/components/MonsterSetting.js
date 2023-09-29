@@ -17,20 +17,19 @@ import {
 } from "@mui/material";
 
 import { StaticData } from "../data/StaticData";
+import { NumberTextField } from "./NumberTextField";
 
 export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) => {
   const handleChangeUserInputData = (key, event, value) => {
-    if (key === "物理肉質" || key === "属性肉質") {
-      // TextField から呼び出された場合
-      value = event.target.value === "" ? 0 : Number(event.target.value);
-    }
-    if (key === "怒り補正") {
+    if (key === "物理肉質" || key === "属性肉質" || key === "怒り補正") {
       value = event.target.value;
     }
     if (key === "水やられ") {
       // CheckBox から呼び出された場合
       value = event.target.checked;
     }
+
+    console.log("MonsterSetting: handleChangeUserInputData: key, value", key, value);
 
     updateUserInputData("モンスター", { ...userInputDataMonster, [key]: value });
   };
@@ -45,6 +44,16 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
           label="物理肉質"
           variant="outlined"
           onChange={(e, v) => handleChangeUserInputData("物理肉質", e, v)}
+        />
+        <NumberTextField
+          value={userInputDataMonster["物理肉質"]}
+          size="small"
+          id="outlined-basic"
+          label="物理肉質"
+          variant="outlined"
+          onChange={(e, v) => handleChangeUserInputData("物理肉質", e, v)}
+          min={0}
+          max={100}
         />
       </Grid>
       <Grid item xs={1}>

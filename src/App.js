@@ -11,6 +11,8 @@ import {
   TextField,
   Button,
   Paper,
+  Tab,
+  Tabs,
 } from "@mui/material";
 
 import Skill from "./components/Skill";
@@ -194,10 +196,15 @@ function App() {
     setPrevDmaxResult(newString);
   };
 
-  // // デバッグ用: 更新されるたびに表示
-  // useEffect(() => {
-  //   console.log("useEffect userInputData:\n" + JSON.stringify(userInputData, null, 4));
-  // }, [skillData]);
+  // デバッグ用: 更新されるたびに表示
+  useEffect(() => {
+    console.log("useEffect userInputData:\n" + JSON.stringify(userInputData, null, 4));
+  }, [skillData]);
+
+  // デバッグ用: 更新されるたびに表示
+  useEffect(() => {
+    console.log("useEffect userInputData:\n" + JSON.stringify(userInputData, null, 4));
+  }, [userInputData]);
 
   // recharts グラフ検証用データ
   let data = [];

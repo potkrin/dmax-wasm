@@ -125,7 +125,6 @@ export const DmaxSolver = ({ userInputData }) => {
   // dmax 最適化の最終結果を管理
   const [middleOutput, setMiddleOutput] = useState("");
   const updateMiddleOutput = (newString) => {
-    updatePrevMiddleOutput(middleOutput);
     setMiddleOutput(newString);
   };
 
@@ -166,22 +165,6 @@ export const DmaxSolver = ({ userInputData }) => {
         <Grid item xs={2}>
           <Button
             onClick={() => {
-              call_worker_wasm_main({});
-              // デバッグ用
-              console.log(
-                "デバッグ出力: userInputData = \n" + JSON.stringify(userInputData, null, 4)
-              );
-              updateDmaxOutput(
-                "デバッグ出力: userInputData = \n" + JSON.stringify(userInputData, null, 4)
-              );
-            }}
-          >
-            Output
-          </Button>
-        </Grid>
-        <Grid item xs={2}>
-          <Button
-            onClick={() => {
               const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
               fetch(apiUrl, {
@@ -198,7 +181,11 @@ export const DmaxSolver = ({ userInputData }) => {
                   return response.json();
                 })
                 .then((data) => {
-                  console.log(data);
+                  // 前回の最終結果用データを隣に移動
+                  updatePrevMiddleOutput(middleOutput);
+                  updateMiddleOutput("");
+
+                  // 前回の中間出力データを消去
                   eraseDmaxOutput();
                   eraseChartData();
                   call_worker_wasm_main(data, updateDmaxOutput, updateChartData);
@@ -209,7 +196,18 @@ export const DmaxSolver = ({ userInputData }) => {
                 });
             }}
           >
-            call POST API
+            Optimize
+          </Button>
+        </Grid>
+        <Grid item xs={2}>
+          <Button
+            onClick={() => {
+              if (startWasmWorker) {
+                startWasmWorker.terminate();
+              }
+            }}
+          >
+            Cancel
           </Button>
         </Grid>
       </Grid>

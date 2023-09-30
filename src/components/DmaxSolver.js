@@ -1,10 +1,11 @@
 /* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/
 
 import { React, useState, useRef, useEffect } from "react";
-import { Grid, Paper, Box, Button } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 
 import { DmaxOutput } from "./DmaxOutput";
 import { DmaxGraph } from "./DmaxGraph";
+import { DmaxResult } from "./DmaxResult";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -108,6 +109,10 @@ export const DmaxSolver = ({ userInputData }) => {
     setDmaxOutput((prevString) => prevString + "\n" + newString);
   };
 
+  const eraseDmaxOutput = (newString) => {
+    setDmaxOutput("");
+  };
+
   // 常に最終行を表示
   const boxRef = useRef(null);
 
@@ -118,16 +123,26 @@ export const DmaxSolver = ({ userInputData }) => {
   }, [dmaxOutput]);
 
   // dmax 最適化の最終結果を管理
-  const [dmaxResult, setDmaxResult] = useState("");
-  const updateDmaxResult = (newString) => {
-    updatePrevDmaxResult(dmaxResult);
-    setDmaxResult(newString);
+  const [middleOutput, setMiddleOutput] = useState("");
+  const updateMiddleOutput = (newString) => {
+    updatePrevMiddleOutput(middleOutput);
+    setMiddleOutput(newString);
   };
 
+  useEffect(() => {
+    // dmax 最適化が完了したら middleOutput に全ての中間結果を渡す (出力生計は middleOutput コンポーネントで行う)
+    if (
+      dmaxOutput.includes("problem is solved [optimal solution found]") &&
+      dmaxOutput.includes("nlobjvar")
+    ) {
+      updateMiddleOutput(dmaxOutput);
+    }
+  }, [dmaxOutput]);
+
   // 1つ前の dmax 最適化の最終結果を管理
-  const [prevDmaxResult, setPrevDmaxResult] = useState("");
-  const updatePrevDmaxResult = (newString) => {
-    setPrevDmaxResult(newString);
+  const [prevMiddleOutput, setPrevMiddleOutput] = useState("");
+  const updatePrevMiddleOutput = (newString) => {
+    setPrevMiddleOutput(newString);
   };
 
   // dmax からの中間出力データを管理
@@ -167,8 +182,6 @@ export const DmaxSolver = ({ userInputData }) => {
         <Grid item xs={2}>
           <Button
             onClick={() => {
-              // デバッグ用
-              updateDmaxResult("ここに結果を出力します。");
               const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
               fetch(apiUrl, {
@@ -186,14 +199,13 @@ export const DmaxSolver = ({ userInputData }) => {
                 })
                 .then((data) => {
                   console.log(data);
-                  updateDmaxResult(JSON.stringify(data, null, 4));
+                  eraseDmaxOutput();
                   eraseChartData();
                   call_worker_wasm_main(data, updateDmaxOutput, updateChartData);
-                  console.log("chartData = \n" + chartData);
                 })
                 .catch((error) => {
                   console.log(`Fetching from ${apiUrl} failed: ${error.message}`);
-                  updateDmaxResult(`Fetching from ${apiUrl} failed: ${error.message}`);
+                  updateMiddleOutput(`Fetching from ${apiUrl} failed: ${error.message}`);
                 });
             }}
           >
@@ -207,35 +219,8 @@ export const DmaxSolver = ({ userInputData }) => {
         <DmaxGraph chartData={chartData} />
       </Grid>
       <Grid container spacing={1} marginY={1}>
-        <Grid item xs={6}>
-          <Paper elevation={2}>
-            <Box
-              ref={boxRef}
-              style={{
-                height: "450px",
-                overflowY: "auto",
-                padding: "8px",
-                textAlign: "left",
-              }}
-            >
-              <pre>{dmaxResult}</pre>
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={6}>
-          <Paper elevation={2}>
-            <Box
-              style={{
-                height: "450px",
-                overflowY: "auto",
-                padding: "8px",
-                textAlign: "left",
-              }}
-            >
-              <pre>{prevDmaxResult}</pre>
-            </Box>
-          </Paper>
-        </Grid>
+        <DmaxResult middleOutput={middleOutput} />
+        <DmaxResult middleOutput={prevMiddleOutput} />
       </Grid>
     </>
   );

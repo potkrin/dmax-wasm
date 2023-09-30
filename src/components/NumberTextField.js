@@ -1,6 +1,7 @@
 import React from "react";
 import { TextField } from "@mui/material";
 
+// 注意: NumberTextField の呼び出し元で parseInt すること
 export function NumberTextField(props) {
   const { min, max, value, ...rest } = props; // min, max, value を分離
 
@@ -10,7 +11,10 @@ export function NumberTextField(props) {
     newValue = min > newValue ? min : newValue; // minより小さい場合はminにする
     newValue = max < newValue ? max : newValue; // maxより大きい場合はmaxにする
 
+    // HTML の <input> 要素の value 属性は常に string として保持されるため、number を代入しても string になる
+    // NumberTextField の呼び出し元で parseInt すること
     event.target.value = newValue;
+
     if (props.onChange) {
       props.onChange(event);
     }

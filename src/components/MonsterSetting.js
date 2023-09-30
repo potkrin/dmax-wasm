@@ -22,7 +22,7 @@ import { NumberTextField } from "./NumberTextField";
 export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) => {
   const handleChangeUserInputData = (key, event, value) => {
     if (key === "物理肉質" || key === "属性肉質" || key === "怒り補正") {
-      value = event.target.value;
+      value = parseInt(event.target.value);
     }
     if (key === "水やられ") {
       // CheckBox から呼び出された場合

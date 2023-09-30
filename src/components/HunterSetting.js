@@ -21,7 +21,9 @@ import { StaticData } from "../data/StaticData";
 
 export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
   const handleChangeUserInputData = (key, event, value) => {
-    if (key === "種ホムラ" || key === "疾替えの書" || key === "ヒトダマドリ") {
+    if (key === "ヒトダマドリ") {
+      value = parseInt(event.target.value);
+    } else if (key === "種ホムラ" || key === "疾替えの書") {
       value = event.target.value;
     } else {
       value = event.target.checked;

@@ -21,14 +21,12 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
   const handleChangeSkillInfo = (key, event, value) => {
     if (key === "activeRate" && !value) {
       // TextField から呼び出された場合
-      value = event.target.value === "" ? 0 : Number(event.target.value);
+      value = parseInt(event.target.value);
     }
     if (key === "fixLevel") {
       // CheckBox から呼び出された場合
       value = event.target.checked;
     }
-    // updateSkillInfo(skillInfo.name, { ...skillInfo, [key]: value });
-    // updateUserInputDataSkill(skillInfo.name, key, value);
     updateUserInputData("スキル", {
       ...userInputData["スキル"],
       [skillInfo.name]: {
@@ -41,13 +39,11 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
   const handleChangeOther = (key, event, value) => {
     if ((key === "全属性耐性値" || key === "狂竜症") && !value) {
       // TextField から呼び出された場合
-      value = event.target.value === "" ? 0 : Number(event.target.value);
+      value = parseInt(event.target.value);
     } else {
       value = event.target.value;
     }
 
-    // updateSkillInfo(skillInfo.name, { ...skillInfo, [key]: value });
-    // updateUserInputDataSkill(skillInfo.name, key, value);
     updateUserInputData("その他", { ...userInputData["その他"], [key]: value });
   };
 

@@ -1,4 +1,5 @@
 // craco.config.js
+// wasm を利用するためのカスタムヘッダーを設定
 
 module.exports = {
   devServer: {

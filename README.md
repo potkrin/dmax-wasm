@@ -1,3 +1,33 @@
+# これは何?
+dmax シミュレータの wasm 版です。ブラウザ上で dmax を動作させることを目的とします。
+
+# 動かし方
+```sh
+npm start
+```
+
+# カスタムヘッダーの利用
+wasm をブラウザで利用するためのカスタムHTTPヘッダーを付与するため、craco を導入します。
+```
+npm install craco
+```
+
+craco.config.js に設定を記述します。
+
+# ファイル説明
+| ファイル | 説明 |
+| ---- | ---- |
+| public/dmax-core | wasm版 dmax のバイナリとその js グルーコード, 呼び出しのための webworker などを定義しているファイル群。public以下に配置しないと、**reactのテンプレートhtmlに上書きされてしまう**場合があるため、public以下に配置する。 |
+
+
+
+
+
+
+
+
+# below is a README.md from Create React App
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

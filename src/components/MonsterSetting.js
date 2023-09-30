@@ -37,14 +37,6 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
   return (
     <>
       <Grid item xs={1}>
-        <TextField
-          value={userInputDataMonster["物理肉質"]}
-          size="small"
-          id="outlined-basic"
-          label="物理肉質"
-          variant="outlined"
-          onChange={(e, v) => handleChangeUserInputData("物理肉質", e, v)}
-        />
         <NumberTextField
           value={userInputDataMonster["物理肉質"]}
           size="small"
@@ -57,13 +49,15 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
         />
       </Grid>
       <Grid item xs={1}>
-        <TextField
+        <NumberTextField
           value={userInputDataMonster["属性肉質"]}
           size="small"
           id="outlined-basic"
           label="属性肉質"
           variant="outlined"
           onChange={(e, v) => handleChangeUserInputData("属性肉質", e, v)}
+          min={0}
+          max={100}
         />
       </Grid>
       <Grid item xs={2}>

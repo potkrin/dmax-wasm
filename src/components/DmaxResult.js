@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { Grid, Paper, Box } from "@mui/material";
 
 import { armors, decos } from "../data/EquipData";
+import { skillData } from "../data/StaticData";
 
 function secondsToHumanReadable(seconds) {
   const days = Math.floor(seconds / (24 * 60 * 60));
@@ -66,13 +67,13 @@ function outputToResult(output) {
           status_reason = "反復回数の上限に到達しました";
         }
 
-        result = `[最適化終了]\n    ${scip_status}: ${status_reason}\n`;
+        result = `[最適化終了]\n${scip_status}: ${status_reason}\n`;
       }
 
       if (line.startsWith("Solving Time")) {
         let solving_time = line.substring(line.indexOf(":") + 1, line.indexOf("."));
         solving_time = secondsToHumanReadable(parseInt(solving_time));
-        result += `    合計処理時間: ${solving_time}`;
+        result += `合計処理時間: ${solving_time}\n\n\n`;
       }
 
       // 最終結果の出力を処理
@@ -151,13 +152,88 @@ function outputToResult(output) {
       };
     }
 
-    result +=
-      "\n" +
-      JSON.stringify(dict_other_result, null, 4) +
-      "\n" +
-      JSON.stringify(list_q_result, null, 4) +
-      "\n" +
-      JSON.stringify(dictResultEquipment, null, 4);
+    // 最大ダメージ, 疾替えの書, 百竜装飾品, 会心率などの出力
+    for (const key in dict_other_result) {
+      result += key + ": " + dict_other_result[key] + "\n";
+    }
+
+    // 部位の出力
+    result += "\n[装備構成]\n";
+    const eqtypeDict = {
+      weapon: "武器スロット",
+      head: "頭",
+      torso: "胴",
+      arms: "腕",
+      waist: "腰",
+      legs: "脚",
+      charm: "護石",
+    };
+    for (const eqtype in eqtypeDict) {
+      if (eqtype === "weapon") {
+        result += eqtypeDict[eqtype] + "\n"; // 一時的に除外 //": " + weaponSlot.slots + "\n";
+        continue;
+      }
+
+      for (const req in dictResultEquipment) {
+        if (eqtype === dictResultEquipment[req].eqDict.type) {
+          result += eqtypeDict[eqtype] + ": " + req + "\n";
+        }
+      }
+    }
+
+    result += "\n[装飾品]\n";
+    // 装飾品の出力 (スロレベル順)
+    const slotLevels = [4, 3, 2, 1];
+    for (const level of slotLevels) {
+      for (const req in dictResultEquipment) {
+        if (dictResultEquipment[req].deco_slotlevel === -1) {
+          continue;
+        }
+
+        if (level === dictResultEquipment[req].decoSlotLevel) {
+          result += req + ": " + dictResultEquipment[req].count + "\n";
+        }
+      }
+    }
+
+    // 出力結果の装備構成で発動するスキルとそのレベルを保持するオブジェクト
+    const dictResultSkill = {};
+
+    // 出力結果の装備オブジェクトから発動スキルとそのレベルを取り出す
+    for (const req in dictResultEquipment) {
+      console.log("req =", req);
+      if (dictResultEquipment[req].count === 0) {
+        continue;
+      }
+
+      for (const skill in dictEquipAll[req].skills) {
+        if (skill in dictResultSkill) {
+          dictResultSkill[skill] +=
+            dictEquipAll[req].skills[skill] * dictResultEquipment[req].count;
+        } else {
+          dictResultSkill[skill] = dictEquipAll[req].skills[skill] * dictResultEquipment[req].count;
+        }
+      }
+    }
+
+    // 最大レベルを超えているスキルのレベルを修正
+    for (const skill in dictResultSkill) {
+      dictResultSkill[skill] = Math.min(skillData[skill]["maxLevel"], dictResultSkill[skill]);
+    }
+
+    console.log("result skills:");
+    result += "\n[スキル構成]\n";
+
+    console.log(dictResultSkill);
+    const skillLevels = Array.from({ length: 7 }, (_, i) => i + 1).reverse();
+
+    for (const level of skillLevels) {
+      for (const req in dictResultSkill) {
+        if (level === dictResultSkill[req]) {
+          result += req + ": " + dictResultSkill[req] + "\n";
+        }
+      }
+    }
   } else if (result === "") {
     result = "";
   } else {

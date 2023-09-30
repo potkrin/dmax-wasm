@@ -26,6 +26,7 @@ function secondsToHumanReadable(seconds) {
   return result.trim();
 }
 
+// 全ての中間結果を含む文字列を処理し、最終結果を出力する
 function outputToResult(output) {
   let result = "";
   if (output.includes("SCIP Status")) {
@@ -243,21 +244,12 @@ function outputToResult(output) {
 }
 
 export const DmaxResult = ({ middleOutput }) => {
-  const boxRef = useRef(null);
-
-  useEffect(() => {
-    if (boxRef.current) {
-      boxRef.current.scrollTop = boxRef.current.scrollHeight;
-    }
-  }, [middleOutput]);
-
   const dmaxResult = outputToResult(middleOutput);
 
   return (
     <Grid item xs={6}>
       <Paper elevation={2}>
         <Box
-          ref={boxRef}
           style={{
             height: "450px",
             overflowY: "auto",

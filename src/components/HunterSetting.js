@@ -16,14 +16,12 @@ import {
   FormGroup,
 } from "@mui/material";
 
+import { NumberTextField } from "./NumberTextField";
 import { StaticData } from "../data/StaticData";
 
 export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
   const handleChangeUserInputData = (key, event, value) => {
-    if (key === "ヒトダマドリ") {
-      // TextField から呼び出された場合
-      value = event.target.value === "" ? 0 : Number(event.target.value);
-    } else if (key === "種ホムラ" || key === "疾替えの書") {
+    if (key === "種ホムラ" || key === "疾替えの書" || key === "ヒトダマドリ") {
       value = event.target.value;
     } else {
       value = event.target.checked;
@@ -77,13 +75,15 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
         .filter(([_, value]) => typeof value === "number")
         .map(([key, _]) => (
           <Grid item xs={1}>
-            <TextField
+            <NumberTextField
               value={userInputDataHunter[key]}
               size="small"
               id="outlined-basic"
               label={key}
               variant="outlined"
               onChange={(e, v) => handleChangeUserInputData(key, e, v)}
+              min={key === "ヒトダマドリ" ? 0 : 0}
+              max={key === "ヒトダマドリ" ? 20 : 20}
             />
           </Grid>
         ))}

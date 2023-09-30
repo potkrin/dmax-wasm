@@ -16,6 +16,7 @@ import {
   FormGroup,
 } from "@mui/material";
 
+import { NumberTextField } from "./NumberTextField";
 import { StaticData } from "../data/StaticData";
 
 export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
@@ -41,13 +42,15 @@ export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
     <>
       {textFieldKeys.map((key) => (
         <Grid item xs={1.5}>
-          <TextField
+          <NumberTextField
             value={userInputDataWeapon[key]}
             size="small"
             id="outlined-basic"
             label={key}
             variant="outlined"
             onChange={(e, v) => handleChangeUserInputData(key, e, v)}
+            min={0}
+            max={key === "会心率" ? 100 : 1000}
           />
         </Grid>
       ))}

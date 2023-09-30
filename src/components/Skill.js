@@ -14,6 +14,7 @@ import {
   MenuItem,
 } from "@mui/material";
 
+import { NumberTextField } from "./NumberTextField";
 import { StaticData } from "../data/StaticData";
 
 const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
@@ -73,13 +74,15 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
             </Box>
           </Grid>
           <Grid item xs={1}>
-            <TextField
+            <NumberTextField
               value={skillInput.activeRate}
               size="small"
               id="outlined-basic"
               label="%"
               variant="outlined"
               onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
+              min={0}
+              max={100}
             />
           </Grid>
         </>
@@ -114,11 +117,13 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
       */}
       {skillInfo.name === "龍気変換" ? (
         <Grid item xs={1}>
-          <TextField
+          <NumberTextField
             label="全属性耐性合計"
             size="small"
             value={userInputData["その他"]["全属性耐性値"]}
             onChange={(e, v) => handleChangeOther("全属性耐性値", e, v)}
+            min={0}
+            max={250}
           />
         </Grid>
       ) : skillInfo.name === "狂竜症【蝕】" ? (
@@ -128,6 +133,8 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
             size="small"
             value={userInputData["その他"]["狂竜症【蝕】感染時割合"]}
             onChange={(e, v) => handleChangeOther("狂竜症【蝕】感染時割合", e, v)}
+            min={0}
+            max={100}
           />
         </Grid>
       ) : skillInfo.name === "伏魔響命" ? (

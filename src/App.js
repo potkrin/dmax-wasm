@@ -1,19 +1,7 @@
-import logo from "./logo.svg";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
-import {
-  Container,
-  Typography,
-  Grid,
-  Switch,
-  Box,
-  Slider,
-  TextField,
-  Button,
-  Paper,
-  Tab,
-  Tabs,
-} from "@mui/material";
+import { Container, Grid, Snackbar } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 
 import { Skill } from "./components/Skill";
 import { NonDamageSkill } from "./components/NonDamageSkill";
@@ -24,6 +12,7 @@ import { DangoSetting } from "./components/DangoSetting";
 import { MelodySetting } from "./components/MelodySetting";
 import { RampageDecoSetting } from "./components/RampageDecoSetting";
 import { DmaxSolver } from "./components/DmaxSolver";
+import { ValidateData } from "./components/ValidateData";
 
 import { staticSkillData } from "./data/StaticData";
 import { userInputData as initUserInputData } from "./data/UserInputData";
@@ -52,6 +41,9 @@ function App() {
 
   return (
     <div className="App">
+      {/* 読み込みデータの検証 */}
+      <ValidateData />
+
       <Container sx={{ marginY: 5 }}>
         <Grid container spacing={1} marginY={1}>
           <MonsterSetting

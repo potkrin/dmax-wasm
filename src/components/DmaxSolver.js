@@ -181,6 +181,7 @@ export const DmaxSolver = ({ userInputData }) => {
                   "userInputData": userInputData,
                   "armors": armors,
                   "decos": decos,
+                  "staticData": staticData,
                 }),
               })
                 .then((response) => {

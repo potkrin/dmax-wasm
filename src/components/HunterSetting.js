@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 
 import { NumberTextField } from "./NumberTextField";
-import { StaticData } from "../data/StaticData";
+import { staticData } from "../data/StaticData";
 
 export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
   const handleChangeUserInputData = (key, event, value) => {
@@ -28,7 +28,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
 
   return (
     <>
-      {Object.entries(StaticData["ハンター"])
+      {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "boolean")
         .map(([key, _]) => (
           <Grid item xs={1}>
@@ -45,7 +45,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
             </FormGroup>
           </Grid>
         ))}
-      {Object.entries(StaticData["ハンター"])
+      {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "object")
         .map(([key, _]) => (
           <Grid item xs={1}>
@@ -59,7 +59,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
                 label={key}
                 onChange={(e) => handleChangeUserInputData(key, e)}
               >
-                {Object.entries(StaticData["ハンター"][key]).map(([_, value]) => (
+                {Object.entries(staticData["ハンター"][key]).map(([_, value]) => (
                   <MenuItem value={value}>{value}</MenuItem>
                 ))}
               </Select>
@@ -67,7 +67,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
           </Grid>
         ))}
 
-      {Object.entries(StaticData["ハンター"])
+      {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "number")
         .map(([key, _]) => (
           <Grid item xs={1}>

@@ -1,4 +1,4 @@
-export const StaticData = {
+export const staticData = {
   "怒り補正": {
     "怒り補正なし": 1,
     "イソネミクニ": 1.05,

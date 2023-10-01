@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-import { StaticData } from "../data/StaticData";
+import { staticData } from "../data/StaticData";
 
 export const DangoSetting = ({ userInputDataDango, updateUserInputData }) => {
   const handleChangeUserInputData = (key, event, value) => {
@@ -11,7 +11,7 @@ export const DangoSetting = ({ userInputDataDango, updateUserInputData }) => {
 
   return (
     <>
-      {Object.keys(StaticData["食事"]).map((key) => (
+      {Object.keys(staticData["食事"]).map((key) => (
         <Grid item xs={2}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">{key}</InputLabel>
@@ -23,7 +23,7 @@ export const DangoSetting = ({ userInputDataDango, updateUserInputData }) => {
               label={key}
               onChange={(e) => handleChangeUserInputData(key, e)}
             >
-              {Object.values(StaticData["食事"][key]).map((value) => (
+              {Object.values(staticData["食事"][key]).map((value) => (
                 <MenuItem value={value}>{value}</MenuItem>
               ))}
             </Select>

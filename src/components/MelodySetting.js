@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 
-import { StaticData } from "../data/StaticData";
+import { staticData } from "../data/StaticData";
 
 export const MelodySetting = ({ userInputDataMelody, updateUserInputData }) => {
   const handleChangeUserInputData = (key, event, value) => {
@@ -11,7 +11,7 @@ export const MelodySetting = ({ userInputDataMelody, updateUserInputData }) => {
 
   return (
     <>
-      {StaticData["旋律"].map((item) => (
+      {staticData["旋律"].map((item) => (
         <Grid item xs={1}>
           <FormGroup>
             <FormControlLabel

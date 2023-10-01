@@ -7,6 +7,7 @@ import { DmaxOutput } from "./DmaxOutput";
 import { DmaxGraph } from "./DmaxGraph";
 import { DmaxResult } from "./DmaxResult";
 import { armors, decos } from "../data/EquipData";
+import { staticData } from "../data/StaticData";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;

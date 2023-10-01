@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 
 import { NumberTextField } from "./NumberTextField";
-import { StaticData } from "../data/StaticData";
+import { staticData } from "../data/StaticData";
 
 export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) => {
   const handleChangeSkillInfo = (key, event, value) => {
@@ -146,7 +146,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
               label={"キュリア"}
               onChange={(e) => handleChangeOther("キュリア", e)}
             >
-              {Object.entries(StaticData["その他"]["キュリア"]).map(([_, value]) => (
+              {Object.entries(staticData["その他"]["キュリア"]).map(([_, value]) => (
                 <MenuItem value={value}>{value}匹</MenuItem>
               ))}
             </Select>
@@ -164,7 +164,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
               label={"血氣覚醒"}
               onChange={(e) => handleChangeOther("血氣覚醒", e)}
             >
-              {Object.entries(StaticData["その他"]["血氣覚醒"]).map(([_, value]) => (
+              {Object.entries(staticData["その他"]["血氣覚醒"]).map(([_, value]) => (
                 <MenuItem value={value}>{value}段階目</MenuItem>
               ))}
             </Select>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { Container, Grid, Snackbar } from "@mui/material";
-import MuiAlert from "@mui/material/Alert";
+import { Container, Grid } from "@mui/material";
 
 import { Skill } from "./components/Skill";
 import { NonDamageSkill } from "./components/NonDamageSkill";

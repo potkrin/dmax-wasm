@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 import { NumberTextField } from "./NumberTextField";
-import { StaticData } from "../data/StaticData";
+import { staticData } from "../data/StaticData";
 
 const numberFieldKeys = ["攻撃力", "会心率", "属性値"];
 
@@ -33,7 +33,7 @@ export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
         </Grid>
       ))}
 
-      {Object.keys(StaticData["武器"]).map((key) => (
+      {Object.keys(staticData["武器"]).map((key) => (
         <Grid item xs={1.5}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">{key}</InputLabel>
@@ -45,7 +45,7 @@ export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
               label={key}
               onChange={(e, v) => handleChangeUserInputData(key, e, v)}
             >
-              {Object.keys(StaticData["武器"][key]).map((key) => (
+              {Object.keys(staticData["武器"][key]).map((key) => (
                 <MenuItem value={key}>{key}</MenuItem>
               ))}
             </Select>

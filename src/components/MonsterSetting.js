@@ -10,7 +10,7 @@ import {
   FormGroup,
 } from "@mui/material";
 
-import { StaticData } from "../data/StaticData";
+import { staticData } from "../data/StaticData";
 import { NumberTextField } from "./NumberTextField";
 
 export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) => {
@@ -65,7 +65,7 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
             label="怒り補正"
             onChange={(e, v) => handleChangeUserInputData("怒り補正", e, v)}
           >
-            {Object.entries(StaticData["怒り補正"]).map(([key, value]) => (
+            {Object.entries(staticData["怒り補正"]).map(([key, value]) => (
               <MenuItem value={value}>
                 {key}: {value}
               </MenuItem>

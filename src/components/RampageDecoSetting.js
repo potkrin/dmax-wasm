@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 
-import { StaticData } from "../data/StaticData";
+import { staticData } from "../data/StaticData";
 
 export const RampageDecoSetting = ({ userInputDataRampageDeco, updateUserInputData }) => {
   const handleChangeUserInputData = (key, event, value) => {
@@ -11,7 +11,7 @@ export const RampageDecoSetting = ({ userInputDataRampageDeco, updateUserInputDa
 
   return (
     <>
-      {StaticData["百竜装飾品"].map((item) => (
+      {staticData["百竜装飾品"].map((item) => (
         <Grid item xs={1}>
           <FormGroup>
             <FormControlLabel

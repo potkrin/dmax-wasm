@@ -14,9 +14,15 @@ import {
   Select,
 } from "@mui/material";
 
-const NonDamageSkill = ({ skillInfo, updateSkillInfo }) => {
+export const NonDamageSkill = ({ staticSkillData, userInputData, updateUserInputData }) => {
   const handleChangeNonDamageSkillInfo = (key, event, value) => {
-    updateSkillInfo(skillInfo.name, { ...skillInfo, [key]: event.target.value });
+    updateUserInputData("スキル", {
+      ...userInputData["スキル"],
+      [staticSkillData.name]: {
+        ...userInputData["スキル"][staticSkillData.name],
+        [key]: event.target.value,
+      },
+    });
   };
 
   return (
@@ -24,15 +30,15 @@ const NonDamageSkill = ({ skillInfo, updateSkillInfo }) => {
       <Grid item xs={2}>
         <Box margin={1}>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">{skillInfo.name}</InputLabel>
+            <InputLabel id="demo-simple-select-label">{staticSkillData.name}</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={skillInfo.minLevel}
-              label={skillInfo.name}
+              value={userInputData["スキル"][staticSkillData.name].minLevel}
+              label={staticSkillData.name}
               onChange={(e, v) => handleChangeNonDamageSkillInfo("minLevel", e, v)}
             >
-              {Array.from({ length: skillInfo.maxLevel + 1 }, (_, i) => (
+              {Array.from({ length: staticSkillData.maxLevel + 1 }, (_, i) => (
                 <MenuItem value={i}>Lv{i}</MenuItem>
               ))}
             </Select>

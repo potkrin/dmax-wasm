@@ -17,7 +17,7 @@ import {
 import { NumberTextField } from "./NumberTextField";
 import { StaticData } from "../data/StaticData";
 
-const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
+export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) => {
   const handleChangeSkillInfo = (key, event, value) => {
     if (key === "activeRate" && !value) {
       // TextField から呼び出された場合
@@ -29,8 +29,8 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
     }
     updateUserInputData("スキル", {
       ...userInputData["スキル"],
-      [skillInfo.name]: {
-        ...userInputData["スキル"][skillInfo.name],
+      [staticSkillData.name]: {
+        ...userInputData["スキル"][staticSkillData.name],
         [key]: value,
       },
     });
@@ -47,14 +47,14 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
     updateUserInputData("その他", { ...userInputData["その他"], [key]: value });
   };
 
-  const skillInput = userInputData["スキル"][skillInfo.name];
+  const skillInput = userInputData["スキル"][staticSkillData.name];
 
   return (
     <>
       <Grid item xs={2}>
-        <Typography variant="body2">{skillInfo.name}</Typography>
+        <Typography variant="body2">{staticSkillData.name}</Typography>
       </Grid>
-      {skillInfo.type === "Damage" ? (
+      {staticSkillData.type === "Damage" ? (
         <>
           <Grid item xs={1}>
             <Box sx={{ width: 50 }}>
@@ -85,33 +85,36 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
       ) : (
         <Grid item xs={2}></Grid>
       )}
-      <Grid item xs={1}>
-        <Checkbox
-          checked={skillInput.fixLevel}
-          onChange={(e, v) => handleChangeSkillInfo("fixLevel", e, v)}
-        />
-      </Grid>
+      {staticSkillData.type !== "FixedLevelDamage" ? (
+        <Grid item xs={1}>
+          <Checkbox
+            checked={skillInput.fixLevel}
+            onChange={(e, v) => handleChangeSkillInfo("fixLevel", e, v)}
+          />
+        </Grid>
+      ) : (
+        <Grid item xs={1}></Grid>
+      )}
       <Grid item xs={4}>
-        <Box sx={{ width: 50 * skillInfo.maxLevel }}>
+        <Box sx={{ width: 50 * staticSkillData.maxLevel }}>
           <Slider
             aria-label="Temperature"
             value={skillInput.minLevel}
             valueLabelDisplay="auto"
             step={1}
-            marks={Array.from({ length: skillInfo.maxLevel + 1 }, (_, level) => ({
+            marks={Array.from({ length: staticSkillData.maxLevel + 1 }, (_, level) => ({
               value: level,
               label: String(level),
             }))}
             min={0}
-            max={skillInfo.maxLevel}
+            max={staticSkillData.maxLevel}
             onChange={(e, v) => handleChangeSkillInfo("minLevel", e, v)}
           />
         </Box>
       </Grid>
-      {/* 下記の方法で条件分岐によるコンポーネント追加ができる 
-          データの管理方法はこのあと考える 
-      */}
-      {skillInfo.name === "龍気変換" ? (
+
+      {/* 追加で入力項目が必要なスキルの処理 */}
+      {staticSkillData.name === "龍気変換" ? (
         <Grid item xs={1}>
           <NumberTextField
             label="全属性耐性合計"
@@ -122,7 +125,7 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
             max={250}
           />
         </Grid>
-      ) : skillInfo.name === "狂竜症【蝕】" ? (
+      ) : staticSkillData.name === "狂竜症【蝕】" ? (
         <Grid item xs={1}>
           <TextField
             label="狂竜症感染時割合"
@@ -133,7 +136,7 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
             max={100}
           />
         </Grid>
-      ) : skillInfo.name === "伏魔響命" ? (
+      ) : staticSkillData.name === "伏魔響命" ? (
         <Grid item xs={1}>
           <FormControl style={{ width: "100%" }}>
             <InputLabel id="demo-simple-select-label">キュリア</InputLabel>
@@ -151,7 +154,7 @@ const Skill = ({ skillInfo, userInputData, updateUserInputData }) => {
             </Select>
           </FormControl>
         </Grid>
-      ) : skillInfo.name === "血氣覚醒" ? (
+      ) : staticSkillData.name === "血氣覚醒" ? (
         <Grid item xs={1}>
           <FormControl>
             <InputLabel id="demo-simple-select-label">血氣覚醒</InputLabel>

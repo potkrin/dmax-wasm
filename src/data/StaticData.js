@@ -146,13 +146,13 @@ export const StaticData = {
 };
 
 /**
- * type: Damage        := ダメージ寄与スキル
- *       FixLevel      := ダメージ寄与スキルのうちレベル固定のみのスキル
- *       NonDamage     := ダメージ計算に寄与しないスキル
- *       FreqNonDamage := ダメージ計算に寄与しないスキルのうち頻繁に利用するスキル
+ * type: Damage           := ダメージ寄与スキル
+ *       FixedLevelDamage := ダメージ寄与スキルのうちレベル固定のみのスキル
+ *       NonDamage        := ダメージ計算に寄与しないスキル
+ *       FreqNonDamage    := ダメージ計算に寄与しないスキルのうち頻繁に利用するスキル
  */
 
-export const skillData = {
+export const staticSkillData = {
   "攻撃": {
     "name": "攻撃",
     "maxLevel": 7,
@@ -720,6 +720,11 @@ export const skillData = {
   },
   "闇討ち": {
     "name": "闇討ち",
+    "maxLevel": 3,
+    "type": "FixedLevelDamage",
+  },
+  "弾・矢強化": {
+    "name": "弾・矢強化",
     "maxLevel": 3,
     "type": "FixedLevelDamage",
   },

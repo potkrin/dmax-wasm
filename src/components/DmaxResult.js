@@ -2,8 +2,9 @@ import React, { useRef, useEffect } from "react";
 import { Grid, Paper, Box } from "@mui/material";
 
 import { armors, decos } from "../data/EquipData";
-import { skillData } from "../data/StaticData";
+import { staticSkillData } from "../data/StaticData";
 
+// 秒を読みやすい形式に変換
 function secondsToHumanReadable(seconds) {
   const days = Math.floor(seconds / (24 * 60 * 60));
   const daysSeconds = days * 24 * 60 * 60;
@@ -219,7 +220,7 @@ function outputToResult(output) {
 
     // 最大レベルを超えているスキルのレベルを修正
     for (const skill in dictResultSkill) {
-      dictResultSkill[skill] = Math.min(skillData[skill]["maxLevel"], dictResultSkill[skill]);
+      dictResultSkill[skill] = Math.min(staticSkillData[skill]["maxLevel"], dictResultSkill[skill]);
     }
 
     console.log("result skills:");

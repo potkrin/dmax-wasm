@@ -1,4 +1,4 @@
-export const UserInputData = {
+export const userInputData = {
   "モンスター": {
     "物理肉質": 45,
     "属性肉質": 25,

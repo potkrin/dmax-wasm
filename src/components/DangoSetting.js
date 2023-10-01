@@ -1,20 +1,5 @@
-import React, { useState } from "react";
-import {
-  Container,
-  Typography,
-  Grid,
-  Switch,
-  Box,
-  Slider,
-  TextField,
-  Checkbox,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  FormControlLabel,
-  FormGroup,
-} from "@mui/material";
+import React from "react";
+import { Grid, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 import { StaticData } from "../data/StaticData";
 

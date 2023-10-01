@@ -6,6 +6,7 @@ import { Grid, Button } from "@mui/material";
 import { DmaxOutput } from "./DmaxOutput";
 import { DmaxGraph } from "./DmaxGraph";
 import { DmaxResult } from "./DmaxResult";
+import { armors, decos } from "../data/EquipData";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -130,10 +131,7 @@ export const DmaxSolver = ({ userInputData }) => {
 
   useEffect(() => {
     // dmax 最適化が完了したら middleOutput に全ての中間結果を渡す (出力生計は middleOutput コンポーネントで行う)
-    if (
-      dmaxOutput.includes("problem is solved [optimal solution found]") &&
-      dmaxOutput.includes("nlobjvar")
-    ) {
+    if (dmaxOutput.includes("SCIP Status")) {
       updateMiddleOutput(dmaxOutput);
     }
   }, [dmaxOutput]);
@@ -172,7 +170,11 @@ export const DmaxSolver = ({ userInputData }) => {
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify(userInputData),
+                body: JSON.stringify({
+                  "userInputData": userInputData,
+                  "armors": armors,
+                  "decos": decos,
+                }),
               })
                 .then((response) => {
                   if (!response.ok) {

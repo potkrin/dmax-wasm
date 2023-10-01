@@ -1,18 +1,5 @@
-import React, { useState } from "react";
-import {
-  Container,
-  Typography,
-  Grid,
-  Switch,
-  Box,
-  Slider,
-  TextField,
-  Checkbox,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@mui/material";
+import React from "react";
+import { Grid, Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 export const NonDamageSkill = ({ staticSkillData, userInputData, updateUserInputData }) => {
   const handleChangeNonDamageSkillInfo = (key, event, value) => {

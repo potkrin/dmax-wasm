@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import { Grid, Paper, Box } from "@mui/material";
 
 import { armors, decos } from "../data/EquipData";

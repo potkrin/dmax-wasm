@@ -1,12 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import {
-  Container,
-  Typography,
   Grid,
-  Switch,
-  Box,
-  Slider,
-  TextField,
   Checkbox,
   FormControl,
   InputLabel,

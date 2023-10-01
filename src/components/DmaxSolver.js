@@ -153,8 +153,14 @@ export const DmaxSolver = ({ userInputData }) => {
     });
   };
 
-  const eraseChartData = (newData) => {
+  const eraseChartData = () => {
     setChartData([]);
+  };
+
+  // 最適化ボタンを押した時点の入力データを保存する変数
+  const [processingUserInputData, setProcessingUserInputData] = useState({});
+  const updateProsessingUserInputData = (newData) => {
+    setProcessingUserInputData(newData);
   };
 
   return (
@@ -196,6 +202,11 @@ export const DmaxSolver = ({ userInputData }) => {
                   console.log(`Fetching from ${apiUrl} failed: ${error.message}`);
                   updateMiddleOutput(`Fetching from ${apiUrl} failed: ${error.message}`);
                 });
+
+              // ボタンを押した時点の入力データを保存する
+              // = 代入や Object.assign() では浅いコピーしか行われないので JSON を経由して深いコピーを行う
+              // 同期処理のためデータが大きい場合、メインスレッドがハングする可能性がある
+              updateProsessingUserInputData(JSON.parse(JSON.stringify(userInputData)));
             }}
           >
             Optimize
@@ -219,8 +230,11 @@ export const DmaxSolver = ({ userInputData }) => {
         <DmaxGraph chartData={chartData} />
       </Grid>
       <Grid container spacing={1} marginY={1}>
-        <DmaxResult middleOutput={middleOutput} />
-        <DmaxResult middleOutput={prevMiddleOutput} />
+        <DmaxResult middleOutput={middleOutput} processingUserInputData={processingUserInputData} />
+        <DmaxResult
+          middleOutput={prevMiddleOutput}
+          processingUserInputData={processingUserInputData}
+        />
       </Grid>
     </>
   );

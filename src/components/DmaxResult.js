@@ -28,7 +28,7 @@ function secondsToHumanReadable(seconds) {
 }
 
 // 全ての中間結果を含む文字列を処理し、最終結果を出力する
-function outputToResult(output) {
+function outputToResult(output, processingUserInputData) {
   let result = "";
   if (output.includes("SCIP Status")) {
     let lines = output.split("\n");
@@ -172,7 +172,7 @@ function outputToResult(output) {
     };
     for (const eqtype in eqtypeDict) {
       if (eqtype === "weapon") {
-        result += eqtypeDict[eqtype] + "\n"; // 一時的に除外 //": " + weaponSlot.slots + "\n";
+        result += eqtypeDict[eqtype] + ": " + processingUserInputData["武器"]["スロット"] + "\n";
         continue;
       }
 
@@ -244,8 +244,8 @@ function outputToResult(output) {
   return result;
 }
 
-export const DmaxResult = ({ middleOutput }) => {
-  const dmaxResult = outputToResult(middleOutput);
+export const DmaxResult = ({ middleOutput, processingUserInputData }) => {
+  const dmaxResult = outputToResult(middleOutput, processingUserInputData);
 
   return (
     <Grid item xs={6}>

@@ -888,4 +888,9 @@ export const staticSkillData = {
     "maxLevel": 1,
     "type": "NonDamage",
   },
+  "激励": {
+    "name": "激励",
+    "maxLevel": 1,
+    "type": "NonDamage",
+  },
 };

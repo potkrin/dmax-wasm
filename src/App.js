@@ -1,20 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
-import { Container, Grid } from "@mui/material";
-
-import { Skill } from "./components/Skill";
-import { NonDamageSkill } from "./components/NonDamageSkill";
-import { MonsterSetting } from "./components/MonsterSetting";
-import { WeaponSetting } from "./components/WeaponSetting";
-import { HunterSetting } from "./components/HunterSetting";
-import { DangoSetting } from "./components/DangoSetting";
-import { MelodySetting } from "./components/MelodySetting";
-import { RampageDecoSetting } from "./components/RampageDecoSetting";
-import { DmaxSolver } from "./components/DmaxSolver";
-import { ValidateData } from "./components/ValidateData";
-
-import { staticSkillData } from "./data/StaticData";
-import { userInputData as initUserInputData } from "./data/UserInputData";
+import { Tabs, Tab, Container, Box } from "@mui/material";
+import { DmaxMain } from "./components/DmaxMain";
 
 /**
  * TODO:
@@ -22,160 +9,44 @@ import { userInputData as initUserInputData } from "./data/UserInputData";
  *   - state 更新の軽量化
  */
 
-function App() {
-  // スキル以外のユーザ入力データを保持
-  const [userInputData, setUserInputData] = useState(initUserInputData);
+function TabPanel(props) {
+  const { children, value, index } = props;
 
-  const updateUserInputData = (key, value) => {
-    setUserInputData((prevData) => ({
-      ...prevData,
-      [key]: value,
-    }));
+  const hiddenStyle = {
+    display: value === index ? "block" : "none",
   };
 
-  // デバッグ用: 更新されるたびに表示
-  useEffect(() => {
-    console.log("useEffect userInputData:\n" + JSON.stringify(userInputData, null, 4));
-  }, [userInputData]);
+  return (
+    <div style={hiddenStyle}>
+      <Box p={3}>{children}</Box>
+    </div>
+  );
+}
+
+function App() {
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
     <div className="App">
-      {/* 読み込みデータの検証 */}
-      <ValidateData />
-
       <Container sx={{ marginY: 5 }}>
-        <Grid container spacing={1} marginY={1}>
-          <MonsterSetting
-            userInputDataMonster={userInputData["モンスター"]}
-            updateUserInputData={updateUserInputData}
-          />
-        </Grid>
-        <Grid container spacing={1} marginY={1}>
-          <WeaponSetting
-            userInputDataWeapon={userInputData["武器"]}
-            updateUserInputData={updateUserInputData}
-          />
-        </Grid>
-        <Grid container spacing={1} marginY={1}>
-          <HunterSetting
-            userInputDataHunter={userInputData["ハンター"]}
-            updateUserInputData={updateUserInputData}
-          />
-        </Grid>
-        <Grid container spacing={1} marginY={1}>
-          <DangoSetting
-            userInputDataDango={userInputData["食事"]}
-            updateUserInputData={updateUserInputData}
-          />
-        </Grid>
-        <Grid container spacing={1} marginY={1}>
-          <MelodySetting
-            userInputDataMelody={userInputData["旋律"]}
-            updateUserInputData={updateUserInputData}
-          />
-        </Grid>
-        <Grid container spacing={1} marginY={1}>
-          <RampageDecoSetting
-            userInputDataRampageDeco={userInputData["百竜装飾品"]}
-            updateUserInputData={updateUserInputData}
-          />
-        </Grid>
-
-        {/* スライダーありのスキル */}
-        <Grid container marginTop={8}>
-          {Object.keys(staticSkillData)
-            .filter((key) => staticSkillData[key].type === "FixedLevelDamage")
-            .map((key) => (
-              <Skill
-                staticSkillData={staticSkillData[key]}
-                userInputData={userInputData}
-                updateUserInputData={updateUserInputData}
-              />
-            ))}
-          {Object.keys(staticSkillData)
-            .filter((key) => staticSkillData[key].type === "Damage")
-            .map((key) => (
-              <Skill
-                staticSkillData={staticSkillData[key]}
-                userInputData={userInputData}
-                updateUserInputData={updateUserInputData}
-              />
-            ))}
-          {Object.keys(staticSkillData)
-            .filter((key) => staticSkillData[key].type === "FreqNonDamage")
-            .map((key) => (
-              <Skill
-                staticSkillData={staticSkillData[key]}
-                userInputData={userInputData}
-                updateUserInputData={updateUserInputData}
-              />
-            ))}
-        </Grid>
-
-        {/* スライダーなしのスキル 最大Lv5以上, Lv4, Lv3, ... */}
-        <Grid container marginTop={2}>
-          {Object.keys(staticSkillData)
-            .filter((key) => staticSkillData[key].type === "NonDamage")
-            .filter((key) => staticSkillData[key].maxLevel > 4)
-            .map((key) => (
-              <NonDamageSkill
-                staticSkillData={staticSkillData[key]}
-                userInputData={userInputData}
-                updateUserInputData={updateUserInputData}
-              />
-            ))}
-        </Grid>
-        <Grid container marginTop={2}>
-          {Object.keys(staticSkillData)
-            .filter((key) => staticSkillData[key].type === "NonDamage")
-            .filter((key) => staticSkillData[key].maxLevel === 4)
-            .map((key) => (
-              <NonDamageSkill
-                staticSkillData={staticSkillData[key]}
-                userInputData={userInputData}
-                updateUserInputData={updateUserInputData}
-              />
-            ))}
-        </Grid>
-        <Grid container marginTop={2}>
-          {Object.keys(staticSkillData)
-            .filter((key) => staticSkillData[key].type === "NonDamage")
-            .filter((key) => staticSkillData[key].maxLevel === 3)
-            .map((key) => (
-              <NonDamageSkill
-                staticSkillData={staticSkillData[key]}
-                userInputData={userInputData}
-                updateUserInputData={updateUserInputData}
-              />
-            ))}
-        </Grid>
-        <Grid container marginTop={2}>
-          {Object.keys(staticSkillData)
-            .filter((key) => staticSkillData[key].type === "NonDamage")
-            .filter((key) => staticSkillData[key].maxLevel === 2)
-            .map((key) => (
-              <NonDamageSkill
-                staticSkillData={staticSkillData[key]}
-                userInputData={userInputData}
-                updateUserInputData={updateUserInputData}
-              />
-            ))}
-        </Grid>
-        <Grid container marginTop={2}>
-          {Object.keys(staticSkillData)
-            .filter((key) => staticSkillData[key].type === "NonDamage")
-            .filter((key) => staticSkillData[key].maxLevel === 1)
-            .map((key) => (
-              <NonDamageSkill
-                staticSkillData={staticSkillData[key]}
-                userInputData={userInputData}
-                updateUserInputData={updateUserInputData}
-              />
-            ))}
-        </Grid>
-
-        {/* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/}
-        <DmaxSolver userInputData={userInputData} />
+        <Tabs value={value} onChange={handleChange}>
+          <Tab label="Tab 1" />
+          <Tab label="Tab 2" />
+          <Tab label="Tab 3" />
+        </Tabs>
+        <TabPanel value={value} index={0}>
+          <DmaxMain />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <p>Tab 2 content</p>
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <p>Tab 3 content</p>
+        </TabPanel>
       </Container>
     </div>
   );

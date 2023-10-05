@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import { Tabs, Tab, Container, Box } from "@mui/material";
 import { DmaxMain } from "./components/DmaxMain";
+import { CharmManager } from "./components/CharmManager";
 
 /**
  * TODO:
@@ -42,7 +43,7 @@ function App() {
           <DmaxMain />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <p>Tab 2 content</p>
+          <CharmManager />
         </TabPanel>
         <TabPanel value={value} index={2}>
           <p>Tab 3 content</p>

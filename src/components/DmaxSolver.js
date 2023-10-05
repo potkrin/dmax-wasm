@@ -172,6 +172,48 @@ export const DmaxSolver = ({ userInputData }) => {
             onClick={() => {
               const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
+              // ユーザが入力した護石データを防具データ一覧 (userArmors) に追加
+              let userArmors = JSON.parse(JSON.stringify(armors));
+              let userCharmString = localStorage.getItem("userCharmData");
+              if (userCharmString) {
+                let userCharmData = JSON.parse(userCharmString);
+                console.log("userCharmData = " + JSON.stringify(userCharmData, null, 4));
+                for (let charm of userCharmData) {
+                  console.log("charm = " + JSON.stringify(charm, null, 4));
+                  let tempCharm = {
+                    "rare": 0,
+                    "type": "charm",
+                    // 護石【攻撃2, 連撃2】4-1-1 形式で名前を作成
+                    "name":
+                      "護石【" +
+                      charm["1stSkill"]["name"] +
+                      charm["1stSkill"]["level"] +
+                      "，" +
+                      charm["2ndSkill"]["name"] +
+                      charm["2ndSkill"]["level"] +
+                      "】" +
+                      charm["slots"][0] +
+                      "-" +
+                      charm["slots"][1] +
+                      "-" +
+                      charm["slots"][2],
+                    "deffence": 0,
+                    "fire": "0",
+                    "water": "0",
+                    "ice": "0",
+                    "thunder": "0",
+                    "dragon": "0",
+                    "slots": [charm["slots"][0], charm["slots"][1], charm["slots"][2]],
+                    "skills": {
+                      [charm["1stSkill"]["name"]]: charm["1stSkill"]["level"],
+                      [charm["2ndSkill"]["name"]]: charm["2ndSkill"]["level"],
+                    },
+                  };
+
+                  userArmors.push(tempCharm);
+                }
+              }
+
               fetch(apiUrl, {
                 method: "POST",
                 headers: {
@@ -179,7 +221,7 @@ export const DmaxSolver = ({ userInputData }) => {
                 },
                 body: JSON.stringify({
                   "userInputData": userInputData,
-                  "armors": armors,
+                  "armors": userArmors,
                   "decos": decos,
                   "staticData": staticData,
                 }),

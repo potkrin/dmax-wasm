@@ -3,6 +3,7 @@ import "./App.css";
 import { Tabs, Tab, Container, Box } from "@mui/material";
 import { DmaxMain } from "./components/DmaxMain";
 import { CharmManager } from "./components/CharmManager";
+import QuriousArmorManager from "./components/QuriousArmorManager";
 
 /**
  * TODO:
@@ -35,9 +36,9 @@ function App() {
     <div className="App">
       <Container sx={{ marginY: 5 }}>
         <Tabs value={value} onChange={handleChange}>
-          <Tab label="Tab 1" />
-          <Tab label="Tab 2" />
-          <Tab label="Tab 3" />
+          <Tab label="DMAX" />
+          <Tab label="護石" />
+          <Tab label="傀異錬成" />
         </Tabs>
         <TabPanel value={value} index={0}>
           <DmaxMain />
@@ -46,7 +47,7 @@ function App() {
           <CharmManager />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <p>Tab 3 content</p>
+          <QuriousArmorManager />
         </TabPanel>
       </Container>
     </div>

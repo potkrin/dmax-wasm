@@ -1659,3 +1659,9 @@ export const decos = [
   { "name": "血氣珠Ⅱ【４】", "type": "deco", "size": 4, "skills": { "血氣": 2 } },
   { "name": "節弾珠Ⅱ【４】", "type": "deco", "size": 4, "skills": { "弾丸節約": 2 } },
 ];
+
+export const armorDict = {}
+
+for (const armor of armors) {
+  armorDict[armor.name] = armor;
+}

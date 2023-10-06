@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Grid, TextField, Button, Snackbar, Typography } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 
-import { staticSkillData } from "../data/StaticData";
-import { userInputData as initUserInputData } from "../data/UserInputData";
-
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -145,7 +142,7 @@ export function CharmManager() {
           <MultiLineTextComponent text={localStorage.getItem("userCharmData")} />
         </Grid>
         {/* データ入力欄 */}
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <TextField
             label="CSV"
             multiline

@@ -28,7 +28,7 @@ function secondsToHumanReadable(seconds) {
 }
 
 // 全ての中間結果を含む文字列を処理し、最終結果を出力する
-function outputToResult(output, processingUserInputData) {
+function outputToResult(output, processingUserInputData, processingUserArmorsData) {
   let result = "";
   if (output.includes("SCIP Status")) {
     let lines = output.split("\n");
@@ -112,7 +112,7 @@ function outputToResult(output, processingUserInputData) {
     // 全装備データ(防具･護石･装飾品) を名前で引ける辞書を作成
     let dictEquipAll = {};
 
-    for (let eq of armors) {
+    for (let eq of processingUserArmorsData) {
       dictEquipAll[eq.name] = eq;
     }
 
@@ -244,8 +244,12 @@ function outputToResult(output, processingUserInputData) {
   return result;
 }
 
-export const DmaxResult = ({ middleOutput, processingUserInputData }) => {
-  const dmaxResult = outputToResult(middleOutput, processingUserInputData);
+export const DmaxResult = ({ middleOutput, processingUserInputData, processingUserArmorsData }) => {
+  const dmaxResult = outputToResult(
+    middleOutput,
+    processingUserInputData,
+    processingUserArmorsData
+  );
 
   return (
     <Grid item xs={6}>

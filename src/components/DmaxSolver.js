@@ -160,9 +160,19 @@ export const DmaxSolver = ({ userInputData }) => {
 
   // 最適化ボタンを押した時点の入力データを保存する変数
   const [processingUserInputData, setProcessingUserInputData] = useState({});
-  const updateProsessingUserInputData = (newData) => {
+  const updateProcessingUserInputData = (newData) => {
     setProcessingUserInputData(newData);
   };
+
+  // 最適化ボタンを押した時点の入力データを保存する変数
+  const [processingUserArmorsData, setProcessingUserArmorsData] = useState([]);
+  const updateProcessingUserArmorsData = (newData) => {
+    setProcessingUserArmorsData(newData);
+  };
+
+  useEffect(() => {
+    console.log("processingUserArmorsData = " + JSON.stringify(processingUserArmorsData, null, 4));
+  }, [processingUserArmorsData]);
 
   return (
     <>
@@ -214,6 +224,10 @@ export const DmaxSolver = ({ userInputData }) => {
                 }
               }
 
+              // ユーザの傀異錬成防具を全防具データに追加
+              let userQuriousArmor = JSON.parse(localStorage.getItem("userQuriousArmorData"));
+              userArmors.push(...userQuriousArmor);
+
               fetch(apiUrl, {
                 method: "POST",
                 headers: {
@@ -250,7 +264,8 @@ export const DmaxSolver = ({ userInputData }) => {
               // ボタンを押した時点の入力データを保存する
               // = 代入や Object.assign() では浅いコピーしか行われないので JSON を経由して深いコピーを行う
               // 同期処理のためデータが大きい場合、メインスレッドがハングする可能性がある
-              updateProsessingUserInputData(JSON.parse(JSON.stringify(userInputData)));
+              updateProcessingUserInputData(JSON.parse(JSON.stringify(userInputData)));
+              updateProcessingUserArmorsData(JSON.parse(JSON.stringify(userArmors)));
             }}
           >
             Optimize
@@ -274,10 +289,15 @@ export const DmaxSolver = ({ userInputData }) => {
         <DmaxGraph chartData={chartData} />
       </Grid>
       <Grid container spacing={1} marginY={1}>
-        <DmaxResult middleOutput={middleOutput} processingUserInputData={processingUserInputData} />
+        <DmaxResult
+          middleOutput={middleOutput}
+          processingUserInputData={processingUserInputData}
+          processingUserArmorsData={processingUserArmorsData}
+        />
         <DmaxResult
           middleOutput={prevMiddleOutput}
           processingUserInputData={processingUserInputData}
+          processingUserArmorsData={processingUserArmorsData}
         />
       </Grid>
     </>

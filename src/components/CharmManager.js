@@ -32,7 +32,7 @@ export function CharmManager() {
 
   // csv データを処理して, ユーザの護石データを localstorage に登録する関数
   const processCsvData = () => {
-    const csvRows = csvData.split("\n");
+    const csvRows = csvData.split("\n").filter((row) => row.trim().replace(/　/g, "") !== "");
     const csvArray = csvRows.map((row) => row.split(","));
 
     const charmData = [];

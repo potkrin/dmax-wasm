@@ -38,7 +38,7 @@ export function QuriousArmorManager() {
       const errorRows = [];
       for (const [index, row] of csvArray.entries()) {
         console.log("process array = " + row);
-        if (10 <= row.length && row.length <= 20) {
+        if (10 < row.length && row.length <= 20) {
           row.push(...Array(20 - row.length).fill(""));
         } else {
           errorRows.push({ lineNumber: index + 1, row: row });

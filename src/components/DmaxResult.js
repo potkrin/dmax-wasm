@@ -139,7 +139,8 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
       // 名前が見つからない装備は除外
       let qEquipInfo = {};
       if (!(qEquipName in dictEquipAll)) {
-        console.log("!! armor NOT found. skip !!");
+        if (qEquipName !== "WeaponSlot")
+          console.log(`!! armor name ${qEquipName} NOT found. skip !!`);
         continue;
       } else {
         qEquipInfo = dictEquipAll[qEquipName];
@@ -203,7 +204,6 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
 
     // 出力結果の装備オブジェクトから発動スキルとそのレベルを取り出す
     for (const req in dictResultEquipment) {
-      console.log("req =", req);
       if (dictResultEquipment[req].count === 0) {
         continue;
       }
@@ -226,7 +226,6 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
     console.log("result skills:");
     result += "\n[スキル構成]\n";
 
-    console.log(dictResultSkill);
     const skillLevels = Array.from({ length: 7 }, (_, i) => i + 1).reverse();
 
     for (const level of skillLevels) {

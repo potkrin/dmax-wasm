@@ -13,7 +13,7 @@ import { DmaxSolver } from "./DmaxSolver";
 import { ValidateData } from "./ValidateData";
 
 import { staticSkillData } from "../data/StaticData";
-import { userInputData as initUserInputData } from "../data/UserInputData";
+import { userInputData as defaultUserInputData } from "../data/UserInputData";
 
 /**
  * TODO:
@@ -23,6 +23,16 @@ import { userInputData as initUserInputData } from "../data/UserInputData";
 
 export function DmaxMain() {
   // スキル以外のユーザ入力データを保持
+  const cacheUserInputData = localStorage.getItem("userInputData");
+
+  // localstorage に過去のユーザ入力が保存されていればそれを読み込む (なければ静的ファイルからを読み込む)
+  let initUserInputData;
+  if (cacheUserInputData !== null) {
+    initUserInputData = JSON.parse(cacheUserInputData);
+  } else {
+    initUserInputData = defaultUserInputData;
+  }
+
   const [userInputData, setUserInputData] = useState(initUserInputData);
 
   const updateUserInputData = (key, value) => {
@@ -32,9 +42,9 @@ export function DmaxMain() {
     }));
   };
 
-  // デバッグ用: 更新されるたびに表示
+  // ユーザが入力するたびに入力データを localstorage に書き込み
   useEffect(() => {
-    console.log("useEffect userInputData:\n" + JSON.stringify(userInputData, null, 4));
+    localStorage.setItem("userInputData", JSON.stringify(userInputData));
   }, [userInputData]);
 
   return (

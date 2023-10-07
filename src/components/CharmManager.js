@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Grid, TextField, Button, Snackbar, Typography } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 
+import { CharmTable } from "./CharmTable";
+
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -21,14 +23,24 @@ function MultiLineTextComponent({ text }) {
 // 体術    ,3,通常弾・連射矢強化,2,3,1,1
 
 export function CharmManager() {
+  let initUserInputData;
+  const cacheUserInputData = localStorage.getItem("userCharmData");
+  if (cacheUserInputData !== null) {
+    initUserInputData = JSON.parse(cacheUserInputData);
+  } else {
+    initUserInputData = [];
+  }
+
   // localstorage に保存されるユーザの護石データ
-  const [userCharmData, setUserCharmData] = useState([]);
+  const [userCharmData, setUserCharmData] = useState(initUserInputData);
 
   // ユーザが入力した csv データ
   const [csvData, setCsvData] = useState("");
   const handleCsvDataChange = (event) => {
     setCsvData(event.target.value);
   };
+
+  const [tableRows, setTableRows] = useState([]);
 
   // csv データを処理して, ユーザの護石データを localstorage に登録する関数
   const processCsvData = () => {
@@ -129,11 +141,8 @@ export function CharmManager() {
 
       <Grid container spacing={3}>
         {/* データ表示 */}
-        <Grid item xs={6}>
-          <MultiLineTextComponent text={localStorage.getItem("userCharmData")} />
-        </Grid>
         {/* データ入力欄 */}
-        <Grid item xs={4}>
+        <Grid item xs={10}>
           <TextField
             label="CSV"
             multiline
@@ -147,6 +156,9 @@ export function CharmManager() {
           <Button variant="contained" color="primary" onClick={processCsvData}>
             読み込み
           </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <CharmTable userCharmData={userCharmData} />
         </Grid>
       </Grid>
     </>

@@ -29,17 +29,20 @@ export function QuriousArmorManager() {
 
   // csv データを処理して, ユーザの護石データを localstorage に登録する関数
   const processCsvData = () => {
-    const csvRows = csvData.split("\n");
+    // csv データを行ごとに分割し, 余分な空白行は削除する
+    const csvRows = csvData.split("\n").filter((row) => row.trim().replace(/　/g, "") !== "");
     const csvArray = csvRows.map((row) => row.split(","));
 
     const quriousArmorData = [];
     try {
-      for (const row of csvArray) {
+      const errorRows = [];
+      for (const [index, row] of csvArray.entries()) {
         console.log("process array = " + row);
-        if (row.length <= 20) {
+        if (10 <= row.length && row.length <= 20) {
           row.push(...Array(20 - row.length).fill(""));
         } else {
-          throw new Error("CSV データの列数が不正です。\n" + row);
+          errorRows.push({ lineNumber: index + 1, row: row });
+          continue;
         }
 
         // 列要素対応表
@@ -98,6 +101,15 @@ export function QuriousArmorManager() {
 
         quriousArmorData.push(tempArmor);
       }
+
+      // csv データの列数が 20 でない列があった場合はエラーを出力
+      if (errorRows.length > 0) {
+        let errorMessage = "CSV データの列数が不正です。\n";
+        for (const errorRow of errorRows) {
+          errorMessage += `${errorRow["lineNumber"]}: ${errorRow["row"]}\n`;
+        }
+        throw new Error(errorMessage);
+      }
     } catch (err) {
       setError(err.message);
       setOpen(true);
@@ -137,7 +149,11 @@ export function QuriousArmorManager() {
         message={error}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+        <Alert
+          onClose={handleClose}
+          severity="error"
+          sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
+        >
           {error}
         </Alert>
       </Snackbar>

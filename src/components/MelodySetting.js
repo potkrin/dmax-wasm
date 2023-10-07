@@ -6,7 +6,16 @@ import { staticData } from "../data/StaticData";
 export const MelodySetting = ({ userInputDataMelody, updateUserInputData }) => {
   const handleChangeUserInputData = (key, event, value) => {
     value = event.target.checked;
-    updateUserInputData("旋律", { ...userInputDataMelody, [key]: value });
+
+    // 攻撃旋律と気炎の旋律は同時に入力できないようにする
+    let toggleKey;
+    if (key === "攻撃旋律" && value === true && userInputDataMelody["気炎の旋律"] === true)
+      toggleKey = "気炎の旋律";
+
+    if (key === "気炎の旋律" && value === true && userInputDataMelody["攻撃旋律"] === true)
+      toggleKey = "攻撃旋律";
+
+    updateUserInputData("旋律", { ...userInputDataMelody, [key]: value, [toggleKey]: false });
   };
 
   return (

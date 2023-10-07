@@ -3,6 +3,7 @@ import { Grid, TextField, Button, Snackbar, Typography } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 
 import { CharmTable } from "./CharmTable";
+import { CharmInput } from "./CharmInput";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -99,7 +100,6 @@ export function CharmManager() {
       setOpen(true);
     }
     setUserCharmData(charmData);
-    localStorage.setItem("userCharmData", JSON.stringify(charmData));
   };
 
   // エラー出力用 Snackbar 管理
@@ -117,7 +117,8 @@ export function CharmManager() {
 
   // デバッグ用
   useEffect(() => {
-    console.log("CharmManager: useEffect: userCharmData\n", JSON.stringify(userCharmData, null, 4));
+    localStorage.setItem("userCharmData", JSON.stringify(userCharmData));
+    console.log("userCharmData has been changed, and saved to localstorage");
   }, [userCharmData]);
 
   return (
@@ -142,6 +143,10 @@ export function CharmManager() {
       <Grid container spacing={3}>
         {/* データ表示 */}
         {/* データ入力欄 */}
+        <Grid item xs={12}>
+          <CharmInput userCharmData={userCharmData} setUserCharmData={setUserCharmData} />
+        </Grid>
+
         <Grid item xs={10}>
           <TextField
             label="CSV"

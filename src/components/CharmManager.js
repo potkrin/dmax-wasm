@@ -89,11 +89,34 @@ export function CharmManager() {
         if (row.length !== 7) {
           throw new Error("CSV データの列数が不正です。\n" + row);
         }
-        charmData.push({
-          "1stSkill": { "name": row[0], "level": parseInt(row[1]) },
-          "2ndSkill": { "name": row[2], "level": parseInt(row[3]) },
+
+        let tempCharm = {
+          "rare": 0,
+          "type": "charm",
+          "deffence": 0,
+          "fire": "0",
+          "water": "0",
+          "ice": "0",
+          "thunder": "0",
+          "dragon": "0",
+          "skills": { [row[0]]: parseInt(row[1]), [row[2]]: parseInt(row[3]) },
           "slots": [parseInt(row[4]), parseInt(row[5]), parseInt(row[6])],
-        });
+          // 護石【攻撃2, 連撃2】4-1-1 形式で名前を作成
+          "name":
+            "護石【" +
+            row[0] +
+            row[1] +
+            "，" +
+            row[2] +
+            row[3] +
+            "】" +
+            row[4] +
+            "-" +
+            row[5] +
+            "-" +
+            row[6],
+        };
+        charmData.push(tempCharm);
       }
     } catch (err) {
       setError(err.message);

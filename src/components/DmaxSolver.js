@@ -184,45 +184,10 @@ export const DmaxSolver = ({ userInputData }) => {
 
               // ユーザが入力した護石データを防具データ一覧 (userArmors) に追加
               let userArmors = JSON.parse(JSON.stringify(armors));
-              let userCharmString = localStorage.getItem("userCharmData");
-              if (userCharmString) {
-                let userCharmData = JSON.parse(userCharmString);
-                console.log("userCharmData = " + JSON.stringify(userCharmData, null, 4));
-                for (let charm of userCharmData) {
-                  console.log("charm = " + JSON.stringify(charm, null, 4));
-                  let tempCharm = {
-                    "rare": 0,
-                    "type": "charm",
-                    // 護石【攻撃2, 連撃2】4-1-1 形式で名前を作成
-                    "name":
-                      "護石【" +
-                      charm["1stSkill"]["name"] +
-                      charm["1stSkill"]["level"] +
-                      "，" +
-                      charm["2ndSkill"]["name"] +
-                      charm["2ndSkill"]["level"] +
-                      "】" +
-                      charm["slots"][0] +
-                      "-" +
-                      charm["slots"][1] +
-                      "-" +
-                      charm["slots"][2],
-                    "deffence": 0,
-                    "fire": "0",
-                    "water": "0",
-                    "ice": "0",
-                    "thunder": "0",
-                    "dragon": "0",
-                    "slots": [charm["slots"][0], charm["slots"][1], charm["slots"][2]],
-                    "skills": {
-                      [charm["1stSkill"]["name"]]: charm["1stSkill"]["level"],
-                      [charm["2ndSkill"]["name"]]: charm["2ndSkill"]["level"],
-                    },
-                  };
 
-                  userArmors.push(tempCharm);
-                }
-              }
+              // ユーザの護石を全防具データに追加
+              let userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
+              userArmors.push(...userCharmData);
 
               // ユーザの傀異錬成防具を全防具データに追加
               let userQuriousArmor = JSON.parse(localStorage.getItem("userQuriousArmorData"));

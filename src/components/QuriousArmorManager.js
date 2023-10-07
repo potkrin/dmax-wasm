@@ -32,7 +32,7 @@ export function QuriousArmorManager() {
     const csvRows = csvData.split("\n");
     const csvArray = csvRows.map((row) => row.split(","));
 
-    let quriousArmorData = [];
+    const quriousArmorData = [];
     try {
       for (const row of csvArray) {
         console.log("process array = " + row);
@@ -107,12 +107,12 @@ export function QuriousArmorManager() {
         // 名前作成 防具名(スキルA+N, スキルB-N, スロット+M))
         let armorName = row[0] + " (";
         for (let i = 0; i < 5; i++) {
-          let skillName = row[10 + 2 * i];
+          const skillName = row[10 + 2 * i];
           if (!(skillName in staticSkillData)) continue;
 
           armorName += skillName;
 
-          let skillLevel = parseInt(row[11 + 2 * i]);
+          const skillLevel = parseInt(row[11 + 2 * i]);
           armorName += (parseInt(skillLevel) > 0 ? "+" + skillLevel : skillLevel) + ",";
         }
 

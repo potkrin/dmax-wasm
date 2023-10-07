@@ -33,8 +33,8 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
   if (output.includes("SCIP Status")) {
     let lines = output.split("\n");
 
-    let list_q_result = [];
-    let dict_other_result = {};
+    const list_q_result = [];
+    const dict_other_result = {};
 
     lines.forEach((line) => {
       if (line.startsWith("SCIP Status")) {
@@ -86,31 +86,31 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
 
       // 最大ダメージ
       if (line.startsWith("objective value:")) {
-        let max_damage_result = line.slice(line.indexOf(":") + 1, line.indexOf("("));
+        const max_damage_result = line.slice(line.indexOf(":") + 1, line.indexOf("("));
         dict_other_result["最大ダメージ"] = parseFloat(max_damage_result).toFixed(3).toString();
       }
 
       // 疾替えの書
       if (line.startsWith("ss[")) {
-        let swap_scroll_result = line.slice(3, line.indexOf("]"));
+        const swap_scroll_result = line.slice(3, line.indexOf("]"));
         dict_other_result["疾替えの書"] = swap_scroll_result;
       }
 
       // 百竜装飾品
       if (line.startsWith("rd[")) {
-        let rampage_deco_result = line.slice(3, line.indexOf("]"));
+        const rampage_deco_result = line.slice(3, line.indexOf("]"));
         dict_other_result["百竜装飾品"] = rampage_deco_result;
       }
 
       // 会心率
       if (line.startsWith("afr")) {
-        let affinity_rate_result = parseFloat(line.slice(3, line.indexOf("(")));
+        const affinity_rate_result = parseFloat(line.slice(3, line.indexOf("(")));
         dict_other_result["会心率"] = affinity_rate_result.toString() + "%";
       }
     });
 
     // 全装備データ(防具･護石･装飾品) を名前で引ける辞書を作成
-    let dictEquipAll = {};
+    const dictEquipAll = {};
 
     for (let eq of processingUserArmorsData) {
       dictEquipAll[eq.name] = eq;
@@ -121,7 +121,7 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
     }
 
     // 出力結果の装備(防具･護石･装飾品)とその数を保持する辞書
-    let dictResultEquipment = {};
+    const dictResultEquipment = {};
 
     // 防具や装飾品の数が反映できていない
     for (let q of list_q_result) {
@@ -145,7 +145,7 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
         qEquipInfo = dictEquipAll[qEquipName];
       }
 
-      let slotLevel = qEquipInfo.type === "deco" ? qEquipInfo.size : -1;
+      const slotLevel = qEquipInfo.type === "deco" ? qEquipInfo.size : -1;
 
       dictResultEquipment[qEquipName] = {
         count: Math.round(parseFloat(qEquipCount)),

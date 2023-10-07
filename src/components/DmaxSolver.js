@@ -63,7 +63,7 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
     console.log("Message posted to worker");
 
     startWasmWorker.onmessage = function (e) {
-      let worker_response = e.data;
+      const worker_response = e.data;
       //console.log("message received from worker: " + worker_response);
       // console.log(worker_response);
       updateDmaxOutput(worker_response);
@@ -183,14 +183,14 @@ export const DmaxSolver = ({ userInputData }) => {
               const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
               // ユーザが入力した護石データを防具データ一覧 (userArmors) に追加
-              let userArmors = JSON.parse(JSON.stringify(armors));
+              const userArmors = JSON.parse(JSON.stringify(armors));
 
               // ユーザの護石を全防具データに追加
-              let userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
+              const userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
               userArmors.push(...userCharmData);
 
               // ユーザの傀異錬成防具を全防具データに追加
-              let userQuriousArmor = JSON.parse(localStorage.getItem("userQuriousArmorData"));
+              const userQuriousArmor = JSON.parse(localStorage.getItem("userQuriousArmorData"));
               userArmors.push(...userQuriousArmor);
 
               fetch(apiUrl, {

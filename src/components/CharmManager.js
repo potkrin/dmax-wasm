@@ -83,14 +83,17 @@ export function CharmManager() {
     const csvRows = csvData.split("\n");
     const csvArray = csvRows.map((row) => row.split(","));
 
-    let charmData = [];
+    const charmData = [];
     try {
-      for (const row of csvArray) {
+      // csv データの列数が 7 でない列を集めておく
+      const errorRows = [];
+      for (const [index, row] of csvArray.entries()) {
         if (row.length !== 7) {
-          throw new Error("CSV データの列数が不正です。\n" + row);
+          errorRows.push({ lineNumber: index + 1, row: row });
+          continue;
         }
 
-        let tempCharm = {
+        const tempCharm = {
           "rare": 0,
           "type": "charm",
           "deffence": 0,
@@ -117,6 +120,15 @@ export function CharmManager() {
             row[6],
         };
         charmData.push(tempCharm);
+      }
+
+      // csv データの列数が 7 でない列があった場合はエラーを出力
+      if (errorRows.length > 0) {
+        let errorMessage = "CSV データの列数が不正です。\n";
+        for (const errorRow of errorRows) {
+          errorMessage += `${errorRow["lineNumber"]}: ${errorRow["row"]}\n`;
+        }
+        throw new Error(errorMessage);
       }
     } catch (err) {
       setError(err.message);
@@ -154,7 +166,11 @@ export function CharmManager() {
         message={error}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+        <Alert
+          onClose={handleClose}
+          severity="error"
+          sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
+        >
           {error}
         </Alert>
       </Snackbar>

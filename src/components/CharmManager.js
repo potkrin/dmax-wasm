@@ -14,59 +14,11 @@ function MultiLineTextComponent({ text }) {
   );
 }
 
-/**
- *
- *
- *
- *
- **/
-
-// temp_charm = {
-//   "rare": 0,
-//   "type": "charm",
-//   // 護石【攻撃2, 連撃2】4-1-1 形式で名前を作成
-//   "name":
-//     "護石【" +
-//     charm[0] +
-//     charm[1] +
-//     "，" +
-//     charm[2] +
-//     charm[3] +
-//     "】" +
-//     charm[4] +
-//     "-" +
-//     charm[5] +
-//     "-" +
-//     charm[6],
-//   "deffence": 0,
-//   "fire": "0",
-//   "water": "0",
-//   "ice": "0",
-//   "thunder": "0",
-//   "dragon": "0",
-//   "slots": [],
-//   "skills": {},
-// };
-
-// 護石の csv  ファイルの一行をリスト形式で受け取り, table に insert する関数
-//
-// csv_row_string := 元の csv形式のファイルの一行の表現
-//
 // 列要素対応表
 //        0,1,                 2,3,4,5,6
 // 火事場力,3,              渾身,2,3,1,1
 // 超会心  ,2,              体術,3,3,1,1
 // 体術    ,3,通常弾・連射矢強化,2,3,1,1
-
-// charm_json = {
-//   "1stSkill": { "name": 火事場力, "level": 3 },
-//   "2ndSkill": { "name": 渾身, "level": 2 },
-//   "slot": [1, 1, 1],
-// };
-
-// TODO:
-//   - エラー処理のコンポーネント分離 (snackbar)
-//   - 入力されたデータの検証 (数字以外, 空文字)
 
 export function CharmManager() {
   // localstorage に保存されるユーザの護石データ

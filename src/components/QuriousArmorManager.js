@@ -42,37 +42,9 @@ export function QuriousArmorManager() {
           throw new Error("CSV データの列数が不正です。\n" + row);
         }
 
-        // csv_row_string := 元の csv形式のファイルの一行の表現
-        //
         // 列要素対応表
         //     0           ,  1,2,3,4, 5,6,7,8,9,  10,11,      12,13,14,15,16,17,18,19
         //     ゼクスヘルム,-11,0,0,0,-3,0,0,0,0,攻撃, 2,気絶耐性,-1,  ,  ,  ,  ,  ,
-
-        //         str(ba['deffence'])     + int_to_str(int(csv_row[1]))
-        // + ' 火:' + ba['fire']    + int_to_str(int(csv_row[2]))
-        // + ' 水:' + ba['water']   + int_to_str(int(csv_row[3]))
-        // + ' 雷:' + ba['thunder'] + int_to_str(int(csv_row[4]))
-        // + ' 氷:' + ba['ice']     + int_to_str(int(csv_row[5]))
-        // + ' 龍:' + ba['dragon']  + int_to_str(int(csv_row[6]))
-        //{"rare":1,"type":"head","name":"カムラノ装【頭巾】","deffence":1,"fire":"1","water":"0","ice":"0","thunder":"0","dragon":"0","slots":[],"skills":{"精霊の加護":1}},
-
-        // armorName = row[0];
-        // # 名前作成 防具名(スキルA+N, ))
-        // aug_name = augment[0] + '('
-        // for i in range(5):
-        //     # 元データのcsvが短い場合 continue
-        //     if 10+2*i+1 >= len(augment):
-        //         continue
-        //     # print(f'augment[{10+2*i}] = {augment[10+2*i]}')
-        //     skill_name = augment[10+2*i]
-        //     if skill_name == '':
-        //         continue
-
-        //     diff_level = int(augment[10+2*i+1])
-        //     if diff_level >= 0:
-        //         aug_name += skill_name + '+' + str(diff_level)
-        //     else:
-        //         aug_name += skill_name + str(diff_level)
 
         const tempArmor = JSON.parse(JSON.stringify(armorDict[row[0]]));
         console.log("tempArmor = " + JSON.stringify(tempArmor, null, 4));

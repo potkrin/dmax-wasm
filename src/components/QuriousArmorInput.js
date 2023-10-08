@@ -22,9 +22,14 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
   const [armorSuggestions, setArmorSuggestions] = useState(Object.keys(armorDict));
   const [skillSuggestions, setSkillSuggestions] = useState(Object.keys(staticSkillData));
 
+  // Autoselect から追加されたスキル
   const [selectedSkills, setSelectedSkills] = useState([]);
 
+  // Autoselect のテキストボックスに入力されている値 (onFocus でリセットするために定義)
+  const [currentSkill, setCurrentSkill] = useState(null);
+
   const handleSkillSelect = (event, newValue) => {
+    setCurrentSkill(newValue);
     if (newValue === null) return;
 
     // スキルの種類は合計で5つまで (防具付属のスキル + 傀異錬成による追加スキル) <= 5
@@ -46,7 +51,9 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
   const [selectedArmor, setSelectedArmor] = useState(null);
 
   const handleArmorSelect = (event, newValue) => {
+    // 防具を選択したら現在のスキル入力用の項目をリセットする
     setSelectedSkills([]);
+
     if (newValue in armorDict) {
       setSelectedArmor(armorDict[newValue]);
       const tempSlots = armorDict[newValue]["slots"];
@@ -136,6 +143,12 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
           options={skillSuggestions}
           onChange={handleSkillSelect}
           renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
+          value={currentSkill}
+          onFocus={() => {
+            // 同じスキルを選択肢した場合に追加できない問題を回避するために, 選択肢をリセットする
+            // [[Autocomplete] onChange not fired for same item consecutively #29159](https://github.com/mui/material-ui/issues/29159)
+            setCurrentSkill("");
+          }}
         />
       )}
       {selectedSkills.map((skill, index) => (

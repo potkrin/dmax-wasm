@@ -86,6 +86,7 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
           skill={skill}
           setSelectedSkills={setSelectedSkills}
           onRemove={() => handleSkillRemove(index)}
+          allowRemove={true}
         />
       ))}
       <div>

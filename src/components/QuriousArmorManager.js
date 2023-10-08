@@ -4,22 +4,28 @@ import MuiAlert from "@mui/material/Alert";
 
 import { armorDict } from "../data/EquipData";
 import { staticSkillData } from "../data/StaticData";
+import { QuriousArmorTable } from "./QuriousArmorTable";
+import QuriousArmorInput from "./QuriousArmorInput";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-function MultiLineTextComponent({ text }) {
-  return (
-    <Typography variant="body1" style={{ whiteSpace: "pre-line", textAlign: "left" }}>
-      {text}
-    </Typography>
-  );
-}
-
 export function QuriousArmorManager() {
+  let initUserInputData;
+  const cacheUserInputData = localStorage.getItem("userQuriousArmorData");
+  if (cacheUserInputData !== null) {
+    initUserInputData = JSON.parse(cacheUserInputData);
+  } else {
+    initUserInputData = [];
+  }
+
   // localstorage に保存されるユーザの傀異錬成防具データ
-  const [userQuriousArmorData, setUserQuriousArmorData] = useState([]);
+  const [userQuriousArmorData, setUserQuriousArmorData] = useState(initUserInputData);
+
+  useEffect(() => {
+    localStorage.setItem("userQuriousArmorData", JSON.stringify(userQuriousArmorData));
+  }, [userQuriousArmorData]);
 
   // ユーザが入力した csv データ
   const [csvData, setCsvData] = useState("");
@@ -115,7 +121,6 @@ export function QuriousArmorManager() {
       setOpen(true);
     }
     setUserQuriousArmorData(quriousArmorData);
-    localStorage.setItem("userQuriousArmorData", JSON.stringify(quriousArmorData));
   };
 
   // エラー出力用 Snackbar 管理
@@ -125,19 +130,6 @@ export function QuriousArmorManager() {
   const handleClose = () => {
     setOpen(false);
   };
-
-  // デバッグ用
-  useEffect(() => {
-    console.log("QuriousArmorManager: useEffect: csvData", csvData);
-  }, [csvData]);
-
-  // デバッグ用
-  useEffect(() => {
-    console.log(
-      "QuriousArmorManager: useEffect: userQuriousArmorData\n",
-      JSON.stringify(userQuriousArmorData, null, 4)
-    );
-  }, [userQuriousArmorData]);
 
   return (
     <>
@@ -159,11 +151,14 @@ export function QuriousArmorManager() {
       </Snackbar>
 
       <Grid container spacing={3}>
-        {/* データ表示 */}
-        <Grid item xs={6}>
-          <MultiLineTextComponent text={localStorage.getItem("userQuriousArmorData")} />
-        </Grid>
         {/* データ入力欄 */}
+        <Grid item xs={12}>
+          <QuriousArmorInput
+            userQuriousArmorData={userQuriousArmorData}
+            setUserQuriousArmorData={setUserQuriousArmorData}
+          />
+        </Grid>
+
         <Grid item xs={4}>
           <TextField
             label="CSV"
@@ -178,6 +173,9 @@ export function QuriousArmorManager() {
           <Button variant="contained" color="primary" onClick={processCsvData}>
             読み込み
           </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <QuriousArmorTable userQuriousArmorData={userQuriousArmorData} />
         </Grid>
       </Grid>
     </>

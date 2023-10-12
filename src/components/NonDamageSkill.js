@@ -14,7 +14,7 @@ export const NonDamageSkill = ({ staticSkillData, userInputData, updateUserInput
 
   return (
     <>
-      <Grid item xs={2}>
+      <Grid item xs style={{ maxWidth: "150px", minWidth: "150px" }}>
         <Box margin={1}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">{staticSkillData.name}</InputLabel>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, TextField, Button, Snackbar, Typography } from "@mui/material";
+import { Grid, TextField, Button, Snackbar, Typography, Box, Card } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 
 import { CharmTable } from "./CharmTable";
@@ -123,49 +123,53 @@ export function CharmManager() {
 
   return (
     <>
-      {/* エラー出力 */}
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message={error}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleClose}
-          severity="error"
-          sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
-        >
-          {error}
-        </Alert>
-      </Snackbar>
+      <Box sx={{ backgroundColor: "#f3f6f9" }}>
+        <Card variant="outlined" sx={{ borderRadius: 4 }} backgroundColor="#f5f5f5">
+          {/* エラー出力 */}
+          <Snackbar
+            open={open}
+            autoHideDuration={6000}
+            onClose={handleClose}
+            message={error}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <Alert
+              onClose={handleClose}
+              severity="error"
+              sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
+            >
+              {error}
+            </Alert>
+          </Snackbar>
 
-      <Grid container spacing={3}>
-        {/* データ表示 */}
-        {/* データ入力欄 */}
-        <Grid item xs={12}>
-          <CharmInput userCharmData={userCharmData} setUserCharmData={setUserCharmData} />
-        </Grid>
+          <Grid container spacing={3}>
+            {/* データ表示 */}
+            {/* データ入力欄 */}
+            <Grid item xs={12}>
+              <CharmInput userCharmData={userCharmData} setUserCharmData={setUserCharmData} />
+            </Grid>
 
-        <Grid item xs={10}>
-          <TextField
-            label="CSV"
-            multiline
-            rows={4}
-            variant="outlined"
-            value={csvData}
-            onChange={handleCsvDataChange}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <Button variant="contained" color="primary" onClick={processCsvData}>
-            読み込み
-          </Button>
-        </Grid>
-        <Grid item xs={12}>
-          <CharmTable userCharmData={userCharmData} />
-        </Grid>
-      </Grid>
+            <Grid item xs={10}>
+              <TextField
+                label="CSV"
+                multiline
+                rows={4}
+                variant="outlined"
+                value={csvData}
+                onChange={handleCsvDataChange}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <Button variant="contained" color="primary" onClick={processCsvData}>
+                読み込み
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <CharmTable userCharmData={userCharmData} />
+            </Grid>
+          </Grid>
+        </Card>
+      </Box>
     </>
   );
 }

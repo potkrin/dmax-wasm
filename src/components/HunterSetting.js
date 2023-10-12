@@ -8,6 +8,7 @@ import {
   Select,
   FormControlLabel,
   FormGroup,
+  Typography,
 } from "@mui/material";
 
 import { NumberTextField } from "./NumberTextField";
@@ -31,16 +32,17 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
       {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "boolean")
         .map(([key, _]) => (
-          <Grid item xs={1}>
+          <Grid item xs={1.5}>
             <FormGroup>
               <FormControlLabel
                 control={
                   <Checkbox
                     checked={userInputDataHunter[key]}
                     onChange={(e, v) => handleChangeUserInputData(key, e, v)}
+                    size="small"
                   />
                 }
-                label={key}
+                label={<Typography style={{ "fontSize": "12px" }}>{key}</Typography>}
               />
             </FormGroup>
           </Grid>
@@ -48,7 +50,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
       {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "object")
         .map(([key, _]) => (
-          <Grid item xs={1}>
+          <Grid item xs={1.5}>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">{key}</InputLabel>
               <Select
@@ -70,7 +72,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
       {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "number")
         .map(([key, _]) => (
-          <Grid item xs={1}>
+          <Grid item xs={1.5}>
             <NumberTextField
               value={userInputDataHunter[key]}
               size="small"
@@ -80,6 +82,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
               onChange={(e, v) => handleChangeUserInputData(key, e, v)}
               min={key === "ヒトダマドリ" ? 0 : 0}
               max={key === "ヒトダマドリ" ? 20 : 20}
+              fullWidth
             />
           </Grid>
         ))}

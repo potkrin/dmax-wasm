@@ -125,6 +125,7 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
         options={armorSuggestions}
         onChange={handleArmorSelect}
         renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
+        sx={{ width: 480 }}
       />
       {selectedArmor &&
         Object.entries(selectedArmor["skills"]).map(([skill, level]) => (
@@ -149,6 +150,7 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
             // [[Autocomplete] onChange not fired for same item consecutively #29159](https://github.com/mui/material-ui/issues/29159)
             setCurrentSkill("");
           }}
+          sx={{ width: 480 }}
         />
       )}
       {selectedSkills.map((skill, index) => (

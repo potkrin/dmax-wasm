@@ -8,15 +8,30 @@ import {
   Select,
   FormControlLabel,
   FormGroup,
+  Typography,
 } from "@mui/material";
+
+import { makeStyles } from "@mui/styles";
 
 import { staticData } from "../data/StaticData";
 import { NumberTextField } from "./NumberTextField";
+import { ClassNames } from "@emotion/react";
+
+const useStyles = makeStyles((theme) => ({
+  customFontSize: {
+    fontSize: "10px !important",
+  },
+}));
 
 export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) => {
+  const classes = useStyles();
+
   const handleChangeUserInputData = (key, event, value) => {
-    if (key === "物理肉質" || key === "属性肉質" || key === "怒り補正") {
+    if (key === "物理肉質" || key === "属性肉質") {
       value = parseInt(event.target.value);
+    }
+    if (key === "怒り補正") {
+      value = event.target.value;
     }
     if (key === "水やられ") {
       // CheckBox から呼び出された場合
@@ -30,7 +45,7 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
 
   return (
     <>
-      <Grid item xs={1}>
+      <Grid item xs={1.5}>
         <NumberTextField
           value={userInputDataMonster["物理肉質"]}
           size="small"
@@ -40,9 +55,10 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
           onChange={(e, v) => handleChangeUserInputData("物理肉質", e, v)}
           min={0}
           max={100}
+          fullWidth
         />
       </Grid>
-      <Grid item xs={1}>
+      <Grid item xs={1.5}>
         <NumberTextField
           value={userInputDataMonster["属性肉質"]}
           size="small"
@@ -52,39 +68,43 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
           onChange={(e, v) => handleChangeUserInputData("属性肉質", e, v)}
           min={0}
           max={100}
+          fullWidth
         />
       </Grid>
-      <Grid item xs={2}>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">怒り補正</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            size="small"
-            value={userInputDataMonster["怒り補正"]}
-            label="怒り補正"
-            onChange={(e, v) => handleChangeUserInputData("怒り補正", e, v)}
-          >
-            {Object.entries(staticData["怒り補正"]).map(([key, value]) => (
-              <MenuItem value={value}>
-                {key}: {value}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={1.5}>
         <FormGroup>
           <FormControlLabel
             control={
               <Checkbox
+                size="small"
                 checked={userInputDataMonster["水やられ"]}
                 onChange={(e, v) => handleChangeUserInputData("水やられ", e, v)}
               />
             }
-            label="水やられ"
+            label={<Typography className={classes.customFontSize}>水やられ</Typography>}
           />
         </FormGroup>
+      </Grid>
+      <Grid item xs={1.5}>
+        <FormControl fullWidth style={{ height: "100%" }}>
+          <InputLabel id="demo-simple-select-label">
+            {"怒り補正 (" + staticData["怒り補正"][userInputDataMonster["怒り補正"]] + ")"}
+          </InputLabel>
+          <Select
+            className={classes.customFontSize}
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            size="small"
+            value={userInputDataMonster["怒り補正"]}
+            label={"怒り補正 (" + staticData["怒り補正"][userInputDataMonster["怒り補正"]] + ")"}
+            onChange={(e, v) => handleChangeUserInputData("怒り補正", e, v)}
+            style={{ height: "100%", textAlign: "left" }}
+          >
+            {Object.entries(staticData["怒り補正"]).map(([key, value]) => (
+              <MenuItem value={key}>{key}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Grid>
     </>
   );

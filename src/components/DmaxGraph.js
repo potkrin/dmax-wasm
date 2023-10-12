@@ -1,12 +1,33 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Grid } from "@mui/material";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
 export const DmaxGraph = ({ chartData }) => {
+  const [chartWidth, setChartWidth] = useState(0);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setChartWidth(containerRef.current.offsetWidth);
+    }
+
+    const handleResize = () => {
+      if (containerRef.current) {
+        setChartWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <Grid item xs={6}>
+    <Grid item xs={6} ref={containerRef}>
       <LineChart
-        width={600}
+        width={chartWidth}
         height={450}
         data={chartData}
         margin={{ top: 5, right: 20, left: 10, bottom: 5 }}

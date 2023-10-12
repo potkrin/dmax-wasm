@@ -50,12 +50,23 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
   return (
     <>
       <Grid item xs={2}>
-        <Typography variant="body2">{staticSkillData.name}</Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            textAlign: "left",
+            display: "flex",
+            alignItems: "center",
+            height: "100%",
+          }}
+          marginLeft={4}
+        >
+          {staticSkillData.name}
+        </Typography>
       </Grid>
       {staticSkillData.type === "Damage" ? (
         <>
           <Grid item xs={1}>
-            <Box sx={{ width: 50 }}>
+            <Box sx={{ width: 50, display: "flex", alignItems: "center", height: "100%" }}>
               <Slider
                 value={skillInput.activeRate}
                 size="small"
@@ -77,6 +88,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
               onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
               min={0}
               max={100}
+              sx={{ display: "flex", alignItems: "center", height: "100%", marginY: 1 }}
             />
           </Grid>
         </>
@@ -88,6 +100,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
           <Checkbox
             checked={skillInput.fixLevel}
             onChange={(e, v) => handleChangeSkillInfo("fixLevel", e, v)}
+            size="small"
+            sx={{ display: "flex", alignItems: "center", height: "100%" }}
           />
         </Grid>
       ) : (
@@ -107,6 +121,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
             min={0}
             max={staticSkillData.maxLevel}
             onChange={(e, v) => handleChangeSkillInfo("minLevel", e, v)}
+            size="small"
           />
         </Box>
       </Grid>

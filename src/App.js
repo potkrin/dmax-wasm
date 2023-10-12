@@ -20,7 +20,7 @@ function TabPanel(props) {
 
   return (
     <div style={hiddenStyle}>
-      <Box p={3}>{children}</Box>
+      <Box p={1}>{children}</Box>
     </div>
   );
 }
@@ -31,7 +31,6 @@ function App() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
   return (
     <div className="App">
       <Container sx={{ marginY: 5 }}>

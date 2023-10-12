@@ -29,6 +29,7 @@ export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
             onChange={(e, v) => handleChangeUserInputData(key, e, v)}
             min={0}
             max={key === "会心率" ? 100 : 1000}
+            fullWidth
           />
         </Grid>
       ))}
@@ -44,6 +45,7 @@ export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
               value={userInputDataWeapon[key]}
               label={key}
               onChange={(e, v) => handleChangeUserInputData(key, e, v)}
+              style={{ textAlign: "left" }}
             >
               {Object.keys(staticData["武器"][key]).map((key) => (
                 <MenuItem value={key}>{key}</MenuItem>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import { Grid, Checkbox, FormControlLabel, FormGroup, Typography } from "@mui/material";
 
 import { staticData } from "../data/StaticData";
 
@@ -21,16 +21,17 @@ export const MelodySetting = ({ userInputDataMelody, updateUserInputData }) => {
   return (
     <>
       {staticData["旋律"].map((item) => (
-        <Grid item xs={1}>
+        <Grid item xs={1.5}>
           <FormGroup>
             <FormControlLabel
               control={
                 <Checkbox
                   checked={userInputDataMelody[item]}
                   onChange={(e, v) => handleChangeUserInputData(item, e, v)}
+                  size="small"
                 />
               }
-              label={item}
+              label={<Typography style={{ "fontSize": "12px" }}>{item}</Typography>}
             />
           </FormGroup>
         </Grid>

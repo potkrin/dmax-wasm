@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, Grid } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 
 import { SkillCard } from "./SkillCard";
@@ -79,6 +79,7 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
         options={suggestions}
         onChange={handleSkillSelect}
         renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
+        sx={{ maxWidth: 480 }}
       />
       {selectedSkills.map((skill, index) => (
         <SkillCard
@@ -89,24 +90,20 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
           allowRemove={true}
         />
       ))}
-      <div>
+      <Grid container sx={{ width: 520, marginTop: 2 }}>
         <SlotSelect
           value={slots[0]}
           onChange={(event) => handleSlotSelect(0, event.target.value)}
         />
-      </div>
-      <div>
         <SlotSelect
           value={slots[1]}
           onChange={(event) => handleSlotSelect(1, event.target.value)}
         />
-      </div>
-      <div>
         <SlotSelect
           value={slots[2]}
           onChange={(event) => handleSlotSelect(2, event.target.value)}
         />
-      </div>
+      </Grid>
       <Button variant="contained" color="primary" onClick={registerCharm}>
         登録
       </Button>

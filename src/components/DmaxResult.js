@@ -243,6 +243,15 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
   return result;
 }
 
+function NewlineText({ text }) {
+  const newText = text
+    .split("\n")
+    .map((str, index, array) => (index === array.length - 1 ? str : `${str}<br/>`))
+    .join("");
+
+  return <span dangerouslySetInnerHTML={{ __html: newText }} />;
+}
+
 export const DmaxResult = ({ middleOutput, processingUserInputData, processingUserArmorsData }) => {
   const dmaxResult = outputToResult(
     middleOutput,
@@ -261,7 +270,7 @@ export const DmaxResult = ({ middleOutput, processingUserInputData, processingUs
             textAlign: "left",
           }}
         >
-          <pre>{dmaxResult}</pre>
+          <NewlineText text={dmaxResult} />
         </Box>
       </Paper>
     </Grid>

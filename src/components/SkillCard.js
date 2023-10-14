@@ -1,6 +1,9 @@
 import React from "react";
 import { Grid, Button, Typography, Divider } from "@mui/material";
 import { staticSkillData } from "../data/StaticData";
+import Add from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export function SkillCard({ skill, setSelectedSkills, handleInnateSkill, onRemove, allowRemove }) {
   const updateSkillLevel = (level) => {
@@ -30,10 +33,8 @@ export function SkillCard({ skill, setSelectedSkills, handleInnateSkill, onRemov
                 disabled={skill.level < 1}
                 onClick={() => updateSkillLevel(skill.level - 1)}
                 variant="outlined"
-                size="small"
-                sx={{ fontSize: 16 }}
               >
-                -
+                <RemoveIcon />
               </Button>
             </Grid>
             <Grid item xs={2}>
@@ -41,15 +42,15 @@ export function SkillCard({ skill, setSelectedSkills, handleInnateSkill, onRemov
                 disabled={staticSkillData[skill.name]["maxLevel"] <= skill.level}
                 onClick={() => updateSkillLevel(skill.level + 1)}
                 variant="outlined"
-                size="small"
-                sx={{ fontSize: 16 }}
               >
-                +
+                <Add />
               </Button>
             </Grid>
             {allowRemove && (
               <Grid item xs={2}>
-                <Button onClick={onRemove}>DEL</Button>
+                <Button onClick={onRemove}>
+                  <ClearIcon />
+                </Button>
               </Grid>
             )}
           </Grid>

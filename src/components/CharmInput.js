@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, Grid } from "@mui/material";
+import { TextField, Button, Grid, Box, Card, Typography, Divider } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
+import AddIcon from "@mui/icons-material/Add";
 
 import { SkillCard } from "./SkillCard";
 import { staticSkillData } from "../data/StaticData";
 import { SlotSelect } from "./SlotSelect";
+
+// import { makeStyles } from "@mui/styles";
+import { useStyles } from "./DmaxMain";
 
 /**
  * バグ: 選択済みのスキルをもう一度選択したとき追加できない
@@ -17,6 +21,7 @@ import { SlotSelect } from "./SlotSelect";
 // 超会心  ,2,              体術,3,3,1,1
 // 体術    ,3,通常弾・連射矢強化,2,3,1,1
 export function CharmInput({ userCharmData, setUserCharmData }) {
+  const classes = useStyles();
   const [suggestions, setSuggestions] = useState(Object.keys(staticSkillData));
 
   const [selectedSkills, setSelectedSkills] = useState([]);
@@ -75,38 +80,64 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
 
   return (
     <>
-      <Autocomplete
-        options={suggestions}
-        onChange={handleSkillSelect}
-        renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
-        sx={{ maxWidth: 480 }}
-      />
-      {selectedSkills.map((skill, index) => (
-        <SkillCard
-          key={index}
-          skill={skill}
-          setSelectedSkills={setSelectedSkills}
-          onRemove={() => handleSkillRemove(index)}
-          allowRemove={true}
-        />
-      ))}
-      <Grid container sx={{ width: 520, marginTop: 2 }}>
-        <SlotSelect
-          value={slots[0]}
-          onChange={(event) => handleSlotSelect(0, event.target.value)}
-        />
-        <SlotSelect
-          value={slots[1]}
-          onChange={(event) => handleSlotSelect(1, event.target.value)}
-        />
-        <SlotSelect
-          value={slots[2]}
-          onChange={(event) => handleSlotSelect(2, event.target.value)}
-        />
-      </Grid>
-      <Button variant="contained" color="primary" onClick={registerCharm}>
-        登録
-      </Button>
+      <Box sx={{ backgroundColor: "#f3f6f9" }}>
+        <Card
+          variant="outlined"
+          sx={{ borderRadius: 4, padding: "20px", maxWidth: 480 }}
+          backgroundColor="#f5f5f5"
+        >
+          <Typography
+            variant="subtitle2"
+            gutterBottom
+            align="left"
+            className={classes.customHeaderNoMargin}
+            marginBottom={2}
+          >
+            護石入力
+          </Typography>
+
+          <Autocomplete
+            options={suggestions}
+            onChange={handleSkillSelect}
+            renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
+            sx={{ maxWidth: 480 }}
+          />
+          {selectedSkills.map((skill, index) => (
+            <SkillCard
+              key={index}
+              skill={skill}
+              setSelectedSkills={setSelectedSkills}
+              onRemove={() => handleSkillRemove(index)}
+              allowRemove={true}
+            />
+          ))}
+          <Grid container sx={{ width: 520, marginTop: 2 }}>
+            <SlotSelect
+              value={slots[0]}
+              onChange={(event) => handleSlotSelect(0, event.target.value)}
+            />
+            <SlotSelect
+              value={slots[1]}
+              onChange={(event) => handleSlotSelect(1, event.target.value)}
+            />
+            <SlotSelect
+              value={slots[2]}
+              onChange={(event) => handleSlotSelect(2, event.target.value)}
+            />
+          </Grid>
+
+          <Box sx={{ textAlign: "right" }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={registerCharm}
+              endIcon={<AddIcon />}
+            >
+              登録
+            </Button>
+          </Box>
+        </Card>
+      </Box>
     </>
   );
 }

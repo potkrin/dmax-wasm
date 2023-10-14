@@ -14,7 +14,7 @@ export function SlotSelect({ value, onChange }) {
     <>
       <Grid item xs={3}>
         <Typography variant="h6" sx={{ marginLeft: 2 }}>
-          スロットLv.
+          スロット
         </Typography>
       </Grid>
       <Grid item xs={9}>

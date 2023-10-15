@@ -1,7 +1,9 @@
 /* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/
 
 import { React, useState, useRef, useEffect } from "react";
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Fab } from "@mui/material";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import { DmaxOutput } from "./DmaxOutput";
 import { DmaxGraph } from "./DmaxGraph";
@@ -104,7 +106,7 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
 
 // dmax-core を呼び出すための処理 ここまで
 
-export const DmaxSolver = ({ userInputData }) => {
+export const DmaxSolver = ({ userInputData, fabRight }) => {
   // dmax からの中間出力データを管理
   const [dmaxOutput, setDmaxOutput] = useState("");
   const updateDmaxOutput = (newString) => {
@@ -134,6 +136,8 @@ export const DmaxSolver = ({ userInputData }) => {
     // dmax 最適化が完了したら middleOutput に全ての中間結果を渡す (出力生計は middleOutput コンポーネントで行う)
     if (dmaxOutput.includes("SCIP Status")) {
       updateMiddleOutput(dmaxOutput);
+      // 最適化完了をボタンに反映
+      setIsOptimizing(false);
     }
   }, [dmaxOutput]);
 
@@ -174,78 +178,90 @@ export const DmaxSolver = ({ userInputData }) => {
     console.log("processingUserArmorsData = " + JSON.stringify(processingUserArmorsData, null, 4));
   }, [processingUserArmorsData]);
 
+  // 最適化の開始
+  const startOptimization = () => {
+    const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
+
+    // ユーザが入力した護石データを防具データ一覧 (userArmors) に追加
+    const userArmors = JSON.parse(JSON.stringify(armors));
+
+    // ユーザの護石を全防具データに追加
+    const userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
+    userArmors.push(...userCharmData);
+
+    // ユーザの傀異錬成防具を全防具データに追加
+    const userQuriousArmor = JSON.parse(localStorage.getItem("userQuriousArmorData"));
+    userArmors.push(...userQuriousArmor);
+
+    fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "userInputData": userInputData,
+        "armors": userArmors,
+        "decos": decos,
+        "staticData": staticData,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // 前回の最終結果用データを隣に移動
+        updatePrevMiddleOutput(middleOutput);
+        updateMiddleOutput("");
+
+        // 前回の中間出力データを消去
+        eraseDmaxOutput();
+        eraseChartData();
+        call_worker_wasm_main(data, updateDmaxOutput, updateChartData);
+      })
+      .catch((error) => {
+        console.log(`Fetching from ${apiUrl} failed: ${error.message}`);
+        updateMiddleOutput(`Fetching from ${apiUrl} failed: ${error.message}`);
+      });
+
+    // ボタンを押した時点の入力データを保存する
+    // = 代入や Object.assign() では浅いコピーしか行われないので JSON を経由して深いコピーを行う
+    // 同期処理のためデータが大きい場合、メインスレッドがハングする可能性がある
+    updateProcessingUserInputData(JSON.parse(JSON.stringify(userInputData)));
+    updateProcessingUserArmorsData(JSON.parse(JSON.stringify(userArmors)));
+  };
+
+  // 最適化の中断
+  const stopOptimization = () => {
+    if (startWasmWorker) {
+      startWasmWorker.terminate();
+    }
+  };
+
+  // 最適化ボタンをトグルする
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
+  const handleToggle = () => {
+    setIsOptimizing(!isOptimizing);
+    // ここで最適化の開始や中止のロジックを実装する
+    if (!isOptimizing) startOptimization();
+    else stopOptimization();
+  };
+
+  useEffect(() => {
+    console.log("fabRight = " + fabRight + "typeof(fabRight) = " + typeof fabRight);
+  }, [fabRight]);
+
   return (
     <>
       <Grid container marginTop={2}>
         <Grid item xs={2}>
-          <Button
-            onClick={() => {
-              const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
-
-              // ユーザが入力した護石データを防具データ一覧 (userArmors) に追加
-              const userArmors = JSON.parse(JSON.stringify(armors));
-
-              // ユーザの護石を全防具データに追加
-              const userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
-              userArmors.push(...userCharmData);
-
-              // ユーザの傀異錬成防具を全防具データに追加
-              const userQuriousArmor = JSON.parse(localStorage.getItem("userQuriousArmorData"));
-              userArmors.push(...userQuriousArmor);
-
-              fetch(apiUrl, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  "userInputData": userInputData,
-                  "armors": userArmors,
-                  "decos": decos,
-                  "staticData": staticData,
-                }),
-              })
-                .then((response) => {
-                  if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                  }
-                  return response.json();
-                })
-                .then((data) => {
-                  // 前回の最終結果用データを隣に移動
-                  updatePrevMiddleOutput(middleOutput);
-                  updateMiddleOutput("");
-
-                  // 前回の中間出力データを消去
-                  eraseDmaxOutput();
-                  eraseChartData();
-                  call_worker_wasm_main(data, updateDmaxOutput, updateChartData);
-                })
-                .catch((error) => {
-                  console.log(`Fetching from ${apiUrl} failed: ${error.message}`);
-                  updateMiddleOutput(`Fetching from ${apiUrl} failed: ${error.message}`);
-                });
-
-              // ボタンを押した時点の入力データを保存する
-              // = 代入や Object.assign() では浅いコピーしか行われないので JSON を経由して深いコピーを行う
-              // 同期処理のためデータが大きい場合、メインスレッドがハングする可能性がある
-              updateProcessingUserInputData(JSON.parse(JSON.stringify(userInputData)));
-              updateProcessingUserArmorsData(JSON.parse(JSON.stringify(userArmors)));
-            }}
-          >
-            Optimize
-          </Button>
+          <Button onClick={startOptimization}>Optimize</Button>
         </Grid>
         <Grid item xs={2}>
-          <Button
-            onClick={() => {
-              if (startWasmWorker) {
-                startWasmWorker.terminate();
-              }
-            }}
-          >
-            Cancel
-          </Button>
+          <Button onClick={stopOptimization}>Cancel</Button>
         </Grid>
       </Grid>
 
@@ -265,6 +281,29 @@ export const DmaxSolver = ({ userInputData }) => {
           processingUserArmorsData={processingUserArmorsData}
         />
       </Grid>
+
+      <Fab
+        variant="extended"
+        sx={{
+          position: "fixed",
+          bottom: "48px",
+          right: `${fabRight}`,
+        }}
+        color="primary"
+        onClick={handleToggle}
+      >
+        {isOptimizing ? (
+          <>
+            <CancelIcon sx={{ mr: 1 }} />
+            中止
+          </>
+        ) : (
+          <>
+            <TrendingUpIcon sx={{ mr: 1 }} />
+            最適化
+          </>
+        )}
+      </Fab>
     </>
   );
 };

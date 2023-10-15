@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Divider, Grid, Typography, Box, Card } from "@mui/material";
+import { Grid, Typography, Box, Card, Backdrop, SpeedDial, SpeedDialAction } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-
 import { Skill } from "./Skill";
 import { NonDamageSkill } from "./NonDamageSkill";
 import { MonsterSetting } from "./MonsterSetting";
@@ -12,6 +11,13 @@ import { MelodySetting } from "./MelodySetting";
 import { RampageDecoSetting } from "./RampageDecoSetting";
 import { DmaxSolver } from "./DmaxSolver";
 import { ValidateData } from "./ValidateData";
+
+// icons
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
+import SaveIcon from "@mui/icons-material/Save";
+import PrintIcon from "@mui/icons-material/Print";
+import ShareIcon from "@mui/icons-material/Share";
 
 import { staticSkillData } from "../data/StaticData";
 import { userInputData as defaultUserInputData } from "../data/UserInputData";
@@ -38,7 +44,14 @@ export const useStyles = makeStyles({
   },
 });
 
-export function DmaxMain() {
+const actions = [
+  { icon: <FileCopyIcon />, name: "Copy" },
+  { icon: <SaveIcon />, name: "Save" },
+  { icon: <PrintIcon />, name: "Print" },
+  { icon: <ShareIcon />, name: "Share" },
+];
+
+export function DmaxMain({ fabRight }) {
   const classes = useStyles();
   // スキル以外のユーザ入力データを保持
   const cacheUserInputData = localStorage.getItem("userInputData");
@@ -65,13 +78,18 @@ export function DmaxMain() {
     localStorage.setItem("userInputData", JSON.stringify(userInputData));
   }, [userInputData]);
 
+  // SpeedDial 用
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
     <div className="DmaxMain">
       {/* 読み込みデータの検証 */}
       <ValidateData />
 
       <Box sx={{ backgroundColor: "#f3f6f9" }}>
-        <Card variant="outlined" sx={{ borderRadius: 4 }} backgroundColor="#f5f5f5">
+        <Card variant="outlined" sx={{ borderRadius: 1 }} backgroundColor="#f5f5f5">
           <Typography
             variant="subtitle2"
             gutterBottom
@@ -289,7 +307,39 @@ export function DmaxMain() {
       </Box>
 
       {/* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/}
-      <DmaxSolver userInputData={userInputData} />
+      <DmaxSolver userInputData={userInputData} fabRight={fabRight} />
+
+      {/* <Box
+        sx={{
+          height: 330,
+          transform: "translateZ(0px)",
+          flexGrow: 1,
+        }}
+      > */}
+      <Backdrop open={open} />
+      <SpeedDial
+        ariaLabel="SpeedDial tooltip example"
+        sx={{
+          position: "fixed",
+          bottom: "128px",
+          right: `${fabRight}`,
+        }}
+        icon={<SpeedDialIcon />}
+        onClose={handleClose}
+        onOpen={handleOpen}
+        open={open}
+      >
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+            tooltipOpen
+            onClick={handleClose}
+          />
+        ))}
+      </SpeedDial>
+      {/* </Box> */}
     </div>
   );
 }

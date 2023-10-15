@@ -1,15 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./App.css";
-import { Tabs, Tab, Container, Box, Typography, AppBar } from "@mui/material";
+import { Tabs, Tab, Container, Box, Typography, AppBar, Fab } from "@mui/material";
 import { DmaxMain } from "./components/DmaxMain";
 import { CharmManager } from "./components/CharmManager";
 import QuriousArmorManager from "./components/QuriousArmorManager";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
-import SwipeableViews from "react-swipeable-views";
 import Slide from "@mui/material/Slide";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-
 /**
  * TODO:
  *   - スキルの検索ボックス。文字列がヒットしたもののみ残る
@@ -27,7 +25,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 1 }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -84,9 +82,59 @@ function App() {
     setValue(index);
   };
 
+  // コンテナ幅を起点にFABの位置を決める. 画面幅がコンテナ幅より小さい場合は画面幅を起点にする
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const containerRef = useRef(null);
+  const [fabRight, setFabRight] = useState(`64px`);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setContainerWidth(containerRef.current.offsetWidth);
+    }
+
+    // window のリサイズ時に呼び出したい関数を定義
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    // window のリサイズ時に呼び出したい関数を登録
+    window.addEventListener("resize", handleResize);
+
+    if (windowWidth > containerWidth) {
+      let rightPx = windowWidth / 2 - containerWidth / 2 + 64;
+      setFabRight(`${rightPx}px`);
+      // setFabRight("74px");
+
+      console.log(
+        "windowWidth > containerWidth. windowWidth = " +
+          windowWidth +
+          ", containerWidth = " +
+          containerWidth +
+          ", fabRight =" +
+          fabRight
+      );
+    } else {
+      setFabRight(`64px`);
+      console.log(
+        "windowWidth <= containerWidth. windowWidth = " +
+          windowWidth +
+          ", containerWidth = " +
+          containerWidth +
+          ", fabRight =" +
+          fabRight
+      );
+    }
+
+    // アンマウント時に実行されるクリーンアップ関数
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [windowWidth, containerWidth]);
+
   return (
     <div className="App">
-      <Container sx={{ marginY: 5 }}>
+      <Container sx={{ marginY: 5 }} ref={containerRef}>
         <HideOnScroll>
           <AppBar position="sticky">
             <Tabs
@@ -103,21 +151,16 @@ function App() {
             </Tabs>
           </AppBar>
         </HideOnScroll>
-        <SwipeableViews
-          axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-          index={value}
-          onChangeIndex={handleChangeIndex}
-        >
-          <TabPanel value={value} index={0} dir={theme.direction}>
-            <DmaxMain />
-          </TabPanel>
-          <TabPanel value={value} index={1} dir={theme.direction}>
-            <CharmManager />
-          </TabPanel>
-          <TabPanel value={value} index={2} dir={theme.direction}>
-            <QuriousArmorManager />
-          </TabPanel>
-        </SwipeableViews>
+        {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
+        <TabPanel value={value} index={0} dir={theme.direction}>
+          <DmaxMain fabRight={fabRight} />
+        </TabPanel>
+        <TabPanel value={value} index={1} dir={theme.direction}>
+          <CharmManager />
+        </TabPanel>
+        <TabPanel value={value} index={2} dir={theme.direction}>
+          <QuriousArmorManager />
+        </TabPanel>
       </Container>
     </div>
   );

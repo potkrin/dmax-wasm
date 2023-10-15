@@ -1,6 +1,9 @@
 # TODO
 - 参考になるテーマ作成サイト https://bareynol.github.io/mui-theme-creator/
   - +/- ボタン https://mui.com/material-ui/react-badge/#badge-visibility
+- Tab切り替えの SwipeableView の最有効化
+  - Fab の position がずれる問題のため無効化している
+  - https://x.com/snowo0213/status/1713148238122066232?s=20
 
 # これは何?
 dmax シミュレータの wasm 版です。ブラウザ上で dmax を動作させることを目的とします。

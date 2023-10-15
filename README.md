@@ -29,8 +29,7 @@ craco.config.js に設定を記述します。
 # 動作重くない？
 以下の手順によりプロダクションビルドで試してみてください。
 ```sh
-npm run build
-serve -s build
+npm run build && serve -s build
 ```
 
 単一のstate (中身はオブジェクト) で全てのUIコンポーネントの状態管理しているため、ある一つのUIに入力を行うとほぼすべてのUIパーツに再レンダリングが走ります。

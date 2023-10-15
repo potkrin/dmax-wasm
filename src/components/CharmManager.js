@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Grid, TextField, Button, Snackbar, Typography } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
+import { MaterialReactTable } from "material-react-table";
 
 import { CharmTable } from "./CharmTable";
 import { CharmInput } from "./CharmInput";
@@ -9,14 +10,6 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-function MultiLineTextComponent({ text }) {
-  return (
-    <Typography variant="body1" style={{ whiteSpace: "pre-line", textAlign: "left" }}>
-      {text}
-    </Typography>
-  );
-}
-
 // 列要素対応表
 //        0,1,                 2,3,4,5,6
 // 火事場力,3,              渾身,2,3,1,1
@@ -24,24 +17,24 @@ function MultiLineTextComponent({ text }) {
 // 体術    ,3,通常弾・連射矢強化,2,3,1,1
 
 export function CharmManager() {
-  let initUserInputData;
+  // localstorage に保存されている護石データがあれば読み込み
+  let initUserCharmData;
   const cacheUserInputData = localStorage.getItem("userCharmData");
   if (cacheUserInputData !== null) {
-    initUserInputData = JSON.parse(cacheUserInputData);
+    initUserCharmData = JSON.parse(cacheUserInputData);
   } else {
-    initUserInputData = [];
+    initUserCharmData = [];
   }
 
-  // localstorage に保存されるユーザの護石データ
-  const [userCharmData, setUserCharmData] = useState(initUserInputData);
+  // 護石データを一元管理するデータ
+  // このデータを起点に localstorage への保存, csv からの読み込み, csv への書き出し, テーブルへの表示 の処理を行う
+  const [userCharmData, setUserCharmData] = useState(initUserCharmData);
 
   // ユーザが入力した csv データ
   const [csvData, setCsvData] = useState("");
   const handleCsvDataChange = (event) => {
     setCsvData(event.target.value);
   };
-
-  const [tableRows, setTableRows] = useState([]);
 
   // csv データを処理して, ユーザの護石データを localstorage に登録する関数
   const processCsvData = () => {
@@ -67,7 +60,7 @@ export function CharmManager() {
           "ice": "0",
           "thunder": "0",
           "dragon": "0",
-          "skills": { [row[0]]: parseInt(row[1]), [row[2]]: parseInt(row[3]) },
+          "skills": {},
           "slots": [parseInt(row[4]), parseInt(row[5]), parseInt(row[6])],
           // 護石【攻撃2, 連撃2】4-1-1 形式で名前を作成
           "name":
@@ -84,6 +77,9 @@ export function CharmManager() {
             "-" +
             row[6],
         };
+
+        if (row[0] !== "") tempCharm.skills[row[0]] = parseInt(row[1]);
+        if (row[2] !== "") tempCharm.skills[row[2]] = parseInt(row[3]);
         charmData.push(tempCharm);
       }
 
@@ -102,6 +98,18 @@ export function CharmManager() {
     setUserCharmData(charmData);
   };
 
+  // テーブルで複数選択された護石を userCharmData から削除 (引数は削除対象インデックス)
+  const deleteUserCharms = (deleteTargetIndexes) => {
+    const newCharmData = userCharmData.filter((_, index) => !deleteTargetIndexes.includes(index));
+    setUserCharmData(newCharmData);
+  };
+
+  // userCharmData が変更されたら localstorage に保存する
+  useEffect(() => {
+    localStorage.setItem("userCharmData", JSON.stringify(userCharmData));
+    console.log("userCharmData has been changed, and saved to localstorage");
+  }, [userCharmData]);
+
   // エラー出力用 Snackbar 管理
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
@@ -109,17 +117,6 @@ export function CharmManager() {
   const handleClose = () => {
     setOpen(false);
   };
-
-  // デバッグ用
-  useEffect(() => {
-    console.log("CharmManager: useEffect: csvData", csvData);
-  }, [csvData]);
-
-  // デバッグ用
-  useEffect(() => {
-    localStorage.setItem("userCharmData", JSON.stringify(userCharmData));
-    console.log("userCharmData has been changed, and saved to localstorage");
-  }, [userCharmData]);
 
   return (
     <>
@@ -163,7 +160,7 @@ export function CharmManager() {
           </Button>
         </Grid>
         <Grid item xs={12}>
-          <CharmTable userCharmData={userCharmData} />
+          <CharmTable userCharmData={userCharmData} deleteUserCharms={deleteUserCharms} />
         </Grid>
       </Grid>
     </>

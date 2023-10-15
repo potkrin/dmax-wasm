@@ -1,55 +1,83 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { Button } from "@mui/material";
+import { MaterialReactTable } from "material-react-table";
 
-import { DataGrid } from "@mui/x-data-grid";
+export function CharmTable({ userCharmData, deleteUserCharms }) {
+  //should be memoized or stable
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "firstSkill",
+        header: "第一スキル",
+        size: 150,
+      },
+      {
+        accessorKey: "secondSkill",
+        header: "第二スキル",
+        size: 150,
+      },
+      {
+        accessorKey: "slots",
+        header: "スロット",
+        size: 200,
+      },
+    ],
+    []
+  );
 
-const columns = [
-  { field: "1stSkillName", headerName: "スキル", width: 160 },
-  { field: "1stSkillLevel", headerName: "レベル", width: 80 },
-  { field: "2ndSkillName", headerName: "スキル", width: 160 },
-  { field: "2ndSkillLevel", headerName: "レベル", width: 80 },
-  { field: "slots", headerName: "スロット", width: 160 },
-];
+  // テーブル表示用データ
+  const [tableData, setTableData] = useState([]);
 
-export function CharmTable({ userCharmData }) {
-  const [tableRows, setTableRows] = useState([]);
-
-  const updateTableRowsFromCharmData = (charmData) => {
-    const newRows = [];
-    for (const [index, charm] of charmData.entries()) {
-      newRows.push({
-        id: index + 1,
-        "1stSkillName": Object.keys(charm["skills"])[0],
-        "2ndSkillName": Object.keys(charm["skills"])[1],
-        "1stSkillLevel":
-          Object.keys(charm["skills"])[0] !== "" ? "Lv" + Object.values(charm["skills"])[0] : "",
-        "2ndSkillLevel":
-          Object.keys(charm["skills"])[1] !== "" ? "Lv" + Object.values(charm["skills"])[1] : "",
-        "slots": charm["slots"].join("-"),
-      });
-    }
-    setTableRows(newRows);
-  };
-
+  // userCharmData が変更されたらテーブル表示用データを更新
   useEffect(() => {
-    updateTableRowsFromCharmData(userCharmData);
+    const newTableData = [];
+    for (const charm of userCharmData) {
+      const tempRow = {
+        "slots": charm.slots.join("-"),
+      };
+      const skillList = Object.entries(charm.skills);
+      tempRow["firstSkill"] = skillList[0] ? skillList[0][0] + "Lv" + skillList[0][1] : "";
+      tempRow["secondSkill"] = skillList[1] ? skillList[1][0] + "Lv" + skillList[1][1] : "";
+      newTableData.push(tempRow);
+    }
+    setTableData(newTableData);
   }, [userCharmData]);
 
   return (
-    <>
-      <div style={{ width: "100%" }}>
-        <DataGrid
-          rows={tableRows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 100 },
-            },
-          }}
-          pageSizeOptions={[5, 25, 100]}
-          checkboxSelection
-        />
-      </div>
-    </>
+    <MaterialReactTable
+      columns={columns}
+      data={tableData}
+      enablePagination={false}
+      enableRowSelection
+      enableMultiRowSelection
+      enableSelectAll
+      renderTopToolbarCustomActions={({ table }) => {
+        const handleDelete = () => {
+          // 削除対象のインデックスを作成
+          const deleteTargetRows = [];
+          table.getSelectedRowModel().flatRows.map((row) => {
+            deleteTargetRows.push(parseInt(row.id));
+          });
+
+          // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
+          deleteUserCharms(deleteTargetRows);
+          table.resetRowSelection();
+        };
+
+        return (
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <Button
+              color="secondary"
+              disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
+              onClick={handleDelete}
+              variant="contained"
+            >
+              削除
+            </Button>
+          </div>
+        );
+      }}
+    />
   );
 }
 

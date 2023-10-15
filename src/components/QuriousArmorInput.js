@@ -124,7 +124,7 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
       <Autocomplete
         options={armorSuggestions}
         onChange={handleArmorSelect}
-        renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
+        renderInput={(params) => <TextField {...params} label="防具" variant="outlined" />}
         sx={{ width: 480 }}
       />
       {selectedArmor &&
@@ -143,7 +143,7 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
         <Autocomplete
           options={skillSuggestions}
           onChange={handleSkillSelect}
-          renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
+          renderInput={(params) => <TextField {...params} label="スキル" variant="outlined" />}
           value={currentSkill}
           onFocus={() => {
             // 同じスキルを選択肢した場合に追加できない問題を回避するために, 選択肢をリセットする

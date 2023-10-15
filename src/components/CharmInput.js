@@ -27,7 +27,10 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
   const [selectedSkills, setSelectedSkills] = useState([]);
 
   const handleSkillSelect = (event, newValue) => {
-    if (selectedSkills.length < 2 && newValue !== null) {
+    setCurrentSkill(newValue);
+    if (newValue === null) return;
+
+    if (selectedSkills.length < 2 && !(newValue in selectedSkills)) {
       setSelectedSkills((prev) => [...prev, { name: newValue, level: 1 }]);
     }
   };
@@ -78,12 +81,15 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
     setUserCharmData((prev) => [...prev, tempCharm]);
   };
 
+  // Autoselect のテキストボックスに入力されている値 (onFocus でリセットするために定義)
+  const [currentSkill, setCurrentSkill] = useState(null);
+
   return (
     <>
       <Box sx={{ backgroundColor: "#f3f6f9" }}>
         <Card
           variant="outlined"
-          sx={{ borderRadius: 4, padding: "20px", maxWidth: 480 }}
+          sx={{ borderRadius: 1, padding: "20px", maxWidth: 480 }}
           backgroundColor="#f5f5f5"
         >
           <Typography
@@ -99,8 +105,14 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
           <Autocomplete
             options={suggestions}
             onChange={handleSkillSelect}
-            renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
+            renderInput={(params) => <TextField {...params} label="スキル" variant="outlined" />}
             sx={{ maxWidth: 480 }}
+            value={currentSkill}
+            onFocus={() => {
+              // 同じスキルを選択肢した場合に追加できない問題を回避するために, 選択肢をリセットする
+              // [[Autocomplete] onChange not fired for same item consecutively #29159](https://github.com/mui/material-ui/issues/29159)
+              setCurrentSkill("");
+            }}
           />
           {selectedSkills.map((skill, index) => (
             <SkillCard

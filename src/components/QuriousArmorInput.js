@@ -4,7 +4,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 
 import { SkillCard } from "./SkillCard";
 import { staticSkillData } from "../data/StaticData";
-import { SlotSelect } from "./SlotSelect";
+// import { SlotSelect } from "./SlotSelect";
 
 import { armorDict } from "../data/EquipData";
 
@@ -162,8 +162,9 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
           allowRemove={true}
         />
       ))}
-      {selectedArmor && (
-        <>
+      {selectedArmor &&
+        {
+          /* <>
           <div>
             <SlotSelect
               value={slots[0]}
@@ -182,8 +183,8 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
               onChange={(event) => handleSlotSelect(2, event.target.value)}
             />
           </div>
-        </>
-      )}
+        </> */
+        }}
 
       <Button variant="contained" color="primary" onClick={registerQuriousArmor}>
         登録

@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { TextField, Button, Grid, Box, Card, Typography, Divider } from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
+import { TextField, Button, Grid, Box, Card, Typography, ButtonGroup } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import AddIcon from "@mui/icons-material/Add";
 
 import { SkillCard } from "./SkillCard";
 import { staticSkillData } from "../data/StaticData";
-import { SlotSelect } from "./SlotSelect";
 
 // import { makeStyles } from "@mui/styles";
 import { useStyles } from "./DmaxMain";
+import SlotLevels from "./SlotLevels";
 
 /**
  * バグ: 選択済みのスキルをもう一度選択したとき追加できない
@@ -84,12 +84,33 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
   // Autoselect のテキストボックスに入力されている値 (onFocus でリセットするために定義)
   const [currentSkill, setCurrentSkill] = useState(null);
 
+  const [firstSlotLevel, setFirstSlotLevel] = useState(0);
+  const [secondSlotLevel, setSecondSlotLevel] = useState(0);
+  const [thirdSlotLevel, setThirdSlotLevel] = useState(0);
+
+  useEffect(() => {
+    setSlots([firstSlotLevel, secondSlotLevel, thirdSlotLevel]);
+  }, [firstSlotLevel, secondSlotLevel, thirdSlotLevel]);
+
+  // 高さはダミーのSkillCardの高さを基にして計算
+  const [containerHeight, setContainerHeight] = useState(0);
+  const dummyCardRef = useRef(null); // ダミーのSkillCard用のref
+
+  useEffect(() => {
+    // コンポーネントがマウントされた後、ダミーのSkillCardの高さを基にして計算を行います。
+    if (dummyCardRef.current) {
+      const height = dummyCardRef.current.offsetHeight;
+      setContainerHeight(height * 2); // 2つ分のSkillCardの高さを確保します。
+      console.log("dummyCardRef useEffect: " + height);
+    }
+  }, []); // 依存関係があれば、ここに追加します。
+
   return (
     <>
       <Box sx={{ backgroundColor: "#f3f6f9" }}>
         <Card
           variant="outlined"
-          sx={{ borderRadius: 1, padding: "20px", maxWidth: 480 }}
+          sx={{ borderRadius: 1, padding: "20px" }}
           backgroundColor="#f5f5f5"
         >
           <Typography
@@ -106,7 +127,8 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
             options={suggestions}
             onChange={handleSkillSelect}
             renderInput={(params) => <TextField {...params} label="スキル" variant="outlined" />}
-            sx={{ maxWidth: 480 }}
+            sx={{ marginBottom: 2 }}
+            size="small"
             value={currentSkill}
             onFocus={() => {
               // 同じスキルを選択肢した場合に追加できない問題を回避するために, 選択肢をリセットする
@@ -114,41 +136,73 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
               setCurrentSkill("");
             }}
           />
-          {selectedSkills.map((skill, index) => (
-            <SkillCard
-              key={index}
-              skill={skill}
-              setSelectedSkills={setSelectedSkills}
-              onRemove={() => handleSkillRemove(index)}
-              allowRemove={true}
-            />
-          ))}
-          <Grid container sx={{ width: 520, marginTop: 2 }}>
-            <SlotSelect
-              value={slots[0]}
-              onChange={(event) => handleSlotSelect(0, event.target.value)}
-            />
-            <SlotSelect
-              value={slots[1]}
-              onChange={(event) => handleSlotSelect(1, event.target.value)}
-            />
-            <SlotSelect
-              value={slots[2]}
-              onChange={(event) => handleSlotSelect(2, event.target.value)}
-            />
-          </Grid>
+          <div style={{ minHeight: `${containerHeight}px` }}>
+            {" "}
+            {/* 動的に設定された高さ */}
+            {selectedSkills.map((skill, index) => (
+              <SkillCard
+                key={index}
+                skill={skill}
+                setSelectedSkills={setSelectedSkills}
+                onRemove={() => handleSkillRemove(index)}
+                allowRemove={true}
+              />
+            ))}
+          </div>
+          <Grid container sx={{ marginTop: 4 }}>
+            <Grid item xs={9}>
+              <Grid container spacing={1}>
+                <Grid item xs={12}>
+                  <SlotLevels slotLevel={firstSlotLevel} setSlotLevel={setFirstSlotLevel} />
+                </Grid>
+                <Grid item xs={12}>
+                  <SlotLevels slotLevel={secondSlotLevel} setSlotLevel={setSecondSlotLevel} />
+                </Grid>
+                <Grid item xs={12}>
+                  <SlotLevels slotLevel={thirdSlotLevel} setSlotLevel={setThirdSlotLevel} />
+                </Grid>
+              </Grid>
+            </Grid>
 
-          <Box sx={{ textAlign: "right" }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={registerCharm}
-              endIcon={<AddIcon />}
-            >
-              登録
-            </Button>
-          </Box>
+            {/* ボタンを右下に寄せる */}
+            <Grid item xs={3} container justifyContent="flex-end">
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={registerCharm}
+                  startIcon={<AddIcon />}
+                >
+                  追加
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
         </Card>
+        {/* ダミーのSkillCard。これは画面上には表示されません。 */}
+        <div
+          ref={dummyCardRef}
+          style={{
+            visibility: "hidden",
+            position: "absolute",
+            zIndex: "-1",
+            height: "auto",
+            width: "50%" /* この幅は実際のSkillCardの幅に依存します */,
+          }}
+        >
+          <SkillCard
+            key={0}
+            skill={{ "name": "攻撃" }}
+            setSelectedSkills={setSelectedSkills}
+            onRemove={() => handleSkillRemove(0)}
+            allowRemove={true}
+          />
+        </div>
       </Box>
     </>
   );

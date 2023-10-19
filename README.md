@@ -1,4 +1,9 @@
 # TODO
+- バグ
+  - 空の護石を追加出来てしまう問題
+  - 護石で同じスキルが追加できてしまう問題 再現方法: 攻撃→見切り→攻撃削除→見切り
+  - 傀異錬成防具未選択状態で登録を押すとエラー
+  - タブ移動で入力中の項目が消える 再現方法: 護石タブでスキル入力→傀異錬成タブに移動→護石タブに戻る
 - 参考になるテーマ作成サイト https://bareynol.github.io/mui-theme-creator/
   - +/- ボタン https://mui.com/material-ui/react-badge/#badge-visibility
 - Tab切り替えの SwipeableView の最有効化

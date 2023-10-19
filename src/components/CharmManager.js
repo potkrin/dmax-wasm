@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Grid, TextField, Button, Snackbar, Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Grid, TextField, Button, Snackbar, Typography, Card, Box } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { MaterialReactTable } from "material-react-table";
+
+import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
+import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
+import AddIcon from "@mui/icons-material/Add";
 
 import { CharmTable } from "./CharmTable";
 import { CharmInput } from "./CharmInput";
+import { useStyles } from "./DmaxMain";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -17,6 +21,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 // 体術    ,3,通常弾・連射矢強化,2,3,1,1
 
 export function CharmManager() {
+  const classes = useStyles();
+
   // localstorage に保存されている護石データがあれば読み込み
   let initUserCharmData;
   const cacheUserInputData = localStorage.getItem("userCharmData");
@@ -37,7 +43,7 @@ export function CharmManager() {
   };
 
   // csv データを処理して, ユーザの護石データを localstorage に登録する関数
-  const processCsvData = () => {
+  const readFromCsvData = (mode) => {
     const csvRows = csvData.split("\n").filter((row) => row.trim().replace(/　/g, "") !== "");
     const csvArray = csvRows.map((row) => row.split(","));
 
@@ -95,7 +101,37 @@ export function CharmManager() {
       setError(err.message);
       setOpen(true);
     }
-    setUserCharmData(charmData);
+    if (mode === "overwrite") {
+      // 上書きモード
+      setUserCharmData(charmData);
+    } else {
+      // 追加モード
+      setUserCharmData([...userCharmData, ...charmData]);
+    }
+  };
+
+  const writeToCsvData = () => {
+    let csv = "";
+    for (const charm of userCharmData) {
+      // 護石【攻撃2, 連撃2】4-1-1 形式で名前を作成
+      const skillList = Object.entries(charm.skills);
+      let firstSkillName = "";
+      let firstSkillLevel = "0";
+      let secondSkillName = "";
+      let secondSkillLevel = "0";
+      if (skillList.length > 0) {
+        firstSkillName = skillList[0][0];
+        firstSkillLevel = skillList[0][1];
+      }
+
+      if (skillList.length > 1) {
+        secondSkillName = skillList[1][0];
+        secondSkillLevel = skillList[1][1];
+      }
+      const slots = charm.slots;
+      csv += `${firstSkillName},${firstSkillLevel},${secondSkillName},${secondSkillLevel},${slots[0]},${slots[1]},${slots[2]}\n`;
+    }
+    setCsvData(csv);
   };
 
   // テーブルで複数選択された護石を userCharmData から削除 (引数は削除対象インデックス)
@@ -140,25 +176,144 @@ export function CharmManager() {
       <Grid container spacing={3}>
         {/* データ表示 */}
         {/* データ入力欄 */}
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <CharmInput userCharmData={userCharmData} setUserCharmData={setUserCharmData} />
         </Grid>
 
-        <Grid item xs={10}>
-          <TextField
-            label="CSV"
-            multiline
-            rows={4}
+        {/* <Grid item xs={6}>
+          <Card
             variant="outlined"
-            value={csvData}
-            onChange={handleCsvDataChange}
-          />
+            sx={{ borderRadius: 1, padding: "20px", maxWidth: 480 }}
+            backgroundColor="#f5f5f5"
+          >
+            <Typography
+              variant="subtitle2"
+              gutterBottom
+              align="left"
+              className={classes.customHeaderNoMargin}
+              marginBottom={2}
+            >
+              CSV 入出力
+            </Typography>
+            <TextField
+              label="CSV"
+              multiline
+              rows={4}
+              variant="outlined"
+              value={csvData}
+              onChange={handleCsvDataChange}
+              sx={{ width: "100%" }}
+            />
+            <div style={{ marginTop: "10px" }}>
+              <Button variant="contained" color="primary" onClick={writeToCsvData}>
+                書き出し
+              </Button>
+              <div style={{ flex: 1 }}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => readFromCsvData("overwrite")}
+                    sx={{ mr: 1 }}
+                  >
+                    上書き
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => readFromCsvData("append")}
+                  >
+                    追加
+                  </Button>
+                </Box>
+              </div>
+            </div>
+          </Card>
+        </Grid> */}
+
+        <Grid item xs={6}>
+          <Card
+            variant="outlined"
+            sx={{ borderRadius: 1, height: "100%" }}
+            backgroundColor="#f5f5f5"
+          >
+            <Box
+              sx={{
+                margin: "20px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-between",
+                height: "90%",
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                align="left"
+                className={classes.customHeaderNoMargin}
+                marginBottom={2}
+              >
+                CSV 入出力
+              </Typography>
+              <Box sx={{ height: "100%" }}>
+                <TextField
+                  label="CSV"
+                  multiline
+                  variant="outlined"
+                  minRows={8}
+                  value={csvData}
+                  onChange={handleCsvDataChange}
+                  InputProps={{
+                    onClick: (event) => {
+                      event.target.select();
+                    },
+                  }}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </Box>
+              <div style={{ marginTop: "10px" }}>
+                <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={writeToCsvData}
+                    disabled={userCharmData.length === 0}
+                    startIcon={<KeyboardDoubleArrowUpIcon />}
+                  >
+                    書き出し
+                  </Button>
+                  <div style={{ flex: 1 }}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={csvData === ""}
+                        onClick={() => readFromCsvData("overwrite")}
+                        sx={{ mr: 1 }}
+                        startIcon={<KeyboardDoubleArrowDownIcon />}
+                      >
+                        上書き
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={csvData === ""}
+                        onClick={() => readFromCsvData("append")}
+                        startIcon={<AddIcon />}
+                      >
+                        追加
+                      </Button>
+                    </Box>
+                  </div>
+                </Box>
+              </div>
+            </Box>
+          </Card>
         </Grid>
-        <Grid item xs={2}>
-          <Button variant="contained" color="primary" onClick={processCsvData}>
-            読み込み
-          </Button>
-        </Grid>
+
         <Grid item xs={12}>
           <CharmTable userCharmData={userCharmData} deleteUserCharms={deleteUserCharms} />
         </Grid>

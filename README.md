@@ -1,6 +1,10 @@
 # TODO
 - dmax 出力の見た目を整える
 - 履歴表示 アコーディオン
+- 状態によって動的にUIの色を変化させる https://mui.com/material-ui/customization/how-to-customize/#dynamic-overrides
+  - 0でない要素だけ色を変化させるなど
+- いろいろなUIのカスタマイズ方法 https://mui.com/material-ui/customization/how-to-customize/
+  - バーを太くする、色を変えるなど
 
 - バグ
   - 空の護石を追加出来てしまう問題

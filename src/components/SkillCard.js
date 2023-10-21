@@ -9,7 +9,14 @@ import LabelImportantIcon from "@mui/icons-material/LabelImportant";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 
-export function SkillCard({ skill, setSelectedSkills, handleInnateSkill, onRemove, allowRemove }) {
+export function SkillCard({
+  skill,
+  setSelectedSkills,
+  handleInnateSkill,
+  onRemove,
+  allowRemove,
+  noDivider = false,
+}) {
   const updateSkillLevel = (level) => {
     if (allowRemove) {
       setSelectedSkills((prev) => {
@@ -77,7 +84,7 @@ export function SkillCard({ skill, setSelectedSkills, handleInnateSkill, onRemov
               </Grid>
             )}
           </Grid>
-          <Divider />
+          {!noDivider && <Divider />}
         </>
       )}
     </>

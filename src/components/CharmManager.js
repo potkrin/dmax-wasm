@@ -97,16 +97,18 @@ export function CharmManager() {
         }
         throw new Error(errorMessage);
       }
+
+      // エラーがなければ更新
+      if (mode === "overwrite") {
+        // 上書きモード
+        setUserCharmData(charmData);
+      } else {
+        // 追加モード
+        setUserCharmData([...userCharmData, ...charmData]);
+      }
     } catch (err) {
       setError(err.message);
       setOpen(true);
-    }
-    if (mode === "overwrite") {
-      // 上書きモード
-      setUserCharmData(charmData);
-    } else {
-      // 追加モード
-      setUserCharmData([...userCharmData, ...charmData]);
     }
   };
 
@@ -179,58 +181,6 @@ export function CharmManager() {
         <Grid item xs={6}>
           <CharmInput userCharmData={userCharmData} setUserCharmData={setUserCharmData} />
         </Grid>
-
-        {/* <Grid item xs={6}>
-          <Card
-            variant="outlined"
-            sx={{ borderRadius: 1, padding: "20px", maxWidth: 480 }}
-            backgroundColor="#f5f5f5"
-          >
-            <Typography
-              variant="subtitle2"
-              gutterBottom
-              align="left"
-              className={classes.customHeaderNoMargin}
-              marginBottom={2}
-            >
-              CSV 入出力
-            </Typography>
-            <TextField
-              label="CSV"
-              multiline
-              rows={4}
-              variant="outlined"
-              value={csvData}
-              onChange={handleCsvDataChange}
-              sx={{ width: "100%" }}
-            />
-            <div style={{ marginTop: "10px" }}>
-              <Button variant="contained" color="primary" onClick={writeToCsvData}>
-                書き出し
-              </Button>
-              <div style={{ flex: 1 }}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => readFromCsvData("overwrite")}
-                    sx={{ mr: 1 }}
-                  >
-                    上書き
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => readFromCsvData("append")}
-                  >
-                    追加
-                  </Button>
-                </Box>
-              </div>
-            </div>
-          </Card>
-        </Grid> */}
-
         <Grid item xs={6}>
           <Card
             variant="outlined"
@@ -261,6 +211,7 @@ export function CharmManager() {
                   multiline
                   variant="outlined"
                   minRows={8}
+                  maxRows={8}
                   value={csvData}
                   onChange={handleCsvDataChange}
                   InputProps={{

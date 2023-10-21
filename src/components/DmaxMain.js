@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Box, Card, Backdrop, SpeedDial, SpeedDialAction } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Box,
+  Card,
+  Backdrop,
+  SpeedDial,
+  SpeedDialAction,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Skill } from "./Skill";
 import { NonDamageSkill } from "./NonDamageSkill";
@@ -21,6 +31,7 @@ import ShareIcon from "@mui/icons-material/Share";
 
 import { staticSkillData } from "../data/StaticData";
 import { userInputData as defaultUserInputData } from "../data/UserInputData";
+import SkillCard from "./SkillCard";
 
 export const useStyles = makeStyles({
   customHeader: {
@@ -82,6 +93,57 @@ export function DmaxMain({ fabRight }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  // 追加スキルの管理
+  let initAdditionalSkills = localStorage.getItem("additionalSkills");
+  if (initAdditionalSkills !== null) {
+    initAdditionalSkills = JSON.parse(initAdditionalSkills);
+  } else {
+    initAdditionalSkills = [];
+  }
+  const [additionalSkills, setAdditionalSkills] = useState(initAdditionalSkills);
+  const [skillSuggestions, setSkillSuggestions] = useState(
+    Object.keys(staticSkillData).filter((key) => staticSkillData[key].type === "NonDamage")
+  );
+
+  const handleSkillSelect = (event, newValue) => {
+    setCurrentSkill(newValue);
+    if (newValue === null) return;
+
+    if (!(newValue in additionalSkills)) {
+      setAdditionalSkills((prev) => [...prev, { name: newValue, level: 1 }]);
+    }
+  };
+
+  // additionalSkills が変更されたら userInputData に反映する
+  useEffect(() => {
+    for (const skill of additionalSkills) {
+      updateUserInputData("スキル", {
+        ...userInputData["スキル"],
+        [skill.name]: {
+          ...userInputData["スキル"][skill.name],
+          minLevel: skill.level,
+        },
+      });
+    }
+    localStorage.setItem("additionalSkills", JSON.stringify(additionalSkills));
+  }, [additionalSkills]);
+
+  // Autoselect のテキストボックスに入力されている値 (onFocus でリセットするために定義)
+  const [currentSkill, setCurrentSkill] = useState(null);
+
+  const handleSkillRemove = (indexToRemove) => {
+    const skillName = additionalSkills[indexToRemove].name;
+    updateUserInputData("スキル", {
+      ...userInputData["スキル"],
+      [skillName]: {
+        ...userInputData["スキル"][skillName],
+        minLevel: 0,
+      },
+    });
+
+    setAdditionalSkills((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
 
   return (
     <div className="DmaxMain">
@@ -242,66 +304,44 @@ export function DmaxMain({ fabRight }) {
               ))}
           </Grid>
 
-          {/* スライダーなしのスキル 最大Lv5以上, Lv4, Lv3, ... */}
-          <Grid container marginTop={2}>
-            {Object.keys(staticSkillData)
-              .filter((key) => staticSkillData[key].type === "NonDamage")
-              .filter((key) => staticSkillData[key].maxLevel > 4)
-              .map((key) => (
-                <NonDamageSkill
-                  staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
+          <Typography
+            variant="subtitle2"
+            gutterBottom
+            align="left"
+            marginTop={4}
+            marginLeft={2}
+            className={classes.customHeader}
+          >
+            その他スキル
+          </Typography>
+          <Grid container marginX={4} marginBottom={6}>
+            <Grid item xs={6} minHeight={"200px"}>
+              <Autocomplete
+                options={skillSuggestions}
+                onChange={handleSkillSelect}
+                renderInput={(params) => (
+                  <TextField {...params} label="スキル名" variant="outlined" />
+                )}
+                sx={{ marginY: 2 }}
+                size="small"
+                value={currentSkill}
+                onFocus={() => {
+                  // 同じスキルを選択肢した場合に追加できない問題を回避するために, 選択肢をリセットする
+                  // [[Autocomplete] onChange not fired for same item consecutively #29159](https://github.com/mui/material-ui/issues/29159)
+                  setCurrentSkill("");
+                }}
+              />
+
+              {additionalSkills.map((skill, index) => (
+                <SkillCard
+                  key={index}
+                  skill={skill}
+                  setSelectedSkills={setAdditionalSkills}
+                  onRemove={() => handleSkillRemove(index)}
+                  allowRemove={true}
                 />
               ))}
-          </Grid>
-          <Grid container marginTop={2}>
-            {Object.keys(staticSkillData)
-              .filter((key) => staticSkillData[key].type === "NonDamage")
-              .filter((key) => staticSkillData[key].maxLevel === 4)
-              .map((key) => (
-                <NonDamageSkill
-                  staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
-                />
-              ))}
-          </Grid>
-          <Grid container marginTop={2}>
-            {Object.keys(staticSkillData)
-              .filter((key) => staticSkillData[key].type === "NonDamage")
-              .filter((key) => staticSkillData[key].maxLevel === 3)
-              .map((key) => (
-                <NonDamageSkill
-                  staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
-                />
-              ))}
-          </Grid>
-          <Grid container marginTop={2}>
-            {Object.keys(staticSkillData)
-              .filter((key) => staticSkillData[key].type === "NonDamage")
-              .filter((key) => staticSkillData[key].maxLevel === 2)
-              .map((key) => (
-                <NonDamageSkill
-                  staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
-                />
-              ))}
-          </Grid>
-          <Grid container marginTop={2}>
-            {Object.keys(staticSkillData)
-              .filter((key) => staticSkillData[key].type === "NonDamage")
-              .filter((key) => staticSkillData[key].maxLevel === 1)
-              .map((key) => (
-                <NonDamageSkill
-                  staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
-                />
-              ))}
+            </Grid>
           </Grid>
         </Card>
       </Box>
@@ -309,13 +349,6 @@ export function DmaxMain({ fabRight }) {
       {/* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/}
       <DmaxSolver userInputData={userInputData} fabRight={fabRight} />
 
-      {/* <Box
-        sx={{
-          height: 330,
-          transform: "translateZ(0px)",
-          flexGrow: 1,
-        }}
-      > */}
       <Backdrop open={open} />
       <SpeedDial
         ariaLabel="SpeedDial tooltip example"
@@ -339,7 +372,6 @@ export function DmaxMain({ fabRight }) {
           />
         ))}
       </SpeedDial>
-      {/* </Box> */}
     </div>
   );
 }

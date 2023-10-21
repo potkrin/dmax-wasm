@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Grid } from "@mui/material";
+import { Grid, Card } from "@mui/material";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
 export const DmaxGraph = ({ chartData }) => {
@@ -26,42 +26,44 @@ export const DmaxGraph = ({ chartData }) => {
 
   return (
     <Grid item xs={6} ref={containerRef}>
-      <LineChart
-        width={chartWidth}
-        height={450}
-        data={chartData}
-        margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-      >
-        <XAxis dataKey="time" unit="s" type="number" />
-        <YAxis yAxisId="left" />
-        <YAxis yAxisId="right" orientation="right" />
-        <Tooltip />
-        <Legend />
-        <CartesianGrid stroke="#f5f5f5" />
-        <Line
-          type="linear"
-          dataKey="upperLimit"
-          stroke="#ff7300"
-          yAxisId="left"
-          animationDuration={300}
-        />
-        <Line
-          type="linear"
-          dataKey="lowerLimit"
-          stroke="#387908"
-          yAxisId="left"
-          animationDuration={300}
-        />
-        <Line
-          type="linear"
-          dataKey="usedMemory"
-          stroke="#4169e1"
-          strokeDasharray={"3 3"}
-          dot={false}
-          yAxisId="right"
-          animationDuration={300}
-        />
-      </LineChart>
+      <Card variant="outlined" sx={{ borderRadius: 1, padding: "8px" }} backgroundColor="#f5f5f5">
+        <LineChart
+          width={chartWidth}
+          height={450}
+          data={chartData}
+          margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+        >
+          <XAxis dataKey="time" unit="s" type="number" />
+          <YAxis yAxisId="left" />
+          <YAxis yAxisId="right" orientation="right" />
+          <Tooltip />
+          <Legend />
+          <CartesianGrid stroke="#f5f5f5" />
+          <Line
+            type="linear"
+            dataKey="upperLimit"
+            stroke="#ff7300"
+            yAxisId="left"
+            animationDuration={300}
+          />
+          <Line
+            type="linear"
+            dataKey="lowerLimit"
+            stroke="#387908"
+            yAxisId="left"
+            animationDuration={300}
+          />
+          <Line
+            type="linear"
+            dataKey="usedMemory"
+            stroke="#4169e1"
+            strokeDasharray={"3 3"}
+            dot={false}
+            yAxisId="right"
+            animationDuration={300}
+          />
+        </LineChart>
+      </Card>
     </Grid>
   );
 };

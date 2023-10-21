@@ -127,7 +127,7 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
     for (let q of list_q_result) {
       let qEquipName = q.slice(2, q.indexOf("]"));
       qEquipName = qEquipName.replace(/'/g, "");
-      let qEquipCount = q.slice(q.indexOf("]") + 1, q.indexOf("("));
+      let qEquipCount = q.slice(q.indexOf("]") + 1, q.indexOf("(obj"));
       qEquipCount = Math.round(parseFloat(qEquipCount));
 
       // 数が0 の装備は除外

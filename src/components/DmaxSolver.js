@@ -14,7 +14,7 @@ import { staticData } from "../data/StaticData";
 // dmax-core を呼び出すための処理
 let startWasmWorker;
 
-function supportsNestedWebWorkers() {
+function supportsNestedWebWorkers(updateDmaxOutput) {
   console.log("supportsNestedWebWorkers() called");
   try {
     var blob = new Blob(
@@ -32,8 +32,10 @@ function supportsNestedWebWorkers() {
       URL.revokeObjectURL(url);
       if (e.data === 1) {
         console.log("Nested Web Workers are supported");
+        updateDmaxOutput("Nested Web Workers are supported");
       } else {
         console.log("Nested Web Workers are not supported");
+        updateDmaxOutput("Nested Web Workers are not supported");
       }
     };
 
@@ -41,14 +43,16 @@ function supportsNestedWebWorkers() {
       worker.terminate();
       URL.revokeObjectURL(url);
       console.log("Nested Web Workers are not supported");
+      updateDmaxOutput("Nested Web Workers are not supported");
     };
   } catch (e) {
     console.log("Nested Web Workers are not supported");
+    updateDmaxOutput("Nested Web Workers are not supported");
   }
 }
 
 function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) {
-  supportsNestedWebWorkers();
+  supportsNestedWebWorkers(updateDmaxOutput);
 
   // gonextbench = false;
   if (window.Worker) {
@@ -60,6 +64,8 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
     startWasmWorker = new Worker(process.env.PUBLIC_URL + "/dmax-core/worker3.js", {
       name: "startWasmWorker",
     });
+
+    updateDmaxOutput("webworker launched");
 
     startWasmWorker.postMessage(["file.nl", 4, 3072, problem_data]);
     console.log("Message posted to worker");
@@ -101,6 +107,7 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
     };
   } else {
     console.log("Your browser doesn't support web workers.");
+    updateDmaxOutput("Your browser doesn't support web workers.");
   }
 }
 
@@ -178,8 +185,11 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     console.log("processingUserArmorsData = " + JSON.stringify(processingUserArmorsData, null, 4));
   }, [processingUserArmorsData]);
 
+  const [resetMiddleOutput, setResetMiddleOutput] = useState(false);
+
   // 最適化の開始
   const startOptimization = () => {
+    setResetMiddleOutput(true);
     const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
     // ユーザが入力した護石データを防具データ一覧 (userArmors) に追加
@@ -229,12 +239,14 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     // ボタンを押した時点の入力データを保存する
     // = 代入や Object.assign() では浅いコピーしか行われないので JSON を経由して深いコピーを行う
     // 同期処理のためデータが大きい場合、メインスレッドがハングする可能性がある
+
     updateProcessingUserInputData(JSON.parse(JSON.stringify(userInputData)));
     updateProcessingUserArmorsData(JSON.parse(JSON.stringify(userArmors)));
   };
 
   // 最適化の中断
   const stopOptimization = () => {
+    setResetMiddleOutput(true);
     if (startWasmWorker) {
       startWasmWorker.terminate();
     }
@@ -266,7 +278,11 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       </Grid>
 
       <Grid container spacing={1} marginY={1}>
-        <DmaxOutput dmaxOutput={dmaxOutput} />
+        <DmaxOutput
+          dmaxOutput={dmaxOutput}
+          resetMiddleOutput={resetMiddleOutput}
+          setResetMiddleOutput={setResetMiddleOutput}
+        />
         <DmaxGraph chartData={chartData} />
       </Grid>
       <Grid container spacing={1} marginY={1}>

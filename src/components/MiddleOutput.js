@@ -6,19 +6,22 @@ import ErrorIcon from "@mui/icons-material/Error";
 
 import { theme } from "./ThemeProvider";
 
-export const MiddleOutput = ({ middleOutput }) => {
-  //   useEffect(() => {
-  //     if (boxRef.current) {
-  //       boxRef.current.scrollTop = boxRef.current.scrollHeight;
-  //     }
-  //   }, [middleOutput]);
+function NewlineText({ text }) {
+  const newText = text
+    .split("\n")
+    .map((str, index, array) => (index === array.length - 1 ? str : `${str}<br/>`))
+    .join("");
 
+  return <span dangerouslySetInnerHTML={{ __html: newText }} />;
+}
+
+export const MiddleOutput = ({ middleOutput }) => {
   return (
     <>
-      <Grid container alignItems={"left"} spacing={0} marginBottom={0.8}>
+      <Grid container alignItems={"center"} spacing={0} marginBottom={0.8}>
         <Grid item xs={0.5}>
           {middleOutput.status === "running" && (
-            <CircularProgress size={10} sx={{ color: theme.palette.secondary.main }} />
+            <CircularProgress size={10} sx={{ color: theme.palette.primary.main }} />
           )}
           {middleOutput.status === "complete" && (
             <CheckIcon color="success" sx={{ fontSize: 16 }} />
@@ -44,7 +47,7 @@ export const MiddleOutput = ({ middleOutput }) => {
                 variant="body1"
                 sx={{ fontSize: "12px", color: theme.palette.text.secondary }}
               >
-                {middleOutput.message}
+                <NewlineText text={middleOutput.message} />
               </Typography>
             </Grid>
           </>

@@ -39,6 +39,11 @@ o [前処理完了]
  */
 
 const defaultMiddleOutputInfo = {
+  "launch": {
+    "title": "Loading",
+    "status": "waiting",
+    "message": "",
+  },
   "load": {
     "title": "ロード",
     "status": "waiting",
@@ -60,38 +65,57 @@ const defaultMiddleOutputInfo = {
     "message": "",
   },
   "solverEnd": {
-    "title": "最適化終了",
+    "title": "終了処理",
     "status": "waiting",
     "message": "",
   },
 };
 
-function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput) {
+function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInfo) {
   const lines = dmaxOutput.trim().split("\n");
 
+  let launchMessage = "";
+  let loadMessage = "";
   let presolveMessage = "";
-  let concurrentSolverMessage = "";
-  let solvedMessage = "";
+  let solverStartMessage = "";
+  let solveMessage = "";
+  let solverEndMessage = "";
+
+  let launchStatus = "waiting";
+  let loadStatus = "waiting";
+  let presolveStatus = "waiting";
+  let solverStartStatus = "waiting";
+  let solveStatus = "waiting";
+  let solverEndStatus = "waiting";
 
   for (const line of lines) {
+    if (line.startsWith("Nested Web Workers are supported"))
+      launchMessage += "Nested WebWorker 有効\n";
+
+    if (line.startsWith("webworker launched")) {
+      launchMessage += "WebWorker 起動完了\n";
+      launchStatus = "complete";
+      loadStatus = "running";
+    }
+
+    if (line.startsWith("Nested Web Workers are not supported")) {
+      launchMessage += "Nested WebWorker がサポートされていません\n";
+      launchStatus = "error";
+    }
+
+    if (line.startsWith("Your browser does not support Web Workers")) {
+      launchMessage += "WebWorker がサポートされていません\n";
+      launchStatus = "error";
+    }
+
     if (line.startsWith("original problem has ")) {
       // 正規表現を使って、数字以外の全ての文字を削除
       const variablesCount = line.slice(0, line.indexOf("variables")).replace(/\D/g, "");
       const constraintsCount = line
         .slice(line.indexOf(") and"), line.indexOf("costraints"))
         .replace(/\D/g, "");
-      const message = "元問題 変数: " + variablesCount + ", 制約式: " + constraintsCount;
-
-      setMiddleOutputInfo((prevMiddleOutputInfo) => {
-        return {
-          ...prevMiddleOutputInfo,
-          "load": {
-            ...prevMiddleOutputInfo["load"],
-            "message": message,
-            "status": "complete",
-          },
-        };
-      });
+      loadMessage = "元問題 変数: " + variablesCount + ", 制約式: " + constraintsCount;
+      loadStatus = "complete";
     }
 
     // 前処理中の中間出力を更新
@@ -104,18 +128,8 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput) {
       const changedBounds = line.slice(line.indexOf('add conss'), line.indexOf('chg bounds')).replace(/\D/g, '');
       const changedCoefficients = line.slice(line.indexOf('chg bounds'), line.indexOf('chg coeffs')).replace(/\D/g, '');
       const updatedConstraints = line.slice(line.indexOf('chg coeffs'), line.indexOf('upgd conss')).replace(/\D/g, '');
-      const message = `${roundNumber} 削除変数: ${deletedVariables}, 削除制約式: ${deletedConstraints}, 追加制約式: ${addedConstraints}, 範囲変更: ${changedBounds}, 係数変更: ${changedCoefficients}, 制約改善: ${updatedConstraints} \n`;
-
-      setMiddleOutputInfo((prevMiddleOutputInfo) => {
-        return {
-          ...prevMiddleOutputInfo,
-          "preprocess": {
-            ...prevMiddleOutputInfo["preprocess"],
-            "message": message,
-            "status": "running",
-          },
-        };
-      });
+      presolveMessage = `${roundNumber}\n削除変数: ${deletedVariables}, 削除制約式: ${deletedConstraints}, 追加制約式: ${addedConstraints}, 範囲変更: ${changedBounds}, 係数変更: ${changedCoefficients}, 制約改善: ${updatedConstraints} \n`
+      presolveStatus = "running";
     }
 
     // 前処理完了時の出力処理
@@ -123,42 +137,29 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput) {
     if (line.startsWith("presolved problem has")) {
       const variablesCount = line.slice(0, line.indexOf("variables")).replace(/\D/g, "");
       const constraintsCount = line.slice(line.indexOf(") and ")).replace(/\D/g, "");
-      presolveMessage = `変数: ${variablesCount}, 制約式: ${constraintsCount}`;
+      presolveMessage = `変数: ${variablesCount}, 制約式: ${constraintsCount}\n`;
     }
 
     if (line.startsWith("Presolving Time:")) {
       let presolvingTime = line.match(/\d+\.\d+/)[0];
       presolveMessage += `前処理時間: ${presolvingTime}秒\n`;
-    }
-
-    if (presolveMessage !== "") {
-      setMiddleOutputInfo((prevMiddleOutputInfo) => {
-        return {
-          ...prevMiddleOutputInfo,
-          "preprocess": {
-            ...prevMiddleOutputInfo["preprocess"],
-            "message": presolveMessage,
-            "status": "complete",
-          },
-        };
-      });
+      // presolveComplete = true;
+      presolveStatus = "complete";
+      solverStartStatus = "running";
     }
 
     // 並列ソルバー起動処理の出力
     if (line.startsWith("starting solve in concurrent solver")) {
       const solverNumber = line.replace(/\D/g, "");
-
-      if (concurrentSolverMessage === "") {
-        concurrentSolverMessage += "[並列ソルバ起動] ";
-      }
-      concurrentSolverMessage += `${solverNumber} `;
+      solverStartMessage += `${solverNumber} `;
+      solverStartStatus = "complete";
 
       setMiddleOutputInfo((prevMiddleOutputInfo) => {
         return {
           ...prevMiddleOutputInfo,
           "solverStart": {
             ...prevMiddleOutputInfo["solverStart"],
-            "message": concurrentSolverMessage,
+            "message": solverStartMessage,
             "status": "complete",
           },
           "solve": {
@@ -168,6 +169,8 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput) {
         };
       });
     }
+
+    console.log("217: " + JSON.stringify(middleOutputInfo));
 
     // 並列ソルバーの中間出力
     if (line.match(/.*s\|.*M\|.*/)) {
@@ -188,18 +191,9 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput) {
       let gap = variables[4];
       gap = gap.slice(0, gap.indexOf("%") + 1);
 
-      const message = `${time}秒, 使用メモリ:${memory}, ダメージ上界: ${dualbound}, ダメージ下界: ${primalbound}, ギャップ: ${gap}`;
-
-      setMiddleOutputInfo((prevMiddleOutputInfo) => {
-        return {
-          ...prevMiddleOutputInfo,
-          "solve": {
-            ...prevMiddleOutputInfo["solve"],
-            "message": message,
-            "status": "running",
-          },
-        };
-      });
+      solveMessage = `${time}秒, 使用メモリ:${memory}, ダメージ上界: ${dualbound}, ダメージ下界: ${primalbound}, ギャップ: ${gap}`;
+      solveStatus = "running";
+      solverStartStatus = "complete";
     }
 
     // SCIP ソルバー実行終了後の状態
@@ -233,44 +227,69 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput) {
         statusReason = "反復回数の上限に到達しました";
       }
 
-      solvedMessage = `${scipStatus}: ${statusReason}\n`;
+      solverEndMessage = `${scipStatus}: ${statusReason}\n`;
+      solveStatus = "complete";
+      solverEndStatus = "complete";
     }
 
     // 合計処理時間
     if (line.startsWith("Solving Time")) {
       const solvingTime = line.slice(line.indexOf(":"), line.indexOf("."));
-      solvedMessage += `合計処理時間 ${solvingTime}秒`;
+      solverEndMessage += `合計処理時間 ${solvingTime}秒`;
     }
 
-    if (solvedMessage !== "") {
-      setMiddleOutputInfo((prevMiddleOutputInfo) => {
-        return {
-          ...prevMiddleOutputInfo,
-          "solve": {
-            ...prevMiddleOutputInfo["solve"],
-            "status": "complete",
-          },
-          "solverEnd": {
-            ...prevMiddleOutputInfo["solverEnd"],
-            "message": solvedMessage,
-            "status": "complete",
-          },
-        };
-      });
-    }
+    setMiddleOutputInfo((prevMiddleOutputInfo) => {
+      return {
+        ...prevMiddleOutputInfo,
+        "launch": {
+          ...prevMiddleOutputInfo["launch"],
+          "status": launchStatus,
+          "message": launchMessage,
+        },
+        "load": {
+          ...prevMiddleOutputInfo["load"],
+          "status": loadStatus,
+          "message": loadMessage,
+        },
+        "preprocess": {
+          ...prevMiddleOutputInfo["preprocess"],
+          "status": presolveStatus,
+          "message": presolveMessage,
+        },
+        "solverStart": {
+          ...prevMiddleOutputInfo["solverStart"],
+          "status": solverStartStatus,
+          "message": solverStartMessage,
+        },
+        "solve": {
+          ...prevMiddleOutputInfo["solve"],
+          "status": solveStatus,
+          "message": solveMessage,
+        },
+        "solverEnd": {
+          ...prevMiddleOutputInfo["solverEnd"],
+          "status": solverEndStatus,
+          "message": solverEndMessage,
+        },
+      };
+    });
   }
 }
 
-export const DmaxOutput = ({ dmaxOutput }) => {
-  const [middleOutputInfo, setMiddleOutputInfo] = useState(defaultMiddleOutputInfo);
+export const DmaxOutput = ({ dmaxOutput, resetMiddleOutput, setResetMiddleOutput }) => {
+  const initMiddleOutputInfo = JSON.parse(JSON.stringify(defaultMiddleOutputInfo));
+  const [middleOutputInfo, setMiddleOutputInfo] = useState(initMiddleOutputInfo);
 
   useEffect(() => {
-    if (dmaxOutput === "") {
-      setMiddleOutputInfo(defaultMiddleOutputInfo);
-    } else {
-      updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput);
-    }
+    updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInfo);
   }, [dmaxOutput]);
+
+  useEffect(() => {
+    if (resetMiddleOutput) {
+      setMiddleOutputInfo(initMiddleOutputInfo);
+      setResetMiddleOutput(false);
+    }
+  }, [resetMiddleOutput]);
 
   return (
     <Grid item xs={6}>
@@ -284,6 +303,7 @@ export const DmaxOutput = ({ dmaxOutput }) => {
           }}
         >
           <Box sx={{ margin: 1.5 }}>
+            <MiddleOutput middleOutput={middleOutputInfo.launch} />
             <MiddleOutput middleOutput={middleOutputInfo.load} />
             <MiddleOutput middleOutput={middleOutputInfo.preprocess} />
             <MiddleOutput middleOutput={middleOutputInfo.solverStart} />

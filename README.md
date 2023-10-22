@@ -1,10 +1,16 @@
 # TODO
-- dmax 出力の見た目を整える
-- 履歴表示 アコーディオン
+- 錬成防具・護石のON/OFF
+- 履歴表示 Menu で
+- API取得結果の表示
+- 結果表示の整形 (アイコン,文字装飾)
 - 状態によって動的にUIの色を変化させる https://mui.com/material-ui/customization/how-to-customize/#dynamic-overrides
   - 0でない要素だけ色を変化させるなど
 - いろいろなUIのカスタマイズ方法 https://mui.com/material-ui/customization/how-to-customize/
   - バーを太くする、色を変えるなど
+- wasm が利用可能か確認
+- アニメーションを付けられる https://mui.com/material-ui/transitions/
+- 結果コピペ用ボタン
+
 
 - バグ
   - 空の護石を追加出来てしまう問題

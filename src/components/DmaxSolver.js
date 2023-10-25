@@ -10,6 +10,7 @@ import { DmaxGraph } from "./DmaxGraph";
 import { DmaxResult } from "./DmaxResult";
 import { armors, decos } from "../data/EquipData";
 import { staticData } from "../data/StaticData";
+import { DmaxHistory } from "./DmaxHistory";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -61,6 +62,8 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
     if (startWasmWorker) {
       startWasmWorker.terminate();
     }
+    console.log("Solve Start TimeStamp: " + new Date().toISOString());
+    updateDmaxOutput("Solve Start TimeStamp: " + new Date().toISOString());
     startWasmWorker = new Worker(process.env.PUBLIC_URL + "/dmax-core/worker3.js", {
       name: "startWasmWorker",
     });
@@ -192,16 +195,20 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     setResetMiddleOutput(true);
     const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
-    // ユーザが入力した護石データを防具データ一覧 (userArmors) に追加
+    // 最適化に含める防具データ定義 (オプションに応じて 護石, 傀異錬成防具を追加)
     const userArmors = JSON.parse(JSON.stringify(armors));
 
-    // ユーザの護石を全防具データに追加
-    const userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
-    userArmors.push(...userCharmData);
+    if (!excludeCharm) {
+      // ユーザの護石を全防具データに追加
+      const userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
+      userArmors.push(...userCharmData);
+    }
 
-    // ユーザの傀異錬成防具を全防具データに追加
-    const userQuriousArmor = JSON.parse(localStorage.getItem("userQuriousArmorData"));
-    userArmors.push(...userQuriousArmor);
+    if (!excludeQuriousArmor) {
+      // ユーザの傀異錬成防具を全防具データに追加
+      const userQuriousArmorData = JSON.parse(localStorage.getItem("userQuriousArmorData"));
+      userArmors.push(...userQuriousArmorData);
+    }
 
     fetch(apiUrl, {
       method: "POST",
@@ -266,22 +273,40 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     console.log("fabRight = " + fabRight + "typeof(fabRight) = " + typeof fabRight);
   }, [fabRight]);
 
+  // 傀異錬成防具と護石を最適化から除外するオプション
+  const [excludeQuriousArmor, setExcludeQuriousArmor] = useState(false);
+  const handleExcludeQuriousArmor = (e, v) => {
+    setExcludeQuriousArmor(e.target.checked);
+  };
+  const [excludeCharm, setExcludeCharm] = useState(false);
+  const handleExcludeCharm = (e, v) => {
+    setExcludeCharm(e.target.checked);
+  };
+
   return (
     <>
-      <Grid container marginTop={2}>
+      {/* <Grid container marginTop={2}>
         <Grid item xs={2}>
           <Button onClick={startOptimization}>Optimize</Button>
         </Grid>
         <Grid item xs={2}>
           <Button onClick={stopOptimization}>Cancel</Button>
         </Grid>
-      </Grid>
+      </Grid> */}
 
       <Grid container spacing={1} marginY={1}>
         <DmaxOutput
           dmaxOutput={dmaxOutput}
           resetMiddleOutput={resetMiddleOutput}
           setResetMiddleOutput={setResetMiddleOutput}
+          startOptimization={startOptimization}
+          stopOptimization={stopOptimization}
+          handleToggle={handleToggle}
+          isOptimizing={isOptimizing}
+          excludeQuriousArmor={excludeQuriousArmor}
+          handleExcludeQuriousArmor={handleExcludeQuriousArmor}
+          excludeCharm={excludeCharm}
+          handleExcludeCharm={handleExcludeCharm}
         />
         <DmaxGraph chartData={chartData} />
       </Grid>
@@ -291,11 +316,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
           processingUserInputData={processingUserInputData}
           processingUserArmorsData={processingUserArmorsData}
         />
-        <DmaxResult
-          middleOutput={prevMiddleOutput}
-          processingUserInputData={processingUserInputData}
-          processingUserArmorsData={processingUserArmorsData}
-        />
+
+        <DmaxHistory middleOutput={middleOutput} />
       </Grid>
 
       <Fab

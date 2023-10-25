@@ -1,46 +1,23 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Grid, Paper, Box, Card } from "@mui/material";
+import {
+  Grid,
+  Box,
+  Card,
+  Typography,
+  Button,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import MiddleOutput from "./MiddleOutput";
-
-/**
-ここに webworker や wasm の起動状況を表示する
-起動完了, エラー, サポートされていないブラウザ など
-
-{
-  "load": {
-    "title": "ロード",
-    "status": "waiting", "done", "running", "complete", "error",
-    "message": "元問題 変数: 2200, 制約式: 241"
-  }
-  "preprocess": {
-    "title": "前処理",
-    "status": "waiting", "done", "running", "complete", "error",
-    "message": "round 10, exhaustive) 削除変数: 1365, 削除制約式: 183, 追加制約式: 993, 範囲変更: 2467, 係数変更: 1943, 制約改善: 51"
-  }
-}
-
-アイコン: タイトル
-  メッセージ  (リアルタイム更新)
-
-x [ロード]
-    元問題 変数: 2200, 制約式: 241
-x [前処理中...]
-    (round 10, exhaustive) 削除変数: 1365, 削除制約式: 183, 追加制約式: 993, 範囲変更: 2467, 係数変更: 1943, 制約改善: 51
-o [前処理完了]
-    前処理時間:  4秒, 変数: 1622, 制約式: 1051
-  [並列ソルバ起動]
-    1 2 3
-  [最適化中...]
-    18秒, 使用メモリ:  71MB, ダメージ上界: 170.57, ダメージ下界: 170.57, ギャップ:    0.00%
-  [最適化終了]
-    最適化完了: 最適解が見つかりました
-    合計処理時間 : 18秒
-
- */
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { useStyles } from "./DmaxMain";
 
 const defaultMiddleOutputInfo = {
   "launch": {
-    "title": "Loading",
+    "title": "起動",
     "status": "waiting",
     "message": "",
   },
@@ -276,7 +253,21 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
   }
 }
 
-export const DmaxOutput = ({ dmaxOutput, resetMiddleOutput, setResetMiddleOutput }) => {
+export const DmaxOutput = ({
+  dmaxOutput,
+  resetMiddleOutput,
+  setResetMiddleOutput,
+  startOptimization,
+  stopOptimization,
+  handleToggle,
+  isOptimizing,
+  excludeQuriousArmor,
+  handleExcludeQuriousArmor,
+  excludeCharm,
+  handleExcludeCharm,
+}) => {
+  const classes = useStyles();
+
   const initMiddleOutputInfo = JSON.parse(JSON.stringify(defaultMiddleOutputInfo));
   const [middleOutputInfo, setMiddleOutputInfo] = useState(initMiddleOutputInfo);
 
@@ -296,13 +287,108 @@ export const DmaxOutput = ({ dmaxOutput, resetMiddleOutput, setResetMiddleOutput
       <Card variant="outlined" sx={{ borderRadius: 1 }} backgroundColor="#f5f5f5">
         <Box
           style={{
-            height: "450px",
+            height: "610px",
             overflowY: "auto",
             padding: "8px",
             textAlign: "left",
           }}
         >
-          <Box sx={{ margin: 1.5 }}>
+          <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
+            <Grid item xs={0.5}>
+              <AssessmentRoundedIcon sx={{ marginTop: "4px" }} color="primary" />
+            </Grid>
+            <Grid item xs>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
+                最適化
+              </Typography>
+            </Grid>
+            <Grid item xs container justifyContent="flex-end" sx={{ marginRight: 1 }}>
+              {isOptimizing ? (
+                <>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleToggle}
+                    startIcon={<CancelIcon />}
+                    size="small"
+                  >
+                    中止
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleToggle}
+                    startIcon={<TrendingUpIcon />}
+                    size="small"
+                  >
+                    実行
+                  </Button>
+                </>
+              )}
+            </Grid>
+          </Grid>
+
+          <Grid container>
+            <Grid item xs={12}>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                align="left"
+                marginLeft={2}
+                className={classes.customHeaderThin}
+              >
+                除外オプション
+              </Typography>
+            </Grid>
+
+            <Grid item xs={0.7}></Grid>
+
+            <Grid item xs={3}>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={excludeQuriousArmor}
+                      onChange={(e, v) => handleExcludeQuriousArmor(e, v)}
+                    />
+                  }
+                  label={<Typography style={{ "fontSize": "12px" }}>傀異錬成除外</Typography>}
+                />
+              </FormGroup>
+            </Grid>
+            <Grid item xs>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={excludeCharm}
+                      onChange={(e, v) => handleExcludeCharm(e, v)}
+                    />
+                  }
+                  label={<Typography style={{ "fontSize": "12px" }}>護石除外</Typography>}
+                />
+              </FormGroup>
+            </Grid>
+          </Grid>
+
+          <Grid container marginTop={2}>
+            <Grid item xs={12}>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                align="left"
+                marginLeft={2}
+                className={classes.customHeaderThin}
+              >
+                実行状況
+              </Typography>
+            </Grid>
+          </Grid>
+
+          <Box sx={{ margin: 1.5, marginLeft: 2.0 }}>
             <MiddleOutput middleOutput={middleOutputInfo.launch} />
             <MiddleOutput middleOutput={middleOutputInfo.load} />
             <MiddleOutput middleOutput={middleOutputInfo.preprocess} />

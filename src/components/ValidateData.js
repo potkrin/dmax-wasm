@@ -10,9 +10,6 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 function validateSkillAndEquipment() {
-  console.log("debug = " + JSON.stringify(armors, null, 4));
-  console.log("debug = " + JSON.stringify(decos, null, 4));
-
   // ここに検証のロジックを記述
   let skillNameSet = new Set();
 

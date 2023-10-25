@@ -1,8 +1,10 @@
-import React from "react";
-import { Grid, Paper, Box } from "@mui/material";
+import React, { useEffect } from "react";
+import { Grid, Paper, Box, Typography } from "@mui/material";
 
 import { armors, decos } from "../data/EquipData";
 import { staticSkillData } from "../data/StaticData";
+import CopyToClipboardButton from "./CopyToClipboardButton";
+import InsightsIcon from "@mui/icons-material/Insights";
 
 // 秒を読みやすい形式に変換
 function secondsToHumanReadable(seconds) {
@@ -30,13 +32,18 @@ function secondsToHumanReadable(seconds) {
 // 全ての中間結果を含む文字列を処理し、最終結果を出力する
 function outputToResult(output, processingUserInputData, processingUserArmorsData) {
   let result = "";
-  if (output.includes("SCIP Status")) {
+  let timeStamp = "";
+  if (output.includes("SCIP Status") && output.includes("nlobjvar")) {
     let lines = output.split("\n");
 
     const list_q_result = [];
     const dict_other_result = {};
 
     lines.forEach((line) => {
+      if (line.startsWith("Solve Start TimeStamp:")) {
+        timeStamp = line.slice(line.indexOf(":") + 2);
+        console.log("extracted time stamp is: " + timeStamp);
+      }
       if (line.startsWith("SCIP Status")) {
         let scip_status = "";
         let status_reason = "";
@@ -235,6 +242,24 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
         }
       }
     }
+
+    // localstorage に結果の履歴を保存
+    const historyItem = {
+      "timeStamp": timeStamp,
+      "result": result,
+      "processingUserInputData": processingUserInputData,
+    };
+
+    const resultHistory = localStorage.getItem("resultHistory");
+    if (resultHistory) {
+      const resultHistoryArray = JSON.parse(resultHistory);
+      if (!resultHistoryArray.some((item) => item.timeStamp === historyItem.timeStamp)) {
+        resultHistoryArray.unshift(historyItem);
+        localStorage.setItem("resultHistory", JSON.stringify(resultHistoryArray));
+      }
+    } else {
+      localStorage.setItem("resultHistory", JSON.stringify([historyItem]));
+    }
   } else if (result === "") {
     result = "";
   } else {
@@ -259,15 +284,35 @@ export const DmaxResult = ({ middleOutput, processingUserInputData, processingUs
     processingUserArmorsData
   );
 
+  const [textToCopy, setTextToCopy] = React.useState("");
+  useEffect(() => {
+    setTextToCopy(dmaxResult);
+  }, [dmaxResult]);
+
   return (
     <Grid item xs={6}>
       <Paper elevation={2}>
+        <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
+          <Grid item xs={0.5}>
+            <InsightsIcon sx={{ marginTop: "4px" }} color="primary" />
+          </Grid>
+          <Grid item xs>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
+              結果
+            </Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <CopyToClipboardButton textToCopy={textToCopy} />
+          </Grid>
+        </Grid>
+
         <Box
           style={{
             height: "450px",
             overflowY: "auto",
-            padding: "8px",
+            paddingLeft: "16px",
             textAlign: "left",
+            fontSize: "14px",
           }}
         >
           <NewlineText text={dmaxResult} />

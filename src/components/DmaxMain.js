@@ -53,6 +53,15 @@ export const useStyles = makeStyles({
     display: "inline-block", // インライン要素に
     // borderBottom: "solid 1px #7db4e6", // 下線
   },
+  customHeaderThin: {
+    padding: "0.25em 0.5em", // 上下 左右の余白
+    color: "#494949", // 文字色
+    background: "transparent", // 背景透明に
+    borderLeft: "solid 3px #3f51b5", // 左線
+    marginTop: "1em", // 上の余白
+    display: "inline-block", // インライン要素に
+    // borderBottom: "solid 1px #7db4e6", // 下線
+  },
 });
 
 const actions = [

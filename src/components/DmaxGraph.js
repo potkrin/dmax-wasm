@@ -26,13 +26,20 @@ export const DmaxGraph = ({ chartData }) => {
 
   return (
     <Grid item xs={6} ref={containerRef}>
-      <Card variant="outlined" sx={{ borderRadius: 1, padding: "8px" }} backgroundColor="#f5f5f5">
-        <LineChart
-          width={chartWidth}
-          height={450}
-          data={chartData}
-          margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-        >
+      <Card
+        variant="outlined"
+        sx={{
+          borderRadius: 1,
+          padding: "8px",
+          height: "610px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        height={610}
+        backgroundColor="#ffffff"
+      >
+        <LineChart width={chartWidth} height={450} data={chartData} margin="auto" display="block">
           <XAxis dataKey="time" unit="s" type="number" />
           <YAxis yAxisId="left" />
           <YAxis yAxisId="right" orientation="right" />

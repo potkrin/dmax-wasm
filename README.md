@@ -1,15 +1,16 @@
 # TODO
 - 錬成防具・護石のON/OFF
-- 履歴表示 Menu で
+- 履歴データは indexedDB に保存
+- コピペ完了時にメッセージ
 - API取得結果の表示
 - 結果表示の整形 (アイコン,文字装飾)
 - 状態によって動的にUIの色を変化させる https://mui.com/material-ui/customization/how-to-customize/#dynamic-overrides
   - 0でない要素だけ色を変化させるなど
+  - 選択されたチェックボックスの文字列の色を青色にする
 - いろいろなUIのカスタマイズ方法 https://mui.com/material-ui/customization/how-to-customize/
   - バーを太くする、色を変えるなど
 - wasm が利用可能か確認
 - アニメーションを付けられる https://mui.com/material-ui/transitions/
-- 結果コピペ用ボタン
 
 
 - バグ

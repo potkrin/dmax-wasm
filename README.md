@@ -1,8 +1,9 @@
 # TODO
-- 錬成防具・護石のON/OFF
+- API取得結果の表示
+  - React のレンダリングサイクル的に後続のタスクと一緒にまとめて表示されてしまい意味がない
+  - SnackBar に変更？
 - 履歴データは indexedDB に保存
 - コピペ完了時にメッセージ
-- API取得結果の表示
 - 結果表示の整形 (アイコン,文字装飾)
 - 状態によって動的にUIの色を変化させる https://mui.com/material-ui/customization/how-to-customize/#dynamic-overrides
   - 0でない要素だけ色を変化させるなど
@@ -60,7 +61,62 @@ npm run build && serve -s build
 - メモ化
 - React ContextAPI の利用 ...
 
+# Django デプロイ用ビルド手順
+Django において cms/static/cms 以下にファイルを配置することを想定
 
+```sh
+# ベースディレクトリを変更する環境変数を付与してビルド
+PUBLIC_URL=/static/cms npm run build
+
+# ファイルコピー
+cp -r build/* ~/work/mhr-speedrun/cms/static/cms/
+
+# index.html のみ templates に配置し、view から参照できるようにする
+cp build/index.html ~/work/mhr-speedrun/cms/templates/cms/
+
+```
+
+ディレクトリの様子
+```sh
+hoge@:mhr-speedrun$ tree cms/static/cms/
+cms/static/cms/
+├── asset-manifest.json
+├── css # cms アプリケーション用にもとから配置されている css
+│   ├── bootstrap.min.css
+│   ├── bootstrap.min.css.map
+│   ├── bootstrap.overwrite.css
+│   ├── quest-card.css
+│   └── toggle-switch.css
+├── dmax-core
+│   ├── brachistochrone.data
+│   ├── brachistochrone.html
+│   ├── brachistochrone.js
+│   ├── brachistochrone.wasm
+│   ├── brachistochrone.worker.js
+│   └── worker3.js
+├── favicon.ico
+├── index.html # templates に配置するので消してよし
+├── js # cms アプリケーション用にもとから配置されている js
+│   ├── bootstrap.bundle.min.js
+│   ├── bootstrap.bundle.min.js.map
+│   ├── jquery-3.5.1.min.js
+│   ├── jquery-3.5.1.min.map
+│   └── shortcut.js
+├── logo192.png
+├── logo512.png
+├── manifest.json
+├── robots.txt
+└── static
+    ├── css
+    │   ├── main.048ee325.css
+    │   └── main.048ee325.css.map
+    └── js
+        ├── 787.45c42e5d.chunk.js
+        ├── 787.45c42e5d.chunk.js.map
+        ├── main.8e3880be.js
+        ├── main.8e3880be.js.LICENSE.txt
+        └── main.8e3880be.js.map
+```
 
 
 

@@ -214,43 +214,43 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
       const solvingTime = line.slice(line.indexOf(":"), line.indexOf("."));
       solverEndMessage += `合計処理時間 ${solvingTime}秒`;
     }
-
-    setMiddleOutputInfo((prevMiddleOutputInfo) => {
-      return {
-        ...prevMiddleOutputInfo,
-        "launch": {
-          ...prevMiddleOutputInfo["launch"],
-          "status": launchStatus,
-          "message": launchMessage,
-        },
-        "load": {
-          ...prevMiddleOutputInfo["load"],
-          "status": loadStatus,
-          "message": loadMessage,
-        },
-        "preprocess": {
-          ...prevMiddleOutputInfo["preprocess"],
-          "status": presolveStatus,
-          "message": presolveMessage,
-        },
-        "solverStart": {
-          ...prevMiddleOutputInfo["solverStart"],
-          "status": solverStartStatus,
-          "message": solverStartMessage,
-        },
-        "solve": {
-          ...prevMiddleOutputInfo["solve"],
-          "status": solveStatus,
-          "message": solveMessage,
-        },
-        "solverEnd": {
-          ...prevMiddleOutputInfo["solverEnd"],
-          "status": solverEndStatus,
-          "message": solverEndMessage,
-        },
-      };
-    });
   }
+
+  setMiddleOutputInfo((prevMiddleOutputInfo) => {
+    return {
+      ...prevMiddleOutputInfo,
+      "launch": {
+        ...prevMiddleOutputInfo["launch"],
+        "status": launchStatus,
+        "message": launchMessage,
+      },
+      "load": {
+        ...prevMiddleOutputInfo["load"],
+        "status": loadStatus,
+        "message": loadMessage,
+      },
+      "preprocess": {
+        ...prevMiddleOutputInfo["preprocess"],
+        "status": presolveStatus,
+        "message": presolveMessage,
+      },
+      "solverStart": {
+        ...prevMiddleOutputInfo["solverStart"],
+        "status": solverStartStatus,
+        "message": solverStartMessage,
+      },
+      "solve": {
+        ...prevMiddleOutputInfo["solve"],
+        "status": solveStatus,
+        "message": solveMessage,
+      },
+      "solverEnd": {
+        ...prevMiddleOutputInfo["solverEnd"],
+        "status": solverEndStatus,
+        "message": solverEndMessage,
+      },
+    };
+  });
 }
 
 export const DmaxOutput = ({

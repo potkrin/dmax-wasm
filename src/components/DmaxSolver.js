@@ -4,6 +4,7 @@ import { React, useState, useRef, useEffect } from "react";
 import { Grid, Button, Fab } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelIcon from "@mui/icons-material/Cancel";
+import Cookies from "js-cookie";
 
 import { DmaxOutput } from "./DmaxOutput";
 import { DmaxGraph } from "./DmaxGraph";
@@ -116,6 +117,15 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
 
 // dmax-core を呼び出すための処理 ここまで
 
+// CSRFトークンを取得するためのヘルパー関数
+function getCsrfToken() {
+  // Djangoがcsrfmiddlewaretokenとしてフォーム内にレンダリングするトークンを取得する
+  // または、js-cookieを使用してクッキーから取得します。
+  // return document.querySelector("[name=csrfmiddlewaretoken]").value;
+  // もしjs-cookieを使用する場合は以下の通り
+  return Cookies.get("csrftoken");
+}
+
 export const DmaxSolver = ({ userInputData, fabRight }) => {
   // dmax からの中間出力データを管理
   const [dmaxOutput, setDmaxOutput] = useState("");
@@ -193,7 +203,11 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   // 最適化の開始
   const startOptimization = () => {
     setResetMiddleOutput(true);
-    const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
+    // ローカルサーバーの endpoint
+    // const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
+
+    // 本番サーバーの endpoint
+    const apiUrl = "https://www.mhrspeedrun.com/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
     // 最適化に含める防具データ定義 (オプションに応じて 護石, 傀異錬成防具を追加)
     const userArmors = JSON.parse(JSON.stringify(armors));
@@ -210,10 +224,14 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       userArmors.push(...userQuriousArmorData);
     }
 
+    // CSRFトークンを取得
+    const csrfToken = getCsrfToken();
+
     fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken,
       },
       body: JSON.stringify({
         "userInputData": userInputData,

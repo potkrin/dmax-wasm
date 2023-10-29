@@ -118,11 +118,9 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
 // dmax-core を呼び出すための処理 ここまで
 
 // CSRFトークンを取得するためのヘルパー関数
+// Django 本番環境で必要
 function getCsrfToken() {
-  // Djangoがcsrfmiddlewaretokenとしてフォーム内にレンダリングするトークンを取得する
-  // または、js-cookieを使用してクッキーから取得します。
-  // return document.querySelector("[name=csrfmiddlewaretoken]").value;
-  // もしjs-cookieを使用する場合は以下の通り
+  // js-cookieを使用する場合は以下の通り
   return Cookies.get("csrftoken");
 }
 

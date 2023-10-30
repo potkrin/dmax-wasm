@@ -1,10 +1,12 @@
 /* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/
 
-import { React, useState, useRef, useEffect } from "react";
+import { React, useState, useRef, useEffect, forwardRef } from "react";
 import { Grid, Button, Fab } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Cookies from "js-cookie";
+import { Snackbar } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 
 import { DmaxOutput } from "./DmaxOutput";
 import { DmaxGraph } from "./DmaxGraph";
@@ -118,8 +120,14 @@ function getCsrfToken() {
   return Cookies.get("csrftoken");
 }
 
+// API送信 Snackbar の表示用
+const Alert = forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export const DmaxSolver = ({ userInputData, fabRight }) => {
-  // dmax からの中間出力データを管理
+  // dmaxOutput : 最適中の全ての出力
+  // middleOutputInfo : dmaxOutput を解析して, 途中経過の出力を抽出したもの
   const [dmaxOutput, setDmaxOutput] = useState("");
   const updateDmaxOutput = (newString) => {
     setDmaxOutput((prevString) => prevString + "\n" + newString);
@@ -138,7 +146,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     }
   }, [dmaxOutput]);
 
-  // dmax 最適化の最終結果を管理
+  // dmaxOutput : 最適中の全ての出力
+  // middleOutputInfo : dmaxOutput を解析して, 途中経過の出力を抽出したもの
   const [middleOutput, setMiddleOutput] = useState("");
   const updateMiddleOutput = (newString) => {
     setMiddleOutput(newString);
@@ -219,6 +228,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     // CSRFトークンを取得
     const csrfToken = getCsrfToken();
 
+    setApiError(false);
+
     fetch(apiUrl, {
       method: "POST",
       headers: {
@@ -249,6 +260,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         call_worker_wasm_main(data, updateDmaxOutput, updateChartData);
       })
       .catch((error) => {
+        setOpenStart(false);
+        setOpenError(true);
         console.log(`Fetching from ${apiUrl} failed: ${error.message}`);
         updateMiddleOutput(`Fetching from ${apiUrl} failed: ${error.message}`);
       });
@@ -263,7 +276,6 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
   // 最適化の中断
   const stopOptimization = () => {
-    setResetMiddleOutput(true);
     if (startWasmWorker) {
       startWasmWorker.terminate();
     }
@@ -275,9 +287,17 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   const handleToggle = () => {
     setIsOptimizing(!isOptimizing);
     // ここで最適化の開始や中止のロジックを実装する
-    if (!isOptimizing) startOptimization();
-    else stopOptimization();
+    // if (!isOptimizing) startOptimization();
+    // else stopOptimizatio();
   };
+
+  useEffect(() => {
+    if (isOptimizing) {
+      startOptimization();
+    } else {
+      stopOptimization();
+    }
+  }, [isOptimizing]);
 
   useEffect(() => {
     console.log("fabRight = " + fabRight + "typeof(fabRight) = " + typeof fabRight);
@@ -291,6 +311,34 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   const [excludeCharm, setExcludeCharm] = useState(false);
   const handleExcludeCharm = (e, v) => {
     setExcludeCharm(e.target.checked);
+  };
+
+  // API Snackbar 表示用
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [apiError, setApiError] = useState(false);
+  const [openStart, setOpenStart] = useState(false);
+  const [openError, setOpenError] = useState(false);
+
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    // マウント時は何もしない
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    if (isOptimizing) {
+      setSnackbarMessage("最適化を開始しました");
+      setOpenStart(true);
+    }
+  }, [isOptimizing]);
+
+  const handleCloseStart = () => {
+    setOpenStart(false);
+  };
+
+  const handleCloseError = () => {
+    setOpenError(false);
   };
 
   return (
@@ -320,6 +368,30 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
         <DmaxHistory middleOutput={middleOutput} />
       </Grid>
+
+      <Snackbar
+        open={openStart}
+        autoHideDuration={6000}
+        onClose={handleCloseStart}
+        message={snackbarMessage}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={handleCloseStart} severity="info" sx={{ width: "100%" }}>
+          最適化を開始しました
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={openError}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+        message={snackbarMessage}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={handleCloseError} severity="error" sx={{ width: "100%" }}>
+          APIの送受信に失敗しました
+        </Alert>
+      </Snackbar>
 
       <Fab
         variant="extended"

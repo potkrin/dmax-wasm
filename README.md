@@ -1,7 +1,5 @@
 # TODO
-- API取得結果の表示
-  - React のレンダリングサイクル的に後続のタスクと一緒にまとめて表示されてしまい意味がない
-  - SnackBar に変更？
+- API取得 SnackBar: error時に close -> open にすれば snackbar は2つ→1つにできるかも
 - 履歴データは indexedDB に保存
 - コピペ完了時にメッセージ
 - 結果表示の整形 (アイコン,文字装飾)

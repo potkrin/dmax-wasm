@@ -269,6 +269,8 @@ export const DmaxOutput = ({
   const classes = useStyles();
 
   const initMiddleOutputInfo = JSON.parse(JSON.stringify(defaultMiddleOutputInfo));
+  // dmaxOutput : 最適中の全ての出力
+  // middleOutputInfo : dmaxOutput を解析して, 途中経過の出力を抽出したもの
   const [middleOutputInfo, setMiddleOutputInfo] = useState(initMiddleOutputInfo);
 
   useEffect(() => {

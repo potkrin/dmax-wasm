@@ -12,6 +12,8 @@
   - バーを太くする、色を変えるなど
 - wasm が利用可能か確認
 - アニメーションを付けられる https://mui.com/material-ui/transitions/
+- グラフのよいカスタム例
+  - https://app.members-portalone.net/index.php?code=3eac6194b5591ce019f9a35ec8dcef27546b681a6052ffa8e85486981d68ad0a&state=c251d67c78ab22f18f795ed15335d8058b0d14b4558a7f873a7f710fff32dbb2&m=d56e0e0b7aebba00395d2848953240d802173fad61aac98bbebe168333790128
 
 
 - バグ

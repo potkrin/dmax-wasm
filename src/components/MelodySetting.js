@@ -2,8 +2,11 @@ import React from "react";
 import { Grid, Checkbox, FormControlLabel, FormGroup, Typography } from "@mui/material";
 
 import { staticData } from "../data/StaticData";
+import { useStyles, GridItemInput } from "./DmaxMain";
 
 export const MelodySetting = ({ userInputDataMelody, updateUserInputData }) => {
+  const classes = useStyles();
+
   const handleChangeUserInputData = (key, event, value) => {
     value = event.target.checked;
 
@@ -21,7 +24,7 @@ export const MelodySetting = ({ userInputDataMelody, updateUserInputData }) => {
   return (
     <>
       {staticData["旋律"].map((item) => (
-        <Grid item xs={1.5}>
+        <GridItemInput item>
           <FormGroup>
             <FormControlLabel
               control={
@@ -31,10 +34,10 @@ export const MelodySetting = ({ userInputDataMelody, updateUserInputData }) => {
                   size="small"
                 />
               }
-              label={<Typography style={{ "fontSize": "12px" }}>{item}</Typography>}
+              label={<Typography className={classes.inputCheckbox}>{item}</Typography>}
             />
           </FormGroup>
-        </Grid>
+        </GridItemInput>
       ))}
     </>
   );

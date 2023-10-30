@@ -102,12 +102,6 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
           });
         }
       }
-
-      // output.value += worker_response + "\n";
-      // output.scrollTop = output.scrollHeight;
-      // getBenchmarkData(worker_response);
-      // console.log("benchmarkdData = ");
-      // console.log(benchmarkdData);
     };
   } else {
     console.log("Your browser doesn't support web workers.");
@@ -301,15 +295,6 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
   return (
     <>
-      {/* <Grid container marginTop={2}>
-        <Grid item xs={2}>
-          <Button onClick={startOptimization}>Optimize</Button>
-        </Grid>
-        <Grid item xs={2}>
-          <Button onClick={stopOptimization}>Cancel</Button>
-        </Grid>
-      </Grid> */}
-
       <Grid container spacing={1} marginY={1}>
         <DmaxOutput
           dmaxOutput={dmaxOutput}

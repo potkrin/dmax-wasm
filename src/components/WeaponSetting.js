@@ -4,9 +4,12 @@ import { Grid, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { NumberTextField } from "./NumberTextField";
 import { staticData } from "../data/StaticData";
 
+import { useStyles, GridItemInput } from "./DmaxMain";
+
 const numberFieldKeys = ["攻撃力", "会心率", "属性値"];
 
 export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
+  const classes = useStyles();
   const handleChangeUserInputData = (key, event, value) => {
     if (key in numberFieldKeys) {
       value = parseInt(event.target.value);
@@ -19,7 +22,7 @@ export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
   return (
     <>
       {numberFieldKeys.map((key) => (
-        <Grid item xs={1.5}>
+        <GridItemInput item>
           <NumberTextField
             value={userInputDataWeapon[key]}
             size="small"
@@ -31,11 +34,11 @@ export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
             max={key === "会心率" ? 100 : 1000}
             fullWidth
           />
-        </Grid>
+        </GridItemInput>
       ))}
 
       {Object.keys(staticData["武器"]).map((key) => (
-        <Grid item xs={1.5}>
+        <GridItemInput item>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">{key}</InputLabel>
             <Select
@@ -52,7 +55,7 @@ export const WeaponSetting = ({ userInputDataWeapon, updateUserInputData }) => {
               ))}
             </Select>
           </FormControl>
-        </Grid>
+        </GridItemInput>
       ))}
     </>
   );

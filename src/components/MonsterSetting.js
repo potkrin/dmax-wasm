@@ -16,12 +16,7 @@ import { makeStyles } from "@mui/styles";
 import { staticData } from "../data/StaticData";
 import { NumberTextField } from "./NumberTextField";
 import { ClassNames } from "@emotion/react";
-
-const useStyles = makeStyles((theme) => ({
-  customFontSize: {
-    fontSize: "10px !important",
-  },
-}));
+import { useStyles, GridItemInput } from "./DmaxMain";
 
 export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) => {
   const classes = useStyles();
@@ -45,7 +40,7 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
 
   return (
     <>
-      <Grid item xs={1.5}>
+      <GridItemInput item>
         <NumberTextField
           value={userInputDataMonster["物理肉質"]}
           size="small"
@@ -57,8 +52,8 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
           max={100}
           fullWidth
         />
-      </Grid>
-      <Grid item xs={1.5}>
+      </GridItemInput>
+      <GridItemInput item>
         <NumberTextField
           value={userInputDataMonster["属性肉質"]}
           size="small"
@@ -70,8 +65,8 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
           max={100}
           fullWidth
         />
-      </Grid>
-      <Grid item xs={1.5}>
+      </GridItemInput>
+      <GridItemInput item>
         <FormGroup>
           <FormControlLabel
             control={
@@ -81,11 +76,11 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
                 onChange={(e, v) => handleChangeUserInputData("水やられ", e, v)}
               />
             }
-            label={<Typography className={classes.customFontSize}>水やられ</Typography>}
+            label={<Typography className={classes.inputCheckbox}>水やられ</Typography>}
           />
         </FormGroup>
-      </Grid>
-      <Grid item xs={1.5}>
+      </GridItemInput>
+      <GridItemInput item>
         <FormControl fullWidth style={{ height: "100%" }}>
           <InputLabel id="demo-simple-select-label">
             {"怒り補正 (" + staticData["怒り補正"][userInputDataMonster["怒り補正"]] + ")"}
@@ -105,7 +100,7 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
             ))}
           </Select>
         </FormControl>
-      </Grid>
+      </GridItemInput>
     </>
   );
 };

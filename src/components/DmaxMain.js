@@ -62,7 +62,24 @@ export const useStyles = makeStyles({
     display: "inline-block", // インライン要素に
     // borderBottom: "solid 1px #7db4e6", // 下線
   },
+  customFontSize: {
+    fontSize: "10px !important",
+  },
+  inputCheckbox: {
+    fontSize: "14px !important",
+  },
 });
+
+/**
+ * xs: 0px 以上
+ * sm: 600px 以上
+ * md: 960px 以上
+ * lg: 1280px 以上
+ * xl: 1920px 以上
+ */
+export function GridItemInput(props) {
+  return <Grid item xs={6} sm={4} md={2} {...props} />;
+}
 
 const actions = [
   { icon: <FileCopyIcon />, name: "Copy" },
@@ -160,18 +177,19 @@ export function DmaxMain({ fabRight }) {
       <ValidateData />
 
       <Box sx={{ backgroundColor: "#f3f6f9" }}>
-        <Card variant="outlined" sx={{ borderRadius: 1 }} backgroundColor="#f5f5f5">
+        <Card variant="outlined" sx={{ borderRadius: 1, padding: 2 }} backgroundColor="#f5f5f5">
           <Typography
             variant="subtitle2"
             gutterBottom
             align="left"
             marginTop={2}
-            marginLeft={2}
+            marginBottom={1}
+            marginLeft={1}
             className={classes.customHeader}
           >
             モンスター
           </Typography>
-          <Grid container spacing={0.5} marginY={1} marginLeft={2}>
+          <Grid container rowSpacing={2} columnSpacing={2} paddingX={3}>
             <MonsterSetting
               userInputDataMonster={userInputData["モンスター"]}
               updateUserInputData={updateUserInputData}
@@ -181,13 +199,14 @@ export function DmaxMain({ fabRight }) {
             variant="subtitle2"
             gutterBottom
             align="left"
-            marginTop={2}
-            marginLeft={2}
+            marginTop={4}
+            marginBottom={1}
+            marginLeft={1}
             className={classes.customHeader}
           >
             武器
           </Typography>
-          <Grid container spacing={0.5} marginY={1} marginLeft={2}>
+          <Grid container rowSpacing={2} columnSpacing={2} paddingX={3}>
             <WeaponSetting
               userInputDataWeapon={userInputData["武器"]}
               updateUserInputData={updateUserInputData}
@@ -197,14 +216,15 @@ export function DmaxMain({ fabRight }) {
             variant="subtitle2"
             gutterBottom
             align="left"
-            marginTop={2}
-            marginLeft={2}
+            marginTop={4}
+            marginBottom={1}
+            marginLeft={1}
             className={classes.customHeader}
           >
             ハンター
           </Typography>
 
-          <Grid container spacing={1} marginY={1} marginLeft={2}>
+          <Grid container rowSpacing={2} columnSpacing={2} paddingX={3}>
             <HunterSetting
               userInputDataHunter={userInputData["ハンター"]}
               updateUserInputData={updateUserInputData}
@@ -214,14 +234,15 @@ export function DmaxMain({ fabRight }) {
             variant="subtitle2"
             gutterBottom
             align="left"
-            marginTop={2}
-            marginLeft={2}
+            marginTop={4}
+            marginBottom={1}
+            marginLeft={1}
             className={classes.customHeader}
           >
             食事
           </Typography>
 
-          <Grid container spacing={1} marginY={1} marginLeft={2}>
+          <Grid container rowSpacing={2} columnSpacing={2} paddingX={3}>
             <DangoSetting
               userInputDataDango={userInputData["食事"]}
               updateUserInputData={updateUserInputData}
@@ -231,14 +252,15 @@ export function DmaxMain({ fabRight }) {
             variant="subtitle2"
             gutterBottom
             align="left"
-            marginTop={2}
-            marginLeft={2}
+            marginTop={4}
+            marginBottom={1}
+            marginLeft={1}
             className={classes.customHeader}
           >
             旋律
           </Typography>
 
-          <Grid container spacing={1} marginY={1} marginLeft={2}>
+          <Grid container rowSpacing={2} columnSpacing={2} paddingX={3}>
             <MelodySetting
               userInputDataMelody={userInputData["旋律"]}
               updateUserInputData={updateUserInputData}
@@ -248,14 +270,15 @@ export function DmaxMain({ fabRight }) {
             variant="subtitle2"
             gutterBottom
             align="left"
-            marginTop={2}
-            marginLeft={2}
+            marginTop={4}
+            marginBottom={1}
+            marginLeft={1}
             className={classes.customHeader}
           >
             百竜装飾品
           </Typography>
 
-          <Grid container spacing={1} marginY={0} marginLeft={2}>
+          <Grid container rowSpacing={2} columnSpacing={2} paddingX={3}>
             <RampageDecoSetting
               userInputDataRampageDeco={userInputData["百竜装飾品"]}
               updateUserInputData={updateUserInputData}
@@ -266,7 +289,9 @@ export function DmaxMain({ fabRight }) {
             variant="subtitle2"
             gutterBottom
             align="left"
-            marginLeft={2}
+            marginTop={4}
+            marginBottom={1}
+            marginLeft={1}
             className={classes.customHeader}
           >
             ダメージスキル
@@ -296,7 +321,9 @@ export function DmaxMain({ fabRight }) {
                 variant="subtitle2"
                 gutterBottom
                 align="left"
-                marginLeft={2}
+                marginTop={4}
+                marginBottom={1}
+                marginLeft={1}
                 className={classes.customHeader}
               >
                 よく使うスキル
@@ -318,7 +345,8 @@ export function DmaxMain({ fabRight }) {
             gutterBottom
             align="left"
             marginTop={4}
-            marginLeft={2}
+            marginBottom={1}
+            marginLeft={1}
             className={classes.customHeader}
           >
             その他スキル

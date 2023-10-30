@@ -2,8 +2,11 @@ import React from "react";
 import { Grid, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 import { staticData } from "../data/StaticData";
+import { useStyles, GridItemInput } from "./DmaxMain";
 
 export const DangoSetting = ({ userInputDataDango, updateUserInputData }) => {
+  const classes = useStyles();
+
   const handleChangeUserInputData = (key, event, value) => {
     value = event.target.value;
     updateUserInputData("食事", { ...userInputDataDango, [key]: value });
@@ -12,7 +15,7 @@ export const DangoSetting = ({ userInputDataDango, updateUserInputData }) => {
   return (
     <>
       {Object.keys(staticData["食事"]).map((key) => (
-        <Grid item xs={1.5}>
+        <GridItemInput item>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">{key}</InputLabel>
             <Select
@@ -22,13 +25,14 @@ export const DangoSetting = ({ userInputDataDango, updateUserInputData }) => {
               value={userInputDataDango[key]}
               label={key}
               onChange={(e) => handleChangeUserInputData(key, e)}
+              sx={{ fontSize: "14px" }}
             >
               {Object.values(staticData["食事"][key]).map((value) => (
                 <MenuItem value={value}>{value}</MenuItem>
               ))}
             </Select>
           </FormControl>
-        </Grid>
+        </GridItemInput>
       ))}
     </>
   );

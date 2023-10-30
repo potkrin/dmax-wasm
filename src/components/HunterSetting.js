@@ -13,8 +13,11 @@ import {
 
 import { NumberTextField } from "./NumberTextField";
 import { staticData } from "../data/StaticData";
+import { GridItemInput, useStyles } from "./DmaxMain";
 
 export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
+  const classes = useStyles();
+
   const handleChangeUserInputData = (key, event, value) => {
     if (key === "ヒトダマドリ") {
       value = parseInt(event.target.value);
@@ -32,7 +35,10 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
       {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "boolean")
         .map(([key, _]) => (
-          <Grid item xs={1.5}>
+          <GridItemInput item>
+            {/* <Grid item xs style={{ maxWidth: "130px", minWidth: "130px" }}> */}
+            {/* <Grid item xs className={classes.inputGridItem}> */}
+
             <FormGroup>
               <FormControlLabel
                 control={
@@ -42,15 +48,16 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
                     size="small"
                   />
                 }
-                label={<Typography style={{ "fontSize": "12px" }}>{key}</Typography>}
+                label={<Typography className={classes.inputCheckbox}>{key}</Typography>}
               />
             </FormGroup>
-          </Grid>
+          </GridItemInput>
         ))}
       {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "object")
         .map(([key, _]) => (
-          <Grid item xs={1.5}>
+          <GridItemInput item>
+            {/* <Grid item xs style={{ maxWidth: 130px", minWidth: "130px" }}> */}
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">{key}</InputLabel>
               <Select
@@ -66,13 +73,13 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
                 ))}
               </Select>
             </FormControl>
-          </Grid>
+          </GridItemInput>
         ))}
 
       {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "number")
         .map(([key, _]) => (
-          <Grid item xs={1.5}>
+          <GridItemInput item>
             <NumberTextField
               value={userInputDataHunter[key]}
               size="small"
@@ -84,7 +91,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
               max={key === "ヒトダマドリ" ? 20 : 20}
               fullWidth
             />
-          </Grid>
+          </GridItemInput>
         ))}
     </>
   );

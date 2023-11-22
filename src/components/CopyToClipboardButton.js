@@ -1,7 +1,8 @@
 import React from "react";
-import { IconButton } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { useState } from "react";
 
 // クリップボードにテキストをコピーする関数
 const copyToClipboard = async (text) => {
@@ -14,14 +15,25 @@ const copyToClipboard = async (text) => {
 };
 
 export const CopyToClipboardButton = ({ textToCopy }) => {
+  // const handleCopyClick = async () => {
+  //   await copyToClipboard(textToCopy);
+  // };
+
+  const [tooltipTitle, setTooltipTitle] = useState("コピー");
+
   const handleCopyClick = async () => {
     await copyToClipboard(textToCopy);
+    setTooltipTitle("コピー完了");
+    // 一定時間後にツールチップのテキストを元に戻す
+    setTimeout(() => setTooltipTitle("コピー"), 2000);
   };
 
   return (
-    <IconButton onClick={handleCopyClick} aria-label="copy" size="large">
-      <ContentCopyIcon sx={{ marginTop: "4px" }} color="primary" />
-    </IconButton>
+    <Tooltip title={tooltipTitle}>
+      <IconButton onClick={handleCopyClick} aria-label="copy" size="large">
+        <ContentCopyIcon sx={{ marginTop: "4px" }} color="primary" />
+      </IconButton>
+    </Tooltip>
   );
 };
 

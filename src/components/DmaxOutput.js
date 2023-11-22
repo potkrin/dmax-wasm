@@ -8,6 +8,7 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  Divider,
 } from "@mui/material";
 import MiddleOutput from "./MiddleOutput";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
@@ -285,7 +286,7 @@ export const DmaxOutput = ({
   }, [resetMiddleOutput]);
 
   return (
-    <Grid item xs={6}>
+    <Grid item xs={12} md={6}>
       <Card variant="outlined" sx={{ borderRadius: 1 }} backgroundColor="#f5f5f5">
         <Box
           style={{
@@ -296,8 +297,8 @@ export const DmaxOutput = ({
           }}
         >
           <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
-            <Grid item xs={0.5}>
-              <AssessmentRoundedIcon sx={{ marginTop: "4px" }} color="primary" />
+            <Grid item>
+              <TrendingUpIcon sx={{ marginTop: "4px" }} color="primary" />
             </Grid>
             <Grid item xs>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
@@ -332,8 +333,8 @@ export const DmaxOutput = ({
               )}
             </Grid>
           </Grid>
-
-          <Grid container>
+          <Divider />
+          <Grid container mt={2}>
             <Grid item xs={12}>
               <Typography
                 variant="subtitle2"

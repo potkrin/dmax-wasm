@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Grid, Paper, Box, Typography } from "@mui/material";
+import { Grid, Paper, Box, Typography, Divider } from "@mui/material";
 
 import { armors, decos } from "../data/EquipData";
 import { staticSkillData } from "../data/StaticData";
@@ -248,12 +248,21 @@ function outputToResult(output, processingUserInputData, processingUserArmorsDat
       "timeStamp": timeStamp,
       "result": result,
       "processingUserInputData": processingUserInputData,
+      "maxDamage": dict_other_result["最大ダメージ"],
+      "element":
+        processingUserInputData["武器"]["属性"] === "無属性"
+          ? "無"
+          : processingUserInputData["武器"]["属性"],
+      "heroic": processingUserInputData["食事"]["火事場"],
+      "physicalHitzone": processingUserInputData["モンスター"]["物理肉質"],
+      "elementalHitzone": processingUserInputData["モンスター"]["属性肉質"],
     };
 
     const resultHistory = localStorage.getItem("resultHistory");
     if (resultHistory) {
       const resultHistoryArray = JSON.parse(resultHistory);
       if (!resultHistoryArray.some((item) => item.timeStamp === historyItem.timeStamp)) {
+        if (resultHistoryArray.length >= 50) resultHistoryArray.pop();
         resultHistoryArray.unshift(historyItem);
         localStorage.setItem("resultHistory", JSON.stringify(resultHistoryArray));
       }
@@ -290,14 +299,14 @@ export const DmaxResult = ({ middleOutput, processingUserInputData, processingUs
   }, [dmaxResult]);
 
   return (
-    <Grid item xs={6}>
+    <Grid item xs={12} md={6}>
       <Paper elevation={2}>
         <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
-          <Grid item xs={0.5}>
-            <InsightsIcon sx={{ marginTop: "4px" }} color="primary" />
+          <Grid item>
+            <InsightsIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
           </Grid>
           <Grid item xs>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, paddingLeft: "6px" }}>
               結果
             </Typography>
           </Grid>
@@ -306,6 +315,9 @@ export const DmaxResult = ({ middleOutput, processingUserInputData, processingUs
           </Grid>
         </Grid>
 
+        <Box sx={{ marginX: "8px" }}>
+          <Divider xs={{ margin: "8px" }} />
+        </Box>
         <Box
           style={{
             height: "450px",
@@ -313,6 +325,17 @@ export const DmaxResult = ({ middleOutput, processingUserInputData, processingUs
             paddingLeft: "16px",
             textAlign: "left",
             fontSize: "14px",
+          }}
+          sx={{
+            flexGrow: 1, // コンテナの残りのスペースを埋める
+            overflowY: "auto", // 縦方向のスクロールを許可
+
+            "&::-webkit-scrollbar": {
+              display: "none", // Webkitブラウザ用のスクロールバーを非表示にする
+            },
+            // MSIEやEdge用の設定
+            "-ms-overflow-style": "none", // IE 10+ スクロールバーを非表示
+            "scrollbar-width": "none", // Firefox スクロールバーを非表示
           }}
         >
           <NewlineText text={dmaxResult} />

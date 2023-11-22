@@ -9,6 +9,7 @@ import {
   SpeedDialAction,
   Autocomplete,
   TextField,
+  Divider,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Skill } from "./Skill";
@@ -28,6 +29,7 @@ import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import PrintIcon from "@mui/icons-material/Print";
 import ShareIcon from "@mui/icons-material/Share";
+import TuneIcon from "@mui/icons-material/Tune";
 
 import { staticSkillData } from "../data/StaticData";
 import { userInputData as defaultUserInputData } from "../data/UserInputData";
@@ -178,6 +180,18 @@ export function DmaxMain({ fabRight }) {
 
       <Box sx={{ backgroundColor: "#f3f6f9" }}>
         <Card variant="outlined" sx={{ borderRadius: 1, padding: 2 }} backgroundColor="#f5f5f5">
+          <Grid container alignItems="center">
+            <Grid item>
+              <TuneIcon sx={{ marginTop: "4px", marginLeft: "4px" }} color="primary" />
+            </Grid>
+            <Grid item ml={1}>
+              <Typography variant="h6">条件設定</Typography>
+            </Grid>
+          </Grid>
+          <Box sx={{ marginTop: "8px" }}>
+            <Divider xs={{ marginTop: "8px" }} />
+          </Box>
+
           <Typography
             variant="subtitle2"
             gutterBottom
@@ -316,6 +330,8 @@ export function DmaxMain({ fabRight }) {
                   updateUserInputData={updateUserInputData}
                 />
               ))}
+          </Grid>
+          <Grid container>
             <Grid item xs={12}>
               <Typography
                 variant="subtitle2"
@@ -387,7 +403,7 @@ export function DmaxMain({ fabRight }) {
       <DmaxSolver userInputData={userInputData} fabRight={fabRight} />
 
       <Backdrop open={open} />
-      <SpeedDial
+      {/* <SpeedDial
         ariaLabel="SpeedDial tooltip example"
         sx={{
           position: "fixed",
@@ -408,7 +424,7 @@ export function DmaxMain({ fabRight }) {
             onClick={handleClose}
           />
         ))}
-      </SpeedDial>
+      </SpeedDial> */}
     </div>
   );
 }

@@ -3,12 +3,12 @@ import { Grid, Paper, Box, Typography, Tab, Tabs, Icon, IconButton, Divider } fr
 
 // import { armors, decos } from "../data/EquipData";
 // import { staticSkillData } from "../data/StaticData";
-// import HistoryMenu from "./HistoryMenu";
 // import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 import HistoryIcon from "@mui/icons-material/History";
 import PropTypes from "prop-types";
 import CopyToClipboardButton from "./CopyToClipboardButton";
+import { theme } from "./ThemeProvider";
 
 function NewlineText({ text }) {
   const newText = text
@@ -94,14 +94,14 @@ export const DmaxHistory = ({
   }, [value, historyOptions]);
 
   return (
-    <Grid item xs={6}>
+    <Grid item xs={12} md={6}>
       <Paper elevation={2}>
         <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
-          <Grid item xs={0.5}>
-            <HistoryIcon sx={{ marginTop: "4px" }} color="primary" />
+          <Grid item>
+            <HistoryIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
           </Grid>
           <Grid item xs>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, paddingLeft: "4px" }}>
               履歴
             </Typography>
           </Grid>
@@ -109,7 +109,9 @@ export const DmaxHistory = ({
             <CopyToClipboardButton textToCopy={textToCopy} />
           </Grid>
         </Grid>
-
+        <Box sx={{ marginX: "8px" }}>
+          <Divider xs={{ margin: "8px" }} />
+        </Box>
         <Box
           style={{
             height: "450px",
@@ -150,7 +152,30 @@ export const DmaxHistory = ({
               }}
             >
               {historyOptions.map((option) => (
-                <Tab label={option.timeStamp} />
+                <Tab
+                  sx={{ alignItems: "start" }}
+                  label={
+                    <>
+                      <Typography sx={{ fontSize: "14px" }} align="left">
+                        {option.physicalHitzone} / {option.elementalHitzone}
+                      </Typography>
+                      <Typography sx={{ fontSize: "14px" }} align="left">
+                        {option.element} {option.maxDamage.split(".")[0]}
+                      </Typography>
+
+                      <Typography
+                        sx={{ fontSize: "10px", color: theme.palette.text.secondary }}
+                        align="left"
+                      >
+                        {new Date(option.timeStamp).toLocaleDateString(undefined, {
+                          year: undefined,
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </Typography>
+                    </>
+                  }
+                />
               ))}
             </Tabs>
           </Box>

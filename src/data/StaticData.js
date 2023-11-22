@@ -163,11 +163,33 @@ export const staticSkillData = {
     "maxLevel": 7,
     "type": "Damage",
   },
+  "龍気活性": {
+    "name": "龍気活性",
+    "maxLevel": 5,
+    "type": "Damage",
+  },
+  "挑戦者": {
+    "name": "挑戦者",
+    "maxLevel": 5,
+    "type": "Damage",
+  },
+
+  "逆恨み": {
+    "name": "逆恨み",
+    "maxLevel": 5,
+    "type": "Damage",
+  },
+  "力の解放": {
+    "name": "力の解放",
+    "maxLevel": 5,
+    "type": "Damage",
+  },
   "防御": {
     "name": "防御",
     "maxLevel": 7,
     "type": "NonDamage",
   },
+
   "ガード性能": {
     "name": "ガード性能",
     "maxLevel": 5,
@@ -178,11 +200,7 @@ export const staticSkillData = {
     "maxLevel": 5,
     "type": "FreqNonDamage",
   },
-  "力の解放": {
-    "name": "力の解放",
-    "maxLevel": 5,
-    "type": "Damage",
-  },
+
   "匠": {
     "name": "匠",
     "maxLevel": 5,
@@ -198,38 +216,15 @@ export const staticSkillData = {
     "maxLevel": 5,
     "type": "NonDamage",
   },
-  "挑戦者": {
-    "name": "挑戦者",
-    "maxLevel": 5,
-    "type": "Damage",
-  },
-  "水属性攻撃強化": {
-    "name": "水属性攻撃強化",
-    "maxLevel": 5,
-    "type": "Damage",
-  },
-  "氷属性攻撃強化": {
-    "name": "氷属性攻撃強化",
-    "maxLevel": 5,
-    "type": "Damage",
-  },
-  "火事場力": {
-    "name": "火事場力",
-    "maxLevel": 5,
-    "type": "NonDamage",
-  },
+
   "火属性攻撃強化": {
     "name": "火属性攻撃強化",
     "maxLevel": 5,
     "type": "Damage",
   },
-  "耳栓": {
-    "name": "耳栓",
-    "maxLevel": 5,
-    "type": "NonDamage",
-  },
-  "逆恨み": {
-    "name": "逆恨み",
+
+  "水属性攻撃強化": {
+    "name": "水属性攻撃強化",
     "maxLevel": 5,
     "type": "Damage",
   },
@@ -238,6 +233,28 @@ export const staticSkillData = {
     "maxLevel": 5,
     "type": "Damage",
   },
+
+  "氷属性攻撃強化": {
+    "name": "氷属性攻撃強化",
+    "maxLevel": 5,
+    "type": "Damage",
+  },
+  "龍属性攻撃強化": {
+    "name": "龍属性攻撃強化",
+    "maxLevel": 5,
+    "type": "Damage",
+  },
+  "火事場力": {
+    "name": "火事場力",
+    "maxLevel": 5,
+    "type": "NonDamage",
+  },
+  "耳栓": {
+    "name": "耳栓",
+    "maxLevel": 5,
+    "type": "NonDamage",
+  },
+
   "雷紋の一致": {
     "name": "雷紋の一致",
     "maxLevel": 5,
@@ -258,16 +275,7 @@ export const staticSkillData = {
     "maxLevel": 5,
     "type": "NonDamage",
   },
-  "龍属性攻撃強化": {
-    "name": "龍属性攻撃強化",
-    "maxLevel": 5,
-    "type": "Damage",
-  },
-  "龍気活性": {
-    "name": "龍気活性",
-    "maxLevel": 5,
-    "type": "Damage",
-  },
+
   "植生学": {
     "name": "植生学",
     "maxLevel": 4,
@@ -292,6 +300,26 @@ export const staticSkillData = {
     "name": "鬼火纏",
     "maxLevel": 4,
     "type": "NonDamage",
+  },
+  "伏魔響命": {
+    "name": "伏魔響命",
+    "maxLevel": 3,
+    "type": "Damage",
+  },
+  "弱点特効": {
+    "name": "弱点特効",
+    "maxLevel": 3,
+    "type": "Damage",
+  },
+  "超会心": {
+    "name": "超会心",
+    "maxLevel": 3,
+    "type": "Damage",
+  },
+  "奮闘": {
+    "name": "奮闘",
+    "maxLevel": 3,
+    "type": "Damage",
   },
   "ひるみ軽減": {
     "name": "ひるみ軽減",
@@ -323,11 +351,6 @@ export const staticSkillData = {
     "maxLevel": 3,
     "type": "FreqNonDamage",
   },
-  "チャージマスター": {
-    "name": "チャージマスター",
-    "maxLevel": 3,
-    "type": "Damage",
-  },
   "フルチャージ": {
     "name": "フルチャージ",
     "maxLevel": 3,
@@ -343,13 +366,19 @@ export const staticSkillData = {
     "maxLevel": 3,
     "type": "NonDamage",
   },
-  "伏魔響命": {
-    "name": "伏魔響命",
+
+  "チャージマスター": {
+    "name": "チャージマスター",
     "maxLevel": 3,
     "type": "Damage",
   },
   "会心撃【属性】": {
     "name": "会心撃【属性】",
+    "maxLevel": 3,
+    "type": "Damage",
+  },
+  "弱点特効【属性】": {
+    "name": "弱点特効【属性】",
     "maxLevel": 3,
     "type": "Damage",
   },
@@ -398,11 +427,6 @@ export const staticSkillData = {
     "maxLevel": 3,
     "type": "NonDamage",
   },
-  "奮闘": {
-    "name": "奮闘",
-    "maxLevel": 3,
-    "type": "Damage",
-  },
   "巧撃": {
     "name": "巧撃",
     "maxLevel": 3,
@@ -412,16 +436,6 @@ export const staticSkillData = {
     "name": "幸運",
     "maxLevel": 3,
     "type": "NonDamage",
-  },
-  "弱点特効": {
-    "name": "弱点特効",
-    "maxLevel": 3,
-    "type": "Damage",
-  },
-  "弱点特効【属性】": {
-    "name": "弱点特効【属性】",
-    "maxLevel": 3,
-    "type": "Damage",
   },
   "強化持続": {
     "name": "強化持続",
@@ -683,8 +697,8 @@ export const staticSkillData = {
     "maxLevel": 3,
     "type": "NonDamage",
   },
-  "超会心": {
-    "name": "超会心",
+  "龍気変換": {
+    "name": "龍気変換",
     "maxLevel": 3,
     "type": "Damage",
   },
@@ -747,11 +761,6 @@ export const staticSkillData = {
     "name": "麻痺属性強化",
     "maxLevel": 3,
     "type": "NonDamage",
-  },
-  "龍気変換": {
-    "name": "龍気変換",
-    "maxLevel": 3,
-    "type": "Damage",
   },
   "ＫＯ術": {
     "name": "ＫＯ術",

@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fadeIn {
+  animation-name: fadeIn;
+  animation-duration: 0.5s; /* アニメーションの時間 */
+  animation-fill-mode: both; /* アニメーションが終了した時の状態を保持する */
+}

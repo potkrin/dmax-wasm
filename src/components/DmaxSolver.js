@@ -1,12 +1,13 @@
 /* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/
 
 import { React, useState, useRef, useEffect, forwardRef } from "react";
-import { Grid, Button, Fab } from "@mui/material";
+import { Grid, Button, Fab, Box } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Cookies from "js-cookie";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { DmaxOutput } from "./DmaxOutput";
 import { DmaxGraph } from "./DmaxGraph";
@@ -14,6 +15,8 @@ import { DmaxResult } from "./DmaxResult";
 import { armors, decos } from "../data/EquipData";
 import { staticData } from "../data/StaticData";
 import { DmaxHistory } from "./DmaxHistory";
+import "../App.css";
+import { theme } from "./ThemeProvider";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -126,6 +129,9 @@ const Alert = forwardRef(function Alert(props, ref) {
 });
 
 export const DmaxSolver = ({ userInputData, fabRight }) => {
+  // useTheme() を使用して、テーマのブレークポイントにアクセスできます。
+  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+
   // dmaxOutput : 最適中の全ての出力
   // middleOutputInfo : dmaxOutput を解析して, 途中経過の出力を抽出したもの
   const [dmaxOutput, setDmaxOutput] = useState("");
@@ -341,6 +347,19 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     setOpenError(false);
   };
 
+  // Fab コンポーネントの表示状態を制御するための状態
+  const [showFab, setShowFab] = useState(false);
+
+  // コンポーネントのマウント後に遅延して Fab を表示する
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowFab(true);
+    }, 500); // 500ミリ秒後に実行
+
+    // コンポーネントのアンマウント時にタイマーをクリアする
+    return () => clearTimeout(timer);
+  }, []); // 空の依存配列でマウント時のみ実行
+
   return (
     <>
       <Grid container spacing={1} marginY={1}>
@@ -393,28 +412,32 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         </Alert>
       </Snackbar>
 
-      <Fab
-        variant="extended"
-        sx={{
-          position: "fixed",
-          bottom: "48px",
-          right: `${fabRight}`,
-        }}
-        color="primary"
-        onClick={handleToggle}
-      >
-        {isOptimizing ? (
-          <>
-            <CancelIcon sx={{ mr: 1 }} />
-            中止
-          </>
-        ) : (
-          <>
-            <TrendingUpIcon sx={{ mr: 1 }} />
-            最適化
-          </>
-        )}
-      </Fab>
+      {showFab && (
+        <Fab
+          variant="extended"
+          sx={{
+            position: "fixed",
+            bottom: "48px",
+            // right: "48px",
+            right: `${fabRight}`,
+            animation: "fadeIn 0.5s ease-in-out",
+          }}
+          color="primary"
+          onClick={handleToggle}
+        >
+          {isOptimizing ? (
+            <>
+              <CancelIcon />
+              {!matches && <Box sx={{ ml: 1 }}>中止</Box>}
+            </>
+          ) : (
+            <>
+              <TrendingUpIcon />
+              {!matches && <Box sx={{ ml: 1 }}>最適化</Box>}
+            </>
+          )}
+        </Fab>
+      )}
     </>
   );
 };

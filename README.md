@@ -1,5 +1,31 @@
 # TODO
+- バグ
+  - 空の護石を追加出来てしまう問題
+  - 護石で同じスキルが追加できてしまう問題 再現方法: 攻撃→見切り→攻撃削除→見切り
+  - 傀異錬成防具未選択状態で登録を押すとエラー
+  - タブ移動で入力中の項目が消える 再現方法: 護石タブでスキル入力→傀異錬成タブに移動→護石タブに戻る
+- High 最優先:
+  - 最低限のUI完成 (カード見た目統一, ツールチップ, FAB修正)
+  - ヘッダ/メニュー
+  - 使い方
+  - ステージング環境
+  - CI/CD: [デプロイやり方](https://softwarenote.info/p3789/)
+- Midle 実装予定:
+  - サーバにユーザデータ保存
+  - プリセット
+  - マイセット
+  - 履歴
+- いつか:
+  - スキルシミュモード
+  - scip-wasm メモリ問題, 他ライブラリ問題
+  - 中間結果を表示できないか?
+  - 別武器に対応
+  - APIアクセス制限
+
+# TODO
+- 狂竜症感染率を NumberTextField に変更
 - API取得 SnackBar: error時に close -> open にすれば snackbar は2つ→1つにできるかも
+- マウスオーバーでスクロールバーが表示される
 - 履歴データは indexedDB に保存
 - コピペ完了時にメッセージ
 - 結果表示の整形 (アイコン,文字装飾)
@@ -12,13 +38,9 @@
 - アニメーションを付けられる https://mui.com/material-ui/transitions/
 - グラフのよいカスタム例
   - https://app.members-portalone.net/index.php?code=3eac6194b5591ce019f9a35ec8dcef27546b681a6052ffa8e85486981d68ad0a&state=c251d67c78ab22f18f795ed15335d8058b0d14b4558a7f873a7f710fff32dbb2&m=d56e0e0b7aebba00395d2848953240d802173fad61aac98bbebe168333790128
+- 数値入力フィールドに -/+ ボタン追加 https://github.com/mui/material-ui/issues/19154
 
 
-- バグ
-  - 空の護石を追加出来てしまう問題
-  - 護石で同じスキルが追加できてしまう問題 再現方法: 攻撃→見切り→攻撃削除→見切り
-  - 傀異錬成防具未選択状態で登録を押すとエラー
-  - タブ移動で入力中の項目が消える 再現方法: 護石タブでスキル入力→傀異錬成タブに移動→護石タブに戻る
 - 検索ボックス付きスキル入力はコンポーネント化できるかも?
   - 傀異錬成入力, 護石入力, メイン画面
 - 参考になるテーマ作成サイト https://bareynol.github.io/mui-theme-creator/
@@ -74,6 +96,8 @@ cp -r build/* ~/work/mhr-speedrun/cms/static/cms/
 # index.html のみ templates に配置し、view から参照できるようにする
 cp build/index.html ~/work/mhr-speedrun/cms/templates/cms/
 
+# 不要 index.html 削除
+rm ~/work/mhr-speedrun/cms/static/cms/index.html
 ```
 
 ディレクトリの様子

@@ -9,6 +9,12 @@ export const themeOptions = {
     secondary: {
       main: "#f50057",
     },
+    error: {
+      main: "#f44336",
+    },
+    text: {
+      hint: "#a2a2a2",
+    },
   },
 };
 

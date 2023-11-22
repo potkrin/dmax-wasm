@@ -178,10 +178,10 @@ export function CharmManager() {
       <Grid container spacing={3}>
         {/* データ表示 */}
         {/* データ入力欄 */}
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <CharmInput userCharmData={userCharmData} setUserCharmData={setUserCharmData} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Card
             variant="outlined"
             sx={{ borderRadius: 1, height: "100%" }}

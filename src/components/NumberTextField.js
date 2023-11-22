@@ -26,7 +26,7 @@ export function NumberTextField(props) {
       value={value}
       onChange={handleChange}
       type="number"
-      inputProps={{ min: 0, max: 100 }}
+      inputProps={{ ...rest.inputProps, min: 0, max: 100 }}
     />
   );
 }

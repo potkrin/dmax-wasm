@@ -38,8 +38,8 @@ import SkillCard from "./SkillCard";
 export const useStyles = makeStyles({
   customHeader: {
     padding: "0.25em 0.5em", // 上下 左右の余白
-    color: "#494949", // 文字色
-    background: "transparent", // 背景透明に
+    // color: "#494949", // 文字色
+    // background: "transparent", // 背景透明に
     borderLeft: "solid 5px #3f51b5", // 左線
     fontWeight: "bold", // 太字
     marginTop: "1em", // 上の余白
@@ -48,8 +48,8 @@ export const useStyles = makeStyles({
   },
   customHeaderNoMargin: {
     padding: "0.25em 0.5em", // 上下 左右の余白
-    color: "#494949", // 文字色
-    background: "transparent", // 背景透明に
+    // color: "#494949", // 文字色
+    // background: "transparent", // 背景透明に
     borderLeft: "solid 5px #3f51b5", // 左線
     fontWeight: "bold", // 太字
     display: "inline-block", // インライン要素に
@@ -57,8 +57,8 @@ export const useStyles = makeStyles({
   },
   customHeaderThin: {
     padding: "0.25em 0.5em", // 上下 左右の余白
-    color: "#494949", // 文字色
-    background: "transparent", // 背景透明に
+    // color: "#494949", // 文字色
+    // background: "transparent", // 背景透明に
     borderLeft: "solid 3px #3f51b5", // 左線
     marginTop: "1em", // 上の余白
     display: "inline-block", // インライン要素に
@@ -138,7 +138,7 @@ export function DmaxMain({ fabRight }) {
     setCurrentSkill(newValue);
     if (newValue === null) return;
 
-    if (!(newValue in additionalSkills)) {
+    if (!additionalSkills.some((skill) => skill.name === newValue)) {
       setAdditionalSkills((prev) => [...prev, { name: newValue, level: 1 }]);
     }
   };

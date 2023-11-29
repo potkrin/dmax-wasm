@@ -81,6 +81,8 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
   // 登録ボタンを追加
   const registerQuriousArmor = () => {
     // 登録する新しい傀異錬成防具データ
+    if (!selectedArmor) return;
+
     const tempQuriousArmor = JSON.parse(JSON.stringify(selectedArmor));
     tempQuriousArmor["originalArmorName"] = selectedArmor["name"];
 

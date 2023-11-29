@@ -66,6 +66,8 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
   let solveStatus = "waiting";
   let solverEndStatus = "waiting";
 
+  let isInterrupted = false;
+
   for (const line of lines) {
     if (line.startsWith("Nested Web Workers are supported"))
       launchMessage += "Nested WebWorker 有効\n";
@@ -131,24 +133,23 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
       const solverNumber = line.replace(/\D/g, "");
       solverStartMessage += `${solverNumber} `;
       solverStartStatus = "complete";
+      solveStatus = "running";
 
-      setMiddleOutputInfo((prevMiddleOutputInfo) => {
-        return {
-          ...prevMiddleOutputInfo,
-          "solverStart": {
-            ...prevMiddleOutputInfo["solverStart"],
-            "message": solverStartMessage,
-            "status": "complete",
-          },
-          "solve": {
-            ...prevMiddleOutputInfo["solve"],
-            "status": "running",
-          },
-        };
-      });
+      // setMiddleOutputInfo((prevMiddleOutputInfo) => {
+      //   return {
+      //     ...prevMiddleOutputInfo,
+      //     "solverStart": {
+      //       ...prevMiddleOutputInfo["solverStart"],
+      //       "message": solverStartMessage,
+      //       "status": "complete",
+      //     },
+      //     "solve": {
+      //       ...prevMiddleOutputInfo["solve"],
+      //       "status": "running",
+      //     },
+      //   };
+      // });
     }
-
-    console.log("217: " + JSON.stringify(middleOutputInfo));
 
     // 並列ソルバーの中間出力
     if (line.match(/.*s\|.*M\|.*/)) {
@@ -176,38 +177,52 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
 
     // SCIP ソルバー実行終了後の状態
     if (line.startsWith("SCIP Status")) {
+      // 出力に問題がなければ complete とする
+      solverEndStatus = "complete";
+
       let scipStatus, statusReason;
       if (line.includes("interrupted")) {
         scipStatus = "最適化中断";
+        solverEndStatus = "interrupted";
       } else if (line.includes("solved")) {
         scipStatus = "最適化完了";
       } else {
         scipStatus = "未定義";
+        solverEndStatus = "interrupted";
       }
 
       if (line.includes("user interrupt")) {
         statusReason = "ユーザーによる中断されました";
+        solverEndStatus = "interrupted";
       } else if (line.includes("node limit reached")) {
         statusReason = "ノード限界に到達しました";
+        solverEndStatus = "interrupted";
       } else if (line.includes("time limit reached")) {
         statusReason = "制限時間に到達しました";
+        solverEndStatus = "interrupted";
       } else if (line.includes("memory limit reached")) {
         statusReason = "メモリ上限に到達しました";
+        solverEndStatus = "interrupted";
       } else if (line.includes("gap limit reached")) {
         statusReason = "ギャップの限界に到達しました";
+        solverEndStatus = "interrupted";
       } else if (line.includes("optimal solution found")) {
         statusReason = "最適解が見つかりました";
       } else if (line.includes("infeasible")) {
         statusReason = "装備が組めませんでした  条件を緩和してください";
+        solverEndStatus = "interrupted";
       } else if (line.includes("unbounded")) {
         statusReason = "問題が非有界です";
+        solverEndStatus = "interrupted";
       } else if (line.includes("iteration limit reached")) {
         statusReason = "反復回数の上限に到達しました";
+        solverEndStatus = "interrupted";
       }
 
+      solverStartStatus = "complete";
+
       solverEndMessage = `${scipStatus}: ${statusReason}\n`;
-      solveStatus = "complete";
-      solverEndStatus = "complete";
+      if (scipStatus === "最適化完了") solveStatus = "complete";
     }
 
     // 合計処理時間
@@ -215,43 +230,59 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
       const solvingTime = line.slice(line.indexOf(":"), line.indexOf("."));
       solverEndMessage += `合計処理時間 ${solvingTime}秒`;
     }
+
+    if (line.startsWith("[User Interrupt] optimization stopped")) isInterrupted = true;
   }
 
-  setMiddleOutputInfo((prevMiddleOutputInfo) => {
-    return {
-      ...prevMiddleOutputInfo,
-      "launch": {
-        ...prevMiddleOutputInfo["launch"],
-        "status": launchStatus,
-        "message": launchMessage,
-      },
-      "load": {
-        ...prevMiddleOutputInfo["load"],
-        "status": loadStatus,
-        "message": loadMessage,
-      },
-      "preprocess": {
-        ...prevMiddleOutputInfo["preprocess"],
-        "status": presolveStatus,
-        "message": presolveMessage,
-      },
-      "solverStart": {
-        ...prevMiddleOutputInfo["solverStart"],
-        "status": solverStartStatus,
-        "message": solverStartMessage,
-      },
-      "solve": {
-        ...prevMiddleOutputInfo["solve"],
-        "status": solveStatus,
-        "message": solveMessage,
-      },
-      "solverEnd": {
-        ...prevMiddleOutputInfo["solverEnd"],
-        "status": solverEndStatus,
-        "message": solverEndMessage,
-      },
-    };
-  });
+  const nextMiddleOutputInfo = {
+    ...middleOutputInfo,
+    "launch": {
+      ...middleOutputInfo["launch"],
+      "message": launchMessage,
+      "status": launchStatus,
+    },
+    "load": {
+      ...middleOutputInfo["load"],
+      "status": loadStatus,
+      "message": loadMessage,
+    },
+    "preprocess": {
+      ...middleOutputInfo["preprocess"],
+      "status": presolveStatus,
+      "message": presolveMessage,
+    },
+    "solverStart": {
+      ...middleOutputInfo["solverStart"],
+      "status": solverStartStatus,
+      "message": solverStartMessage,
+    },
+    "solve": {
+      ...middleOutputInfo["solve"],
+      "status": solveStatus,
+      "message": solveMessage,
+    },
+    "solverEnd": {
+      ...middleOutputInfo["solverEnd"],
+      "status": solverEndStatus,
+      "message": solverEndMessage,
+    },
+  };
+
+  if (isInterrupted) {
+    for (let key in nextMiddleOutputInfo) {
+      if (nextMiddleOutputInfo[key]["status"] === "running") {
+        nextMiddleOutputInfo[key]["status"] = "interrupted";
+        nextMiddleOutputInfo[key]["message"] = "ユーザー入力によって中断されました";
+      }
+    }
+  }
+
+  // setMiddleOutputInfo((prevMiddleOutputInfo) => {
+  //   return nextMiddleOutputInfo;
+  // });
+
+  setMiddleOutputInfo(nextMiddleOutputInfo);
+  console.log("print middle=" + JSON.stringify(nextMiddleOutputInfo));
 }
 
 export const DmaxOutput = ({

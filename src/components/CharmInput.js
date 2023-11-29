@@ -30,7 +30,7 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
     setCurrentSkill(newValue);
     if (newValue === null) return;
 
-    if (selectedSkills.length < 2 && !(newValue in selectedSkills)) {
+    if (selectedSkills.length < 2 && !selectedSkills.some((skill) => skill.name === newValue)) {
       setSelectedSkills((prev) => [...prev, { name: newValue, level: 1 }]);
     }
   };
@@ -54,6 +54,12 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
 
   // 登録ボタンを追加
   const registerCharm = () => {
+    // 空の護石を登録しない
+    let hasSlot = false;
+    for (const slot in slots) if (slot !== 0) hasSlot = true;
+
+    if (selectedSkills.length === 0 && !hasSlot) return;
+
     const tempCharm = {
       "rare": 0,
       "type": "charm",

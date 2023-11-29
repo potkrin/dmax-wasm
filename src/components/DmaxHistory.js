@@ -114,7 +114,7 @@ export const DmaxHistory = ({
         </Box>
         <Box
           style={{
-            height: "450px",
+            height: "900px",
             overflowY: "auto",
             paddingLeft: "8px",
             textAlign: "left",
@@ -143,7 +143,7 @@ export const DmaxHistory = ({
                 borderRight: 1,
                 borderColor: "divider",
                 width: "80px",
-                height: "450px",
+                height: "900px",
                 // インジケータのスタイルをオーバーライドする
                 "& .MuiTabs-indicator": {
                   left: 0, // インジケータを左側に配置
@@ -156,21 +156,32 @@ export const DmaxHistory = ({
                   sx={{ alignItems: "start" }}
                   label={
                     <>
-                      <Typography sx={{ fontSize: "14px" }} align="left">
+                      <Typography
+                        sx={{ fontSize: "14px", color: theme.palette.primary[theme.palette.mode] }}
+                        align="left"
+                      >
                         {option.physicalHitzone} / {option.elementalHitzone}
                       </Typography>
-                      <Typography sx={{ fontSize: "14px" }} align="left">
+                      <Typography
+                        sx={{ fontSize: "14px", color: theme.palette.primary[theme.palette.mode] }}
+                        align="left"
+                      >
                         {option.element} {option.maxDamage.split(".")[0]}
                       </Typography>
 
                       <Typography
-                        sx={{ fontSize: "10px", color: theme.palette.text.secondary }}
+                        sx={{ fontSize: "10px", color: theme.palette.text[theme.palette.mode] }}
                         align="left"
                       >
                         {new Date(option.timeStamp).toLocaleDateString(undefined, {
                           year: undefined,
-                          month: "long",
-                          day: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}{" "}
+                        {new Date(option.timeStamp).toLocaleTimeString(undefined, {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
                         })}
                       </Typography>
                     </>

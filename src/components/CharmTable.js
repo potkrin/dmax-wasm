@@ -38,7 +38,7 @@ export function CharmTable({ userCharmData, deleteUserCharms }) {
       const skillList = Object.entries(charm.skills);
       tempRow["firstSkill"] = skillList[0] ? skillList[0][0] + "Lv" + skillList[0][1] : "";
       tempRow["secondSkill"] = skillList[1] ? skillList[1][0] + "Lv" + skillList[1][1] : "";
-      newTableData.push(tempRow);
+      newTableData.unshift(tempRow);
     }
     setTableData(newTableData);
   }, [userCharmData]);
@@ -55,8 +55,9 @@ export function CharmTable({ userCharmData, deleteUserCharms }) {
         const handleDelete = () => {
           // 削除対象のインデックスを作成
           const deleteTargetRows = [];
+          const charmTotal = Object.keys(userCharmData).length;
           table.getSelectedRowModel().flatRows.map((row) => {
-            deleteTargetRows.push(parseInt(row.id));
+            deleteTargetRows.push(charmTotal - parseInt(row.id) - 1);
           });
 
           // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)

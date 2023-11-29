@@ -15,6 +15,7 @@ import {
   Divider,
   Paper,
 } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { NumberTextField } from "./NumberTextField";
 import { staticData } from "../data/StaticData";
@@ -73,6 +74,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
   const buttonSize = "28px";
   const buttonSize2 = "24px";
 
+  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+
   return (
     <>
       <Grid container mt={0.5} marginX={3}>
@@ -95,93 +98,146 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
           <Grid item xs={1} md={0.5}></Grid>
         )}
 
-        <Grid item xs={4} md={2.3}>
-          <Typography
-            variant="body1"
-            sx={{
-              textAlign: "left",
-              display: "flex",
-              alignItems: "flex-start",
-            }}
-          >
-            {staticSkillData.name} {skillInput.minLevel > 0 ? `Lv.${skillInput.minLevel}` : ""}
-          </Typography>
-          <Box sx={{ width: 30 * staticSkillData.maxLevel, mt: -1, ml: 0.5 }}>
-            <Slider
-              aria-label="Temperature"
-              value={skillInput.minLevel}
-              valueLabelDisplay="auto"
-              step={1}
-              marks={Array.from({ length: staticSkillData.maxLevel + 1 }, (_, level) => ({
-                value: level,
-              }))}
-              min={0}
-              max={staticSkillData.maxLevel}
-              onChange={(e, v) => handleChangeSkillInfo("minLevel", e, v)}
-              size="small"
+        <Grid item xs={6} md={2.8}>
+          <Box display="flex" alignItems="center">
+            <Typography
+              variant="body1"
               sx={{
-                "& .MuiSlider-mark": {
-                  borderRadius: "2px",
-                  height: "4px",
-                  width: "4px",
-                  color:
-                    skillInput.minLevel > 0 ? theme.palette.primary.main : theme.palette.text.hint,
-                  "&.MuiSlider-markActive": {
-                    opacity: 1,
-                    backgroundColor: "currentColor",
-                  },
-                },
-
-                "& .MuiSlider-rail": {
-                  height: "3px",
-                  color:
-                    skillInput.minLevel > 0 ? theme.palette.primary.main : theme.palette.text.hint,
-                },
-                "& .MuiSlider-thumb": {
-                  borderRadius: "1px",
-                  width: "10px",
-                  height: "10px",
-                  color:
-                    skillInput.minLevel > 0 ? theme.palette.primary.main : theme.palette.text.hint,
-                },
+                textAlign: "left",
+                display: "flex",
+                alignItems: "flex-start",
               }}
-            />
+            >
+              {staticSkillData.name}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: theme.palette.secondary.main,
+                textAlign: "left",
+                display: "flex",
+                alignItems: "flex-start",
+                marginLeft: 1,
+              }}
+            >
+              {skillInput.minLevel > 0 ? `Lv.${skillInput.minLevel}` : ""}
+            </Typography>
           </Box>
+          {!matches ? (
+            <Box sx={{ width: 30 * staticSkillData.maxLevel, mt: -1, ml: 0.5 }}>
+              <Slider
+                aria-label="Temperature"
+                value={skillInput.minLevel}
+                valueLabelDisplay="auto"
+                step={1}
+                marks={Array.from({ length: staticSkillData.maxLevel + 1 }, (_, level) => ({
+                  value: level,
+                }))}
+                min={0}
+                max={staticSkillData.maxLevel}
+                onChange={(e, v) => handleChangeSkillInfo("minLevel", e, v)}
+                size="small"
+                sx={{
+                  "& .MuiSlider-mark": {
+                    borderRadius: "2px",
+                    height: "4px",
+                    width: "4px",
+                    color:
+                      skillInput.minLevel > 0
+                        ? theme.palette.primary.main
+                        : theme.palette.text.hint,
+                    "&.MuiSlider-markActive": {
+                      opacity: 1,
+                      backgroundColor: "currentColor",
+                    },
+                  },
+
+                  "& .MuiSlider-rail": {
+                    height: "3px",
+                    color:
+                      skillInput.minLevel > 0
+                        ? theme.palette.primary.main
+                        : theme.palette.text.hint,
+                  },
+                  "& .MuiSlider-thumb": {
+                    borderRadius: "1px",
+                    width: "10px",
+                    height: "10px",
+                    color:
+                      skillInput.minLevel > 0
+                        ? theme.palette.primary.main
+                        : theme.palette.text.hint,
+                  },
+                }}
+              />
+            </Box>
+          ) : (
+            <>
+              <IconButton
+                onClick={(e, v) =>
+                  handleChangeSkillInfo(
+                    "minLevel",
+                    e,
+                    skillInput.minLevel - 1 >= 0 ? skillInput.minLevel - 1 : 0
+                  )
+                }
+                sx={{ marginTop: -1 }}
+              >
+                <IndeterminateCheckBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
+              </IconButton>
+              <IconButton
+                onClick={(e, v) =>
+                  handleChangeSkillInfo(
+                    "minLevel",
+                    e,
+                    skillInput.minLevel + 1 <= staticSkillData.maxLevel
+                      ? skillInput.minLevel + 1
+                      : staticSkillData.maxLevel
+                  )
+                }
+                sx={{ marginTop: -1, marginLeft: 1 }}
+              >
+                <AddBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
+              </IconButton>
+            </>
+          )}
         </Grid>
 
-        <Grid
-          item
-          xs={2}
-          md={1.5}
-          sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}
-        >
-          <IconButton
-            onClick={(e, v) =>
-              handleChangeSkillInfo(
-                "minLevel",
-                e,
-                skillInput.minLevel - 1 >= 0 ? skillInput.minLevel - 1 : 0
-              )
-            }
-            sx={{ marginTop: -1 }}
+        {/* {matches && (
+          <Grid
+            item
+            xs={2}
+            md={1.5}
+            sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}
           >
-            <IndeterminateCheckBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
-          </IconButton>
-          <IconButton
-            onClick={(e, v) =>
-              handleChangeSkillInfo(
-                "minLevel",
-                e,
-                skillInput.minLevel + 1 <= staticSkillData.maxLevel
-                  ? skillInput.minLevel + 1
-                  : staticSkillData.maxLevel
-              )
-            }
-            sx={{ marginTop: -1, marginLeft: 1 }}
-          >
-            <AddBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
-          </IconButton>
-        </Grid>
+            <IconButton
+              onClick={(e, v) =>
+                handleChangeSkillInfo(
+                  "minLevel",
+                  e,
+                  skillInput.minLevel - 1 >= 0 ? skillInput.minLevel - 1 : 0
+                )
+              }
+              sx={{ marginTop: -1 }}
+            >
+              <IndeterminateCheckBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
+            </IconButton>
+            <IconButton
+              onClick={(e, v) =>
+                handleChangeSkillInfo(
+                  "minLevel",
+                  e,
+                  skillInput.minLevel + 1 <= staticSkillData.maxLevel
+                    ? skillInput.minLevel + 1
+                    : staticSkillData.maxLevel
+                )
+              }
+              sx={{ marginTop: -1, marginLeft: 1 }}
+            >
+              <AddBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
+            </IconButton>
+          </Grid>
+        )} */}
 
         {staticSkillData.type === "Damage" ? (
           <>
@@ -208,7 +264,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     // sx={{ display: "flex", alignItems: "center", height: "100%", marginY: 1 }}
                     sx={{
                       marginBottom: -0.5,
-                      "&:hover .MuiInput-underline:before": {
+                      "& .MuiInput-underline:hover:before": {
                         borderBottom: "none", // ホバー時の下線を非表示
                       },
                       "& .MuiInput-underline:after": {

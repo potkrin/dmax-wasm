@@ -42,7 +42,7 @@ export function QuriousArmorTable({ userQuriousArmorData, deleteUserQuriousArmor
       for (const [skillName, skillLevel] of skillList) {
         tempRow["skills"] += skillName + "Lv" + skillLevel + " ";
       }
-      newTableData.push(tempRow);
+      newTableData.unshift(tempRow);
     }
     setTableData(newTableData);
   }, [userQuriousArmorData]);
@@ -60,8 +60,9 @@ export function QuriousArmorTable({ userQuriousArmorData, deleteUserQuriousArmor
         const handleDelete = () => {
           // 削除対象のインデックスを作成
           const deleteTargetRows = [];
+          const quriousArmorTotal = Object.keys(userQuriousArmorData).length;
           table.getSelectedRowModel().flatRows.map((row) => {
-            deleteTargetRows.push(parseInt(row.id));
+            deleteTargetRows.push(quriousArmorTotal - parseInt(row.id) - 1);
           });
 
           // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)

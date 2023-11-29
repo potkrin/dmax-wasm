@@ -320,7 +320,7 @@ export const DmaxResult = ({ middleOutput, processingUserInputData, processingUs
         </Box>
         <Box
           style={{
-            height: "450px",
+            height: "900px",
             overflowY: "auto",
             paddingLeft: "16px",
             textAlign: "left",

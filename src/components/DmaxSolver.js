@@ -22,7 +22,6 @@ import { theme } from "./ThemeProvider";
 let startWasmWorker;
 
 function supportsNestedWebWorkers(updateDmaxOutput) {
-  console.log("supportsNestedWebWorkers() called");
   try {
     var blob = new Blob(
       [
@@ -49,11 +48,9 @@ function supportsNestedWebWorkers(updateDmaxOutput) {
     worker.onerror = function () {
       worker.terminate();
       URL.revokeObjectURL(url);
-      console.log("Nested Web Workers are not supported");
       updateDmaxOutput("Nested Web Workers are not supported");
     };
   } catch (e) {
-    console.log("Nested Web Workers are not supported");
     updateDmaxOutput("Nested Web Workers are not supported");
   }
 }
@@ -111,6 +108,7 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
   } else {
     console.log("Your browser doesn't support web workers.");
     updateDmaxOutput("Your browser doesn't support web workers.");
+    updateDmaxOutput("Nested Web Workers are not supported");
   }
 }
 
@@ -291,6 +289,9 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   const [isOptimizing, setIsOptimizing] = useState(false);
 
   const handleToggle = () => {
+    // ユーザ入力による中断の場合メッセージを追加(表示への反映に利用)
+    if (isOptimizing) updateDmaxOutput("[User Interrupt] optimization stopped");
+
     setIsOptimizing(!isOptimizing);
     // ここで最適化の開始や中止のロジックを実装する
     // if (!isOptimizing) startOptimization();

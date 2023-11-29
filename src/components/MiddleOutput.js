@@ -3,6 +3,7 @@ import { Grid, Paper, Box, Card, Typography, CircularProgress, Divider } from "@
 import CheckIcon from "@mui/icons-material/Check";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import ErrorIcon from "@mui/icons-material/Error";
+import CancelIcon from "@mui/icons-material/Cancel";
 import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
 
 import { theme } from "./ThemeProvider";
@@ -28,6 +29,10 @@ export const MiddleOutput = ({ middleOutput }) => {
             <CheckIcon color="success" sx={{ fontSize: 16 }} />
           )}
           {middleOutput.status === "error" && <ErrorIcon color="error" sx={{ fontSize: 16 }} />}
+          {middleOutput.status === "interrupted" && (
+            <CancelIcon color="error" sx={{ fontSize: 16 }} />
+          )}
+
           {middleOutput.status === "waiting" && (
             <PanoramaFishEyeIcon sx={{ fontSize: 12, color: theme.palette.text.disabled }} />
           )}
@@ -49,7 +54,13 @@ export const MiddleOutput = ({ middleOutput }) => {
             <Grid item xs={11.5}>
               <Typography
                 variant="body1"
-                sx={{ fontSize: "12px", color: theme.palette.text.secondary }}
+                sx={{
+                  fontSize: "12px",
+                  color:
+                    (middleOutput.status === "error") | (middleOutput.status === "interrupted")
+                      ? theme.palette.error.main
+                      : theme.palette.text.secondary,
+                }}
               >
                 <NewlineText text={middleOutput.message} />
               </Typography>

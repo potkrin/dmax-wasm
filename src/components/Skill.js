@@ -25,6 +25,7 @@ import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/Indeterminate
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { theme } from "./ThemeProvider";
+import { LDThemeContext } from "./LDThemeContext";
 
 // import { makeStyles } from "@mui/styles";
 
@@ -76,6 +77,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
 
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
+  const { currentTheme } = React.useContext(LDThemeContext);
+
   return (
     <>
       <Grid container mt={0.5} marginX={3}>
@@ -113,7 +116,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
             <Typography
               variant="body1"
               sx={{
-                color: theme.palette.secondary.main,
+                color: currentTheme.palette.secondary.main,
                 textAlign: "left",
                 display: "flex",
                 alignItems: "flex-start",
@@ -144,8 +147,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     width: "4px",
                     color:
                       skillInput.minLevel > 0
-                        ? theme.palette.primary.main
-                        : theme.palette.text.hint,
+                        ? currentTheme.palette.primary.main
+                        : currentTheme.palette.text.hint,
                     "&.MuiSlider-markActive": {
                       opacity: 1,
                       backgroundColor: "currentColor",
@@ -156,8 +159,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     height: "3px",
                     color:
                       skillInput.minLevel > 0
-                        ? theme.palette.primary.main
-                        : theme.palette.text.hint,
+                        ? currentTheme.palette.primary.main
+                        : currentTheme.palette.text.hint,
                   },
                   "& .MuiSlider-thumb": {
                     borderRadius: "1px",
@@ -165,8 +168,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     height: "10px",
                     color:
                       skillInput.minLevel > 0
-                        ? theme.palette.primary.main
-                        : theme.palette.text.hint,
+                        ? currentTheme.palette.primary.main
+                        : currentTheme.palette.text.hint,
                   },
                 }}
               />
@@ -314,16 +317,16 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     "& .MuiSlider-rail": {
                       color:
                         skillInput.activeRate > 0
-                          ? theme.palette.primary.main
-                          : theme.palette.text.disabled,
+                          ? currentTheme.palette.primary.main
+                          : currentTheme.palette.text.disabled,
                     },
                     "& .MuiSlider-thumb": {
                       width: "8px",
                       height: "8px",
                       color:
                         skillInput.activeRate > 0
-                          ? theme.palette.primary.main
-                          : theme.palette.text.disabled,
+                          ? currentTheme.palette.primary.main
+                          : currentTheme.palette.text.disabled,
                     },
                   }}
                   onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}

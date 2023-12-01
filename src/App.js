@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, createContext } from "react";
 import "./App.css";
 import {
   Tabs,
@@ -14,7 +14,7 @@ import {
 import { DmaxMain } from "./components/DmaxMain";
 import { CharmManager } from "./components/CharmManager";
 import QuriousArmorManager from "./components/QuriousArmorManager";
-import { useTheme } from "@emotion/react";
+import { ThemeContext, useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
 import Slide from "@mui/material/Slide";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
@@ -34,6 +34,8 @@ import { theme } from "./components/ThemeProvider";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 
+import { LDThemeContext, SkillContext } from "./components/LDThemeContext";
+
 /**
  * TODO:
  *   - スキルの検索ボックス。文字列がヒットしたもののみ残る
@@ -45,16 +47,12 @@ function TabPanel(props) {
   return (
     <div
       role="tabpanel"
-      hidden={value !== index}
+      hidden={value !== index} // ここを変更
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 1 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {children}
     </div>
   );
 }
@@ -115,6 +113,9 @@ const lightTheme = createTheme({
     text: {
       hint: "#a2a2a2",
     },
+    background: {
+      default: "#f3f6f9",
+    },
   },
 });
 
@@ -124,6 +125,7 @@ const darkTheme = createTheme({
     type: "dark",
     primary: {
       main: "#8798ef",
+      contrastText: "#ffffff",
     },
     secondary: {
       main: "#f50057",
@@ -134,11 +136,15 @@ const darkTheme = createTheme({
     text: {
       hint: "#a2a2a2",
     },
+    background: {
+      default: "#303030",
+      paper: "#424242",
+    },
   },
 });
 
 function App() {
-  const theme = useTheme();
+  // const theme = useTheme();
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -234,109 +240,125 @@ function App() {
   }));
 
   return (
-    <ThemeProvider theme={currentTheme}>
-      {/* <div className="App" style={background}> */}
-      <AppDiv>
-        {/* <AppBar component="nav">
+    <LDThemeContext.Provider value={{ currentTheme, toggleTheme }}>
+      <ThemeProvider theme={currentTheme}>
+        <div className="App">
+          {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
+          {/* <AppDiv> */}
+          {/* <AppBar component="nav">
                  </AppBar> */}
-        <HideOnScroll>
-          <AppBar component="nav" position="sticky">
-            {/* <Toolbar variant="dense" sx={{ backgroundColor: theme.palette.primary.main }}> */}
-            <Toolbar variant="dense">
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-                sx={{ mr: 2, display: { sm: "none" } }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography
-                variant="h6"
-                component="div"
-                sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-              >
-                DMAX
-              </Typography>
-              {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <HideOnScroll>
+            <AppBar component="nav" position="sticky">
+              {/* <Toolbar variant="dense" sx={{ backgroundColor: theme.palette.primary.main }}> */}
+              <Toolbar variant="dense">
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  edge="start"
+                  onClick={handleDrawerToggle}
+                  sx={{ mr: 2, display: { sm: "none" } }}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+                >
+                  DMAX
+                </Typography>
+                {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
               {navItems.map((item) => (
                 <Button key={item} sx={{ color: "#fff" }}>
                   {item}
                 </Button>
               ))}
             </Box> */}
-              <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                <IconButton onClick={toggleTheme} color="inherit">
-                  {theme.palette.mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
-                </IconButton>
-
-                <Button sx={{ color: theme.palette.primary.contrastText }}>
-                  <a
-                    href="https://www.mhrspeedrun.com/cms/quest/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: theme.palette.primary.contrastText, textDecoration: "none" }}
+                <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                  <Button sx={{ color: currentTheme.palette.primary.contrastText }}>
+                    <a
+                      href="https://www.mhrspeedrun.com/cms/quest/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: currentTheme.palette.primary.contrastText,
+                        textDecoration: "none",
+                      }}
+                    >
+                      TA集計
+                    </a>
+                  </Button>
+                  <Button
+                    onClick={toggleTheme}
+                    color="inherit"
+                    startIcon={
+                      currentTheme.palette.mode === "dark" ? (
+                        <Brightness7Icon />
+                      ) : (
+                        <Brightness4Icon />
+                      )
+                    }
+                    style={{ textTransform: "none" }}
                   >
-                    TA集計
-                  </a>
-                </Button>
-              </Box>
-            </Toolbar>
+                    {currentTheme.palette.mode === "dark" ? "Light" : "Dark"}
+                  </Button>
+                </Box>
+              </Toolbar>
 
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              indicatorColor="secondary"
-              textColor="inherit"
-              variant="fullWidth"
-              aria-label="tabs example"
-              sx={{ minHeight: "0px" }}
+              <Tabs
+                value={value}
+                onChange={handleChange}
+                indicatorColor="secondary"
+                textColor="inherit"
+                variant="fullWidth"
+                aria-label="tabs example"
+                sx={{ minHeight: "0px" }}
+              >
+                <Tab label="最適化" sx={{ minHeight: "0px" }} {...a11yProps(0)} />
+                <Tab label="護石" sx={{ minHeight: "0px" }} {...a11yProps(1)} />
+                <Tab label="傀異錬成" sx={{ minHeight: "0px" }} {...a11yProps(2)} />
+                <Tab label="使い方" sx={{ minHeight: "0px" }} {...a11yProps(3)} />
+              </Tabs>
+            </AppBar>
+          </HideOnScroll>
+          <nav>
+            <Drawer
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+              }}
+              sx={{
+                display: { xs: "block", sm: "none" },
+                "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+              }}
             >
-              <Tab label="最適化" sx={{ minHeight: "0px" }} {...a11yProps(0)} />
-              <Tab label="護石" sx={{ minHeight: "0px" }} {...a11yProps(1)} />
-              <Tab label="傀異錬成" sx={{ minHeight: "0px" }} {...a11yProps(2)} />
-              <Tab label="使い方" sx={{ minHeight: "0px" }} {...a11yProps(3)} />
-            </Tabs>
-          </AppBar>
-        </HideOnScroll>
-        <nav>
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-            }}
+              {drawer}
+            </Drawer>
+          </nav>
+
+          <Container
+            // ref={containerRef}
+            sx={{ paddingLeft: "0px !important", paddingRight: "0px !important" }}
           >
-            {drawer}
-          </Drawer>
-        </nav>
+            {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
 
-        {/* </HideOnScroll> */}
-
-        <Container
-          ref={containerRef}
-          sx={{ paddingLeft: "0px !important", paddingRight: "0px !important" }}
-        >
-          {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
-          <TabPanel value={value} index={0} dir={theme.direction}>
-            <DmaxMain fabRight={fabRight} />
-          </TabPanel>
-          <TabPanel value={value} index={1} dir={theme.direction}>
-            <CharmManager />
-          </TabPanel>
-          <TabPanel value={value} index={2} dir={theme.direction}>
-            <QuriousArmorManager />
-          </TabPanel>
-        </Container>
-        {/* </div> */}
-      </AppDiv>
-    </ThemeProvider>
+            <TabPanel value={value} index={0} dir={theme.direction}>
+              <DmaxMain fabRight={fabRight} />
+            </TabPanel>
+            <TabPanel value={value} index={1} dir={theme.direction}>
+              <CharmManager />
+            </TabPanel>
+            <TabPanel value={value} index={2} dir={theme.direction}>
+              <QuriousArmorManager />
+            </TabPanel>
+          </Container>
+        </div>
+        {/* </AppDiv> */}
+        {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
+      </ThemeProvider>
+    </LDThemeContext.Provider>
   );
 }
 

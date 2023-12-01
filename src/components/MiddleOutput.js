@@ -7,6 +7,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
 
 import { theme } from "./ThemeProvider";
+import { LDThemeContext } from "./LDThemeContext";
 
 function NewlineText({ text }) {
   const newText = text
@@ -18,12 +19,14 @@ function NewlineText({ text }) {
 }
 
 export const MiddleOutput = ({ middleOutput }) => {
+  const { currentTheme } = React.useContext(LDThemeContext);
+
   return (
     <>
       <Grid container alignItems={"center"} spacing={0} marginBottom={0.8}>
         <Grid item xs={0.5}>
           {middleOutput.status === "running" && (
-            <CircularProgress size={10} sx={{ color: theme.palette.primary.main }} />
+            <CircularProgress size={10} sx={{ color: currentTheme.palette.primary.main }} />
           )}
           {middleOutput.status === "complete" && (
             <CheckIcon color="success" sx={{ fontSize: 16 }} />
@@ -34,7 +37,7 @@ export const MiddleOutput = ({ middleOutput }) => {
           )}
 
           {middleOutput.status === "waiting" && (
-            <PanoramaFishEyeIcon sx={{ fontSize: 12, color: theme.palette.text.disabled }} />
+            <PanoramaFishEyeIcon sx={{ fontSize: 12, color: currentTheme.palette.text.disabled }} />
           )}
         </Grid>
         <Grid item xs={11.5}>
@@ -58,8 +61,8 @@ export const MiddleOutput = ({ middleOutput }) => {
                   fontSize: "12px",
                   color:
                     (middleOutput.status === "error") | (middleOutput.status === "interrupted")
-                      ? theme.palette.error.main
-                      : theme.palette.text.secondary,
+                      ? currentTheme.palette.error.main
+                      : currentTheme.palette.text.secondary,
                 }}
               >
                 <NewlineText text={middleOutput.message} />
@@ -72,7 +75,11 @@ export const MiddleOutput = ({ middleOutput }) => {
             <Grid item xs={11.5}>
               <Typography
                 variant="body1"
-                sx={{ fontSize: "12px", color: theme.palette.text.secondary, visibility: "hidden" }}
+                sx={{
+                  fontSize: "12px",
+                  color: currentTheme.palette.text.secondary,
+                  visibility: "hidden",
+                }}
               >
                 invisible
               </Typography>

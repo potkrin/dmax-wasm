@@ -1,9 +1,12 @@
 import React from "react";
 import { Button, Grid, ButtonGroup } from "@mui/material";
 import DiamondIcon from "@mui/icons-material/Diamond";
+import { LDThemeContext } from "./LDThemeContext";
 
 export function SlotLevels({ slotLevel, setSlotLevel }) {
   const slotLevels = [0, 1, 2, 3, 4];
+
+  const { currentTheme } = React.useContext(LDThemeContext);
 
   return (
     <>
@@ -17,8 +20,8 @@ export function SlotLevels({ slotLevel, setSlotLevel }) {
               <Button
                 onClick={() => setSlotLevel(level)}
                 sx={{
-                  backgroundColor: slotLevel === level ? "#3f51b5" : "",
-                  color: slotLevel === level ? "#fff" : "",
+                  backgroundColor: slotLevel === level ? currentTheme.palette.primary.main : "",
+                  color: slotLevel === level ? currentTheme.palette.primary.contrastText : "",
                 }}
               >
                 {level}

@@ -9,6 +9,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import PropTypes from "prop-types";
 import CopyToClipboardButton from "./CopyToClipboardButton";
 import { theme } from "./ThemeProvider";
+import { LDThemeContext } from "./LDThemeContext";
 
 function NewlineText({ text }) {
   const newText = text
@@ -93,6 +94,8 @@ export const DmaxHistory = ({
     setTextToCopy(historyOptions[value].result);
   }, [value, historyOptions]);
 
+  const { currentTheme } = React.useContext(LDThemeContext);
+
   return (
     <Grid item xs={12} md={6}>
       <Paper elevation={2}>
@@ -157,20 +160,20 @@ export const DmaxHistory = ({
                   label={
                     <>
                       <Typography
-                        sx={{ fontSize: "14px", color: theme.palette.primary[theme.palette.mode] }}
+                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.main }}
                         align="left"
                       >
                         {option.physicalHitzone} / {option.elementalHitzone}
                       </Typography>
                       <Typography
-                        sx={{ fontSize: "14px", color: theme.palette.primary[theme.palette.mode] }}
+                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.main }}
                         align="left"
                       >
                         {option.element} {option.maxDamage.split(".")[0]}
                       </Typography>
 
                       <Typography
-                        sx={{ fontSize: "10px", color: theme.palette.text[theme.palette.mode] }}
+                        sx={{ fontSize: "10px", color: currentTheme.palette.text.primary }}
                         align="left"
                       >
                         {new Date(option.timeStamp).toLocaleDateString(undefined, {

@@ -12,6 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import Paper from "@mui/material/Paper";
 import { Skill } from "./Skill";
 import { NonDamageSkill } from "./NonDamageSkill";
 import { MonsterSetting } from "./MonsterSetting";
@@ -34,13 +35,14 @@ import TuneIcon from "@mui/icons-material/Tune";
 import { staticSkillData } from "../data/StaticData";
 import { userInputData as defaultUserInputData } from "../data/UserInputData";
 import SkillCard from "./SkillCard";
+import useCustomStyles from "./CustomStyles";
 
 export const useStyles = makeStyles({
   customHeader: {
     padding: "0.25em 0.5em", // 上下 左右の余白
     // color: "#494949", // 文字色
     // background: "transparent", // 背景透明に
-    borderLeft: "solid 5px #3f51b5", // 左線
+    borderLeft: "solid 5px #8798ef", // 左線
     fontWeight: "bold", // 太字
     marginTop: "1em", // 上の余白
     display: "inline-block", // インライン要素に
@@ -50,7 +52,7 @@ export const useStyles = makeStyles({
     padding: "0.25em 0.5em", // 上下 左右の余白
     // color: "#494949", // 文字色
     // background: "transparent", // 背景透明に
-    borderLeft: "solid 5px #3f51b5", // 左線
+    borderLeft: "solid 5px #8798ef", // 左線
     fontWeight: "bold", // 太字
     display: "inline-block", // インライン要素に
     // borderBottom: "solid 1px #7db4e6", // 下線
@@ -59,7 +61,7 @@ export const useStyles = makeStyles({
     padding: "0.25em 0.5em", // 上下 左右の余白
     // color: "#494949", // 文字色
     // background: "transparent", // 背景透明に
-    borderLeft: "solid 3px #3f51b5", // 左線
+    borderLeft: "solid 3px #8798ef", // 左線
     marginTop: "1em", // 上の余白
     display: "inline-block", // インライン要素に
     // borderBottom: "solid 1px #7db4e6", // 下線
@@ -91,7 +93,14 @@ const actions = [
 ];
 
 export function DmaxMain({ fabRight }) {
+  useEffect(() => {
+    return () => {
+      console.log("ChildComponent: DmaxMain がアンマウントされました");
+    };
+  }, []);
+
   const classes = useStyles();
+  // const classes = useCustomStyles();
   // スキル以外のユーザ入力データを保持
   const cacheUserInputData = localStorage.getItem("userInputData");
 
@@ -178,8 +187,8 @@ export function DmaxMain({ fabRight }) {
       {/* 読み込みデータの検証 */}
       <ValidateData />
 
-      <Box sx={{ backgroundColor: "#f3f6f9" }}>
-        <Card variant="outlined" sx={{ borderRadius: 1, padding: 2 }} backgroundColor="#f5f5f5">
+      <Box>
+        <Paper variant="outlined" sx={{ borderRadius: 1, padding: 2 }}>
           <Grid container alignItems="center">
             <Grid item>
               <TuneIcon sx={{ marginTop: "4px", marginLeft: "4px" }} color="primary" />
@@ -396,7 +405,7 @@ export function DmaxMain({ fabRight }) {
               ))}
             </Grid>
           </Grid>
-        </Card>
+        </Paper>
       </Box>
 
       {/* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/}

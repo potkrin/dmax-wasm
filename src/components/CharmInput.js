@@ -113,7 +113,7 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
 
   return (
     <>
-      <Box sx={{ backgroundColor: "#f3f6f9" }}>
+      <Box>
         <Card
           variant="outlined"
           sx={{ borderRadius: 1, padding: "20px" }}

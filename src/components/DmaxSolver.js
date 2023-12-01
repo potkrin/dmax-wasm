@@ -280,6 +280,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
   // 最適化の中断
   const stopOptimization = () => {
+    console.log("stopOptimization called");
     if (startWasmWorker) {
       startWasmWorker.terminate();
     }
@@ -292,18 +293,25 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     // ユーザ入力による中断の場合メッセージを追加(表示への反映に利用)
     if (isOptimizing) updateDmaxOutput("[User Interrupt] optimization stopped");
 
+    if (isOptimizing) {
+      stopOptimization();
+    } else {
+      startOptimization();
+    }
+
+    // state の更新は非同期に行われる点に注意 (setIsOptimizing 直後に if (isOptimizing) 等としても反映されない)
     setIsOptimizing(!isOptimizing);
-    // ここで最適化の開始や中止のロジックを実装する
-    // if (!isOptimizing) startOptimization();
-    // else stopOptimizatio();
   };
 
   useEffect(() => {
-    if (isOptimizing) {
-      startOptimization();
-    } else {
-      stopOptimization();
-    }
+    console.log(
+      "isOptimizing has changed = " + isOptimizing + "typeof(isOptimizing) = " + typeof isOptimizing
+    );
+    // if (isOptimizing) {
+    //   startOptimization();
+    // } else {
+    //   stopOptimization();
+    // }
   }, [isOptimizing]);
 
   useEffect(() => {

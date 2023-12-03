@@ -53,11 +53,7 @@ function a11yProps(index) {
   };
 }
 
-export const DmaxHistory = ({
-  middleOutput,
-  processingUserInputData,
-  processingUserArmorsData,
-}) => {
+export const DmaxHistory = ({ allDmaxOutput }) => {
   // const dmaxResult = outputToResult(
   //   middleOutput,
   //   processingUserInputData,
@@ -65,7 +61,7 @@ export const DmaxHistory = ({
   // );
 
   const options = [];
-  const [historyOptions, setHistoryOptions] = React.useState(options);
+  const [historyList, setHistoryLists] = React.useState(options);
 
   let latestTimeStamp;
   React.useEffect(() => {
@@ -75,12 +71,14 @@ export const DmaxHistory = ({
       console.log("resultHistory is found");
       let resultHistoryArray = JSON.parse(resultHistory);
       if (resultHistoryArray.length > 1) {
-        resultHistoryArray = resultHistoryArray.slice(1);
+        if (allDmaxOutput !== "") {
+          resultHistoryArray = resultHistoryArray.slice(1);
+        }
         latestTimeStamp = resultHistoryArray[0].timeStamp;
-        setHistoryOptions(resultHistoryArray);
+        setHistoryLists(resultHistoryArray);
       }
     }
-  }, [middleOutput]);
+  }, [allDmaxOutput]);
 
   const [value, setValue] = React.useState(0);
 
@@ -90,9 +88,9 @@ export const DmaxHistory = ({
 
   const [textToCopy, setTextToCopy] = React.useState("");
   useEffect(() => {
-    if (historyOptions.length === 0) return;
-    setTextToCopy(historyOptions[value].result);
-  }, [value, historyOptions]);
+    if (historyList.length === 0) return;
+    setTextToCopy(historyList[value].result);
+  }, [value, historyList]);
 
   const { currentTheme } = React.useContext(LDThemeContext);
 
@@ -154,19 +152,19 @@ export const DmaxHistory = ({
                 },
               }}
             >
-              {historyOptions.map((option) => (
+              {historyList.map((option) => (
                 <Tab
                   sx={{ alignItems: "start" }}
                   label={
                     <>
                       <Typography
-                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.main }}
+                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.light }}
                         align="left"
                       >
                         {option.physicalHitzone} / {option.elementalHitzone}
                       </Typography>
                       <Typography
-                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.main }}
+                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.light }}
                         align="left"
                       >
                         {option.element} {option.maxDamage.split(".")[0]}
@@ -208,7 +206,7 @@ export const DmaxHistory = ({
               "scrollbar-width": "none", // Firefox スクロールバーを非表示
             }}
           >
-            {historyOptions.map((option, index) => (
+            {historyList.map((option, index) => (
               <TabPanel value={value} index={index}>
                 <NewlineText text={option.result} />
               </TabPanel>

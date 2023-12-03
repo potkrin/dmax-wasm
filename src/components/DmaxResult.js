@@ -286,9 +286,13 @@ function NewlineText({ text }) {
   return <span dangerouslySetInnerHTML={{ __html: newText }} />;
 }
 
-export const DmaxResult = ({ middleOutput, processingUserInputData, processingUserArmorsData }) => {
+export const DmaxResult = ({
+  allDmaxOutput,
+  processingUserInputData,
+  processingUserArmorsData,
+}) => {
   const dmaxResult = outputToResult(
-    middleOutput,
+    allDmaxOutput,
     processingUserInputData,
     processingUserArmorsData
   );

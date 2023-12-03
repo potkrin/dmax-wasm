@@ -34,7 +34,7 @@ import { theme } from "./components/ThemeProvider";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 
-import { LDThemeContext, SkillContext } from "./components/LDThemeContext";
+import { LDThemeContext, lightTheme, darkTheme } from "./components/LDThemeContext";
 
 /**
  * TODO:
@@ -47,11 +47,13 @@ function TabPanel(props) {
   return (
     <div
       role="tabpanel"
-      hidden={value !== index} // ここを変更
+      // タブ切替時にアンマウントされないように display: none で非表示
+      style={{ display: value === index ? "block" : "none" }}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
+      {/* タブ切り替えを条件分岐によるレンダーON/OFFで実現すると OFF でアンマウントされ、state がリセットされてしまうので避ける */}
       {children}
     </div>
   );
@@ -97,52 +99,6 @@ HideOnScroll.propTypes = {
 const drawerWidth = 240;
 const navItems = ["Home", "About", "Contact"];
 
-const lightTheme = createTheme({
-  palette: {
-    mode: "light",
-    type: "light",
-    primary: {
-      main: "#3f51b5",
-    },
-    secondary: {
-      main: "#f50057",
-    },
-    error: {
-      main: "#f44336",
-    },
-    text: {
-      hint: "#a2a2a2",
-    },
-    background: {
-      default: "#f3f6f9",
-    },
-  },
-});
-
-const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-    type: "dark",
-    primary: {
-      main: "#8798ef",
-      contrastText: "#ffffff",
-    },
-    secondary: {
-      main: "#f50057",
-    },
-    error: {
-      main: "#f44336",
-    },
-    text: {
-      hint: "#a2a2a2",
-    },
-    background: {
-      default: "#303030",
-      paper: "#424242",
-    },
-  },
-});
-
 function App() {
   // const theme = useTheme();
   const [value, setValue] = useState(0);
@@ -176,7 +132,9 @@ function App() {
 
     if (windowWidth > containerWidth) {
       let rightPx = windowWidth / 2 - containerWidth / 2 + 64;
-      setFabRight(`${rightPx}px`);
+      // setFabRight(`${rightPx}px`);
+      setFabRight(rightPx);
+
       // setFabRight("74px");
 
       console.log(
@@ -188,7 +146,7 @@ function App() {
           fabRight
       );
     } else {
-      setFabRight(`64px`);
+      setFabRight(64);
       console.log(
         "windowWidth <= containerWidth. windowWidth = " +
           windowWidth +
@@ -229,20 +187,28 @@ function App() {
     </Box>
   );
 
-  const [currentTheme, setCurrentTheme] = React.useState(lightTheme);
+  const [currentTheme, setCurrentTheme] = React.useState(
+    localStorage.getItem("colorTheme") === "dark" ? darkTheme : lightTheme
+  );
   const toggleTheme = () => {
+    if (currentTheme === lightTheme) {
+      localStorage.setItem("colorTheme", "dark");
+    } else {
+      localStorage.setItem("colorTheme", "light");
+    }
     setCurrentTheme((prevTheme) => (prevTheme === lightTheme ? darkTheme : lightTheme));
   };
 
-  // <div className="App"></div> の背景色を変更するために styled-components を使用
-  const AppDiv = styled("div")(({ theme }) => ({
-    backgroundColor: theme.palette.background.default,
-  }));
+  // // アンマウント-stateリセット問題を引き起こすので使用しない
+  // // <div className="App"></div> の背景色を変更するために styled-components を使用
+  // const AppDiv = styled("div")(({ theme }) => ({
+  //   backgroundColor: theme.palette.background.default,
+  // }));
 
   return (
     <LDThemeContext.Provider value={{ currentTheme, toggleTheme }}>
       <ThemeProvider theme={currentTheme}>
-        <div className="App">
+        <div className="App" style={{ backgroundColor: currentTheme.palette.background.default }}>
           {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
           {/* <AppDiv> */}
           {/* <AppBar component="nav">
@@ -339,13 +305,18 @@ function App() {
           </nav>
 
           <Container
-            // ref={containerRef}
-            sx={{ paddingLeft: "0px !important", paddingRight: "0px !important" }}
+            ref={containerRef}
+            sx={{
+              paddingLeft: "0px !important",
+              paddingRight: "0px !important",
+              marginBottom: "0px !important", // 追加
+              paddingBottom: "0px !important", // 追加
+            }}
           >
             {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
 
             <TabPanel value={value} index={0} dir={theme.direction}>
-              <DmaxMain fabRight={fabRight} />
+              <DmaxMain fabRight={fabRight} setFabRight={setFabRight} />
             </TabPanel>
             <TabPanel value={value} index={1} dir={theme.direction}>
               <CharmManager />

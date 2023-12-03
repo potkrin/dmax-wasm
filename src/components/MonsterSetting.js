@@ -17,6 +17,7 @@ import { staticData } from "../data/StaticData";
 import { NumberTextField } from "./NumberTextField";
 import { ClassNames } from "@emotion/react";
 import { useStyles, GridItemInput } from "./DmaxMain";
+import { applyWaterBlight } from "./HelperFunction";
 
 export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) => {
   const classes = useStyles();
@@ -45,7 +46,12 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
           value={userInputDataMonster["物理肉質"]}
           size="small"
           id="outlined-basic"
-          label="物理肉質"
+          label={
+            "物理肉質" +
+            (userInputDataMonster["水やられ"]
+              ? " (" + applyWaterBlight(userInputDataMonster["物理肉質"], true) + ")"
+              : "")
+          }
           variant="outlined"
           onChange={(e, v) => handleChangeUserInputData("物理肉質", e, v)}
           min={0}
@@ -76,7 +82,16 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
                 onChange={(e, v) => handleChangeUserInputData("水やられ", e, v)}
               />
             }
-            label={<Typography className={classes.inputCheckbox}>水やられ</Typography>}
+            label={
+              <Typography className={classes.inputCheckbox}>
+                水やられ{" "}
+                {userInputDataMonster["水やられ"]
+                  ? userInputDataMonster["物理肉質"] +
+                    " → " +
+                    applyWaterBlight(userInputDataMonster["物理肉質"], true)
+                  : ""}
+              </Typography>
+            }
           />
         </FormGroup>
       </GridItemInput>
@@ -86,7 +101,6 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
             {"怒り補正 (" + staticData["怒り補正"][userInputDataMonster["怒り補正"]] + ")"}
           </InputLabel>
           <Select
-            className={classes.customFontSize}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             size="small"

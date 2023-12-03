@@ -81,11 +81,19 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
     if (line.startsWith("Nested Web Workers are not supported")) {
       launchMessage += "Nested WebWorker がサポートされていません\n";
       launchStatus = "error";
+      loadStatus = "waiting";
     }
 
     if (line.startsWith("Your browser does not support Web Workers")) {
       launchMessage += "WebWorker がサポートされていません\n";
       launchStatus = "error";
+      loadStatus = "waiting";
+    }
+
+    if (line.startsWith("Uncaught Error: SharedArrayBuffer is not defined")) {
+      launchMessage += "SharedArrayBuffer が定義されていません\n";
+      launchStatus = "error";
+      loadStatus = "waiting";
     }
 
     if (line.startsWith("original problem has ")) {
@@ -287,8 +295,8 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
 
 export const DmaxOutput = ({
   dmaxOutput,
-  resetMiddleOutput,
-  setResetMiddleOutput,
+  resetMiddleOutputInfo,
+  setResetMiddleOutputInfo,
   startOptimization,
   stopOptimization,
   handleToggle,
@@ -301,8 +309,8 @@ export const DmaxOutput = ({
   const classes = useStyles();
 
   const initMiddleOutputInfo = JSON.parse(JSON.stringify(defaultMiddleOutputInfo));
-  // dmaxOutput : 最適中の全ての出力
-  // middleOutputInfo : dmaxOutput を解析して, 途中経過の出力を抽出したもの
+  // dmaxOutput : 最適中の全ての出力をリアルタイム更新
+  // middleOutputInfo : dmaxOutput を解析してリアルタイムで表示する中間出力
   const [middleOutputInfo, setMiddleOutputInfo] = useState(initMiddleOutputInfo);
 
   useEffect(() => {
@@ -310,11 +318,11 @@ export const DmaxOutput = ({
   }, [dmaxOutput]);
 
   useEffect(() => {
-    if (resetMiddleOutput) {
+    if (resetMiddleOutputInfo) {
       setMiddleOutputInfo(initMiddleOutputInfo);
-      setResetMiddleOutput(false);
+      setResetMiddleOutputInfo(false);
     }
-  }, [resetMiddleOutput]);
+  }, [resetMiddleOutputInfo]);
 
   return (
     <Grid item xs={12} md={6}>

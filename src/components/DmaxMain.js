@@ -92,7 +92,7 @@ const actions = [
   { icon: <ShareIcon />, name: "Share" },
 ];
 
-export function DmaxMain({ fabRight }) {
+export function DmaxMain({ fabRight, setFabRight }) {
   useEffect(() => {
     return () => {
       console.log("ChildComponent: DmaxMain がアンマウントされました");
@@ -233,6 +233,8 @@ export function DmaxMain({ fabRight }) {
             <WeaponSetting
               userInputDataWeapon={userInputData["武器"]}
               updateUserInputData={updateUserInputData}
+              // fabRight={fabRight}
+              // setFabRight={setFabRight}
             />
           </Grid>
           <Typography
@@ -411,7 +413,7 @@ export function DmaxMain({ fabRight }) {
       {/* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/}
       <DmaxSolver userInputData={userInputData} fabRight={fabRight} />
 
-      <Backdrop open={open} />
+      {/* <Backdrop open={open} /> */}
       {/* <SpeedDial
         ariaLabel="SpeedDial tooltip example"
         sx={{

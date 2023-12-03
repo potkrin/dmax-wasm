@@ -17,6 +17,7 @@ import { staticData } from "../data/StaticData";
 import { DmaxHistory } from "./DmaxHistory";
 import "../App.css";
 import { theme } from "./ThemeProvider";
+import { applyWaterBlight } from "./HelperFunction";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -55,7 +56,7 @@ function supportsNestedWebWorkers(updateDmaxOutput) {
   }
 }
 
-function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) {
+function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing) {
   supportsNestedWebWorkers(updateDmaxOutput);
 
   // gonextbench = false;
@@ -105,6 +106,15 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData) 
         }
       }
     };
+
+    startWasmWorker.onerror = function (e) {
+      const workerError = e.message;
+      console.log("error message received from worker: " + workerError);
+      console.error("error message received from worker: " + workerError);
+      updateDmaxOutput(workerError);
+      setIsOptimizing(false);
+      startWasmWorker.terminate();
+    };
   } else {
     console.log("Your browser doesn't support web workers.");
     updateDmaxOutput("Your browser doesn't support web workers.");
@@ -151,18 +161,19 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   }, [dmaxOutput]);
 
   // dmaxOutput : 最適中の全ての出力
-  // middleOutputInfo : dmaxOutput を解析して, 途中経過の出力を抽出したもの
-  const [middleOutput, setMiddleOutput] = useState("");
-  const updateMiddleOutput = (newString) => {
-    setMiddleOutput(newString);
+  // allDmaxOutput : 最適化が完了したときのすべての中間出力 (DmaxResult と DmaxHistory で使用)
+  const [allDmaxOutput, setAllDmaxOutput] = useState("");
+  const updateAllDmaxOutput = (newString) => {
+    setAllDmaxOutput(newString);
   };
 
   useEffect(() => {
-    // dmax 最適化が完了したら middleOutput に全ての中間結果を渡す (出力生計は middleOutput コンポーネントで行う)
+    // dmax 最適化が完了したら allDmaxOutput に全ての中間結果を渡す (出力整形は DmaxResult と DmaxHistory コンポーネントで行う)
     if (dmaxOutput.includes("SCIP Status")) {
-      updateMiddleOutput(dmaxOutput);
+      updateAllDmaxOutput(dmaxOutput);
       // 最適化完了をボタンに反映
       setIsOptimizing(false);
+      startWasmWorker.terminate();
     }
   }, [dmaxOutput]);
 
@@ -203,11 +214,12 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     console.log("processingUserArmorsData = " + JSON.stringify(processingUserArmorsData, null, 4));
   }, [processingUserArmorsData]);
 
-  const [resetMiddleOutput, setResetMiddleOutput] = useState(false);
+  // DmaxOutput のリアルタイム中間出力をリセットする state
+  const [resetMiddleOutputInfo, setResetMiddleOutputInfo] = useState(false);
 
   // 最適化の開始
   const startOptimization = () => {
-    setResetMiddleOutput(true);
+    setResetMiddleOutputInfo(true);
     // ローカルサーバーの endpoint
     // const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
@@ -229,6 +241,13 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       userArmors.push(...userQuriousArmorData);
     }
 
+    // 肉質を水やられ状態に変換したデータを送信
+    const tempUserInputData = JSON.parse(JSON.stringify(userInputData));
+    tempUserInputData["モンスター"]["物理肉質"] = applyWaterBlight(
+      userInputData["モンスター"]["物理肉質"],
+      userInputData["モンスター"]["水やられ"]
+    );
+
     // CSRFトークンを取得
     const csrfToken = getCsrfToken();
 
@@ -241,7 +260,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         "X-CSRFToken": csrfToken,
       },
       body: JSON.stringify({
-        "userInputData": userInputData,
+        "userInputData": tempUserInputData,
         "armors": userArmors,
         "decos": decos,
         "staticData": staticData,
@@ -255,19 +274,19 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       })
       .then((data) => {
         // 前回の最終結果用データを隣に移動
-        updatePrevMiddleOutput(middleOutput);
-        updateMiddleOutput("");
+        // updatePrevMiddleOutput(allDmaxOutput);
+        updateAllDmaxOutput("");
 
         // 前回の中間出力データを消去
         eraseDmaxOutput();
         eraseChartData();
-        call_worker_wasm_main(data, updateDmaxOutput, updateChartData);
+        call_worker_wasm_main(data, updateDmaxOutput, updateChartData, setIsOptimizing);
       })
       .catch((error) => {
         setOpenStart(false);
         setOpenError(true);
         console.log(`Fetching from ${apiUrl} failed: ${error.message}`);
-        updateMiddleOutput(`Fetching from ${apiUrl} failed: ${error.message}`);
+        updateAllDmaxOutput(`Fetching from ${apiUrl} failed: ${error.message}`);
       });
 
     // ボタンを押した時点の入力データを保存する
@@ -280,7 +299,6 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
   // 最適化の中断
   const stopOptimization = () => {
-    console.log("stopOptimization called");
     if (startWasmWorker) {
       startWasmWorker.terminate();
     }
@@ -302,17 +320,6 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     // state の更新は非同期に行われる点に注意 (setIsOptimizing 直後に if (isOptimizing) 等としても反映されない)
     setIsOptimizing(!isOptimizing);
   };
-
-  useEffect(() => {
-    console.log(
-      "isOptimizing has changed = " + isOptimizing + "typeof(isOptimizing) = " + typeof isOptimizing
-    );
-    // if (isOptimizing) {
-    //   startOptimization();
-    // } else {
-    //   stopOptimization();
-    // }
-  }, [isOptimizing]);
 
   useEffect(() => {
     console.log("fabRight = " + fabRight + "typeof(fabRight) = " + typeof fabRight);
@@ -374,8 +381,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       <Grid container spacing={1} marginY={1}>
         <DmaxOutput
           dmaxOutput={dmaxOutput}
-          resetMiddleOutput={resetMiddleOutput}
-          setResetMiddleOutput={setResetMiddleOutput}
+          resetMiddleOutputInfo={resetMiddleOutputInfo}
+          setResetMiddleOutputInfo={setResetMiddleOutputInfo}
           startOptimization={startOptimization}
           stopOptimization={stopOptimization}
           handleToggle={handleToggle}
@@ -389,12 +396,12 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       </Grid>
       <Grid container spacing={1} marginY={1}>
         <DmaxResult
-          middleOutput={middleOutput}
+          allDmaxOutput={allDmaxOutput}
           processingUserInputData={processingUserInputData}
           processingUserArmorsData={processingUserArmorsData}
         />
 
-        <DmaxHistory middleOutput={middleOutput} />
+        <DmaxHistory allDmaxOutput={allDmaxOutput} />
       </Grid>
 
       <Snackbar
@@ -428,7 +435,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
             position: "fixed",
             bottom: "48px",
             // right: "48px",
-            right: `${fabRight}`,
+            right: `${fabRight}px`,
             animation: "fadeIn 0.5s ease-in-out",
           }}
           color="primary"

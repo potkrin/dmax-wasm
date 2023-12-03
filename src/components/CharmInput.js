@@ -98,22 +98,52 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
     setSlots([firstSlotLevel, secondSlotLevel, thirdSlotLevel]);
   }, [firstSlotLevel, secondSlotLevel, thirdSlotLevel]);
 
+  // 画面上に表示されているかどうかを判定し、表示されている場合は高さを計算する
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // isVisibleを更新する
+        setIsVisible(entry.isIntersecting);
+      },
+      {
+        root: null,
+        rootMargin: "0px",
+        threshold: 1.0,
+      }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, []);
+
   // 高さはダミーのSkillCardの高さを基にして計算
   const [containerHeight, setContainerHeight] = useState(0);
   const dummyCardRef = useRef(null); // ダミーのSkillCard用のref
 
   useEffect(() => {
-    // コンポーネントがマウントされた後、ダミーのSkillCardの高さを基にして計算を行います。
-    if (dummyCardRef.current) {
-      const height = dummyCardRef.current.offsetHeight;
-      setContainerHeight(height * 2); // 2つ分のSkillCardの高さを確保します。
-      console.log("dummyCardRef useEffect: " + height);
+    if (isVisible) {
+      // CharmInputが表示されているときの処理をここに書く
+      if (dummyCardRef.current) {
+        const height = dummyCardRef.current.offsetHeight;
+        setContainerHeight(height * 2); // 2つ分のSkillCardの高さを確保します。
+        console.log("dummyCardRef useEffect: " + height);
+      }
     }
-  }, []); // 依存関係があれば、ここに追加します。
+  }, [isVisible]);
 
   return (
     <>
-      <Box>
+      <Box ref={ref}>
         <Card
           variant="outlined"
           sx={{ borderRadius: 1, padding: "20px" }}
@@ -198,7 +228,7 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
             position: "absolute",
             zIndex: "-1",
             height: "auto",
-            width: "50%" /* この幅は実際のSkillCardの幅に依存します */,
+            width: "50%",
           }}
         >
           <SkillCard

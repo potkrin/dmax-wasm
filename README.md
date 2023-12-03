@@ -1,12 +1,18 @@
 # TODO
 - バグ
-  - 計算中にタブを切り替えると state が消えて計算結果がわからなくなる
-    - 原因不明なので contextAPI に切り替える方針
-  - カラーテーマをlocalstorageに保存
-  - 履歴へデータを移すタイミングが遅い (たぶん計算完了時に移行になっている)
-  - スマホ向けUIが壊れている
+  - スマホのサイドパネル用リンクとボタン
+  - スマホ向けUIが壊れている等 UI微調整
   - 並列ソルバ起動 の欄 で1スレッドだけ表示されない
-  - 計算中にタブを切り替えると処理が中断される
+  - スクロールバー表示と見た目の変更
+  * DONE: ドロップダウン選択時に Fabボタン(最適化) が動いてしまう問題
+  * DONE: sharedArrayBuffer is not defined をcatchして表示する仕組み
+  * DONE: 水やられが計算に反映されない
+  * DONE: QAテーブルに色を反映させる
+  * DONE: 履歴へデータを移すタイミングが遅い (たぶん計算完了時に移行になっている)
+  * DONE: カラーテーマをlocalstorageに保存
+  * DONE: 計算中にタブを切り替えると処理が中断される
+  * DONE: 計算中にタブを切り替えると state が消えて計算結果がわからなくなる
+    * DONE: 原因不明なので contextAPI に切り替える方針
   * DONE: 最適化不可能のときのアイコンがほしい
   * DONE: 中止を押したときの表示がおかしい
   * DONE: 装備が組めなかったときに "並列ソルバ起動" がクルクル回り続ける
@@ -15,18 +21,20 @@
   * DONE: 空の護石を追加出来てしまう問題
 - High 最優先:
   * DONE: ヘッダ/メニュー
+  - サーバにユーザデータ保存
   - 使い方
   - ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
-  - サーバにユーザデータ保存
   - ステージング環境
   - CI/CD: [デプロイやり方](https://softwarenote.info/p3789/)
 - Midle 実装予定:
+  - ひらがなカタカナ検索
+  - 結果の欄を読みやすいUIにする
+  - 水やられ時の肉質を表示
   - light/darkのカラーテーマを適切に切り替える(theme.pallet.primary.mainをそれぞれのモードに対応する色に)
     - [MUI v5 Theme ～基本の使い方からカスタマイズまで～](https://zenn.dev/longbridge/articles/c100d0311ed1be)
     - [ここで定義したcolorThemeを import して theme と入れ替えればいいのでは？](https://github.com/potkrin/dmax-wasm/blob/d167ca8702337a3e14c26e030bf0c7dafcce83f9/src/App.js#L226)
     - カラー自動決定してくれるサイト↑
     - ContextAPI 孫コンポーネントに渡せるらしい
-  - スクロールバー表示と見た目の変更
   - タブ移動で入力中の項目が消える 再現方法: 護石タブでスキル入力→傀異錬成タブに移動→護石タブに戻る
   - 処理やデータの流れを図にしたい(特にdmax中間出力の処理)
   - プリセット
@@ -34,6 +42,8 @@
   - 履歴
 - いつか:
   - スキルシミュモード
+  - ダメージ計算モード
+  - ダメージ計算伸びグラフモード
   - scip-wasm メモリ問題, 他ライブラリ問題
   - 中間結果を表示できないか?
   - 別武器に対応
@@ -159,7 +169,46 @@ cms/static/cms/
         └── main.8e3880be.js.map
 ```
 
+# アンマウントでstateが消える問題
+原因
+1. 自身を含む祖先の条件分岐等でレンダーされなくなるときアンマウントされる (hiddenやcssによる非表示で解決できる)
+2. styled コンポーネント https://github.com/potkrin/unmount-caused-by-styled-div/tree/master
+3. React.StrictMode を利用すると再マウントされる
 
+# wasm バイナリを再コンパイルした場合, brachistochrone.js に以下を追記する
+```js
+if (ENVIRONMENT_IS_PTHREAD) {
+  wasmMemory = Module["wasmMemory"];
+} else {
+  if (Module["wasmMemory"]) {
+    wasmMemory = Module["wasmMemory"];
+  } else {
+    wasmMemory = new WebAssembly.Memory({
+      "initial": INITIAL_MEMORY / 65536,
+      "maximum": INITIAL_MEMORY / 65536,
+      "shared": true,
+    });
+
+    // ここから追加
+    if (typeof SharedArrayBuffer === "undefined") {
+      throw new Error("SharedArrayBuffer is not defined");
+    }
+    // ここまで追加
+
+    if (!(wasmMemory.buffer instanceof SharedArrayBuffer)) {
+      err(
+        "requested a shared WebAssembly.Memory but the returned buffer is not a SharedArrayBuffer, indicating that while the browser has SharedArrayBuffer it does not have WebAssembly threads support - you may need to set a flag"
+      );
+      if (ENVIRONMENT_IS_NODE) {
+        err(
+          "(on node you may need: --experimental-wasm-threads --experimental-wasm-bulk-memory and/or recent version)"
+        );
+      }
+      throw Error("bad memory");
+    }
+  }
+}
+```
 
 
 

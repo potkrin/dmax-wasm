@@ -1,9 +1,10 @@
 # TODO
 - バグ
-  - スマホのサイドパネル用リンクとボタン
   - スマホ向けUIが壊れている等 UI微調整
+  - 読みやすい段落幅 https://www.gizmodo.jp/2023/12/google-gemini.html
   - 並列ソルバ起動 の欄 で1スレッドだけ表示されない
   - スクロールバー表示と見た目の変更
+  * DONE: スマホのサイドパネル用リンクとボタン
   * DONE: ドロップダウン選択時に Fabボタン(最適化) が動いてしまう問題
   * DONE: sharedArrayBuffer is not defined をcatchして表示する仕組み
   * DONE: 水やられが計算に反映されない
@@ -21,12 +22,14 @@
   * DONE: 空の護石を追加出来てしまう問題
 - High 最優先:
   * DONE: ヘッダ/メニュー
-  - サーバにユーザデータ保存
   - 使い方
   - ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
   - ステージング環境
   - CI/CD: [デプロイやり方](https://softwarenote.info/p3789/)
 - Midle 実装予定:
+  - 狂竜症感染率ツールチップ
+  - コンテンツの高さが足りないときに body の白色が見えてしまう (再現方法: めいっぱい縮小表示するなどしてウィンドウの高さを埋められないようにする)
+  - サーバにユーザデータ保存
   - ひらがなカタカナ検索
   - 結果の欄を読みやすいUIにする
   - 水やられ時の肉質を表示
@@ -210,7 +213,21 @@ if (ENVIRONMENT_IS_PTHREAD) {
 }
 ```
 
+# Reactのレンダリングタイミング
+そもそもReactデフォルトの機能でコンポーネントの再レンダリングが走るタイミングは以下のパターンになります。
 
+1. 親コンポーネントがレンダリングされた場合（子コンポーネントのpropsに変更があったかは関与しない)
+2. stateが変更された場合
+  - クラスコンポーネントのthis.setState()
+  - 関数コンポーネントのuseStateのセッター
+  - 関数コンポーネントのuseReducerの dispatch()
+3. ContextのValueが変更された場合（ConsumerComponent限定）
+
+※stateが変更された場合は、変更前と変更後でstateをshallow比較して差分があった時のみ再レンダリングされる
+
+※強制レンダリングであるforceUpdateの実行は除く
+
+参考:[React、Reduxのレンダリングとメモ化のタイミングまとめ](https://qiita.com/obake_fe/items/252b48b61df435e68fc2)
 
 
 # below is a README.md from Create React App

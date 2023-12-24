@@ -10,6 +10,7 @@ import {
   Fab,
   ThemeProvider,
   createTheme,
+  ListItemIcon,
 } from "@mui/material";
 import { DmaxMain } from "./components/DmaxMain";
 import { CharmManager } from "./components/CharmManager";
@@ -33,8 +34,10 @@ import Button from "@mui/material/Button";
 import { theme } from "./components/ThemeProvider";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import { LDThemeContext, lightTheme, darkTheme } from "./components/LDThemeContext";
+import Usage from "./components/Usage";
 
 /**
  * TODO:
@@ -169,24 +172,6 @@ function App() {
     setMobileOpen((prevState) => !prevState);
   };
 
-  const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        MUI
-      </Typography>
-      <Divider />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary={item} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
-
   const [currentTheme, setCurrentTheme] = React.useState(
     localStorage.getItem("colorTheme") === "dark" ? darkTheme : lightTheme
   );
@@ -198,6 +183,49 @@ function App() {
     }
     setCurrentTheme((prevTheme) => (prevTheme === lightTheme ? darkTheme : lightTheme));
   };
+
+  const drawer = (
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: "left" }}>
+      <Typography variant="h6" sx={{ my: 2, ml: 2 }}>
+        DMAX
+      </Typography>
+      <Divider />
+      <List>
+        {/* {navItems.map((item) => (
+          <ListItem key={item} disablePadding> */}
+        {/* <ListItemButton sx={{ textAlign: "center" }}>
+              <ListItemText primary={item} />
+            </ListItemButton> */}
+        <ListItem key={"leaderboardLink"} disablePadding>
+          <ListItemButton sx={{ color: currentTheme.palette.primary.contrastText }}>
+            <ListItemIcon>
+              <OpenInNewIcon />
+            </ListItemIcon>
+            <a
+              href="https://www.mhrspeedrun.com/cms/quest/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: currentTheme.palette.text.primary,
+                textDecoration: "none",
+              }}
+            >
+              TA集計
+            </a>
+          </ListItemButton>
+        </ListItem>
+        <ListItem key={"themeToggle"} disablePadding>
+          <ListItemButton onClick={toggleTheme}>
+            <ListItemIcon>
+              {currentTheme.palette.mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+            </ListItemIcon>
+            <ListItemText primary={currentTheme.palette.mode === "dark" ? "Light" : "Dark"} />
+          </ListItemButton>
+        </ListItem>
+        {/* ))} */}
+      </List>
+    </Box>
+  );
 
   // // アンマウント-stateリセット問題を引き起こすので使用しない
   // // <div className="App"></div> の背景色を変更するために styled-components を使用
@@ -323,6 +351,9 @@ function App() {
             </TabPanel>
             <TabPanel value={value} index={2} dir={theme.direction}>
               <QuriousArmorManager />
+            </TabPanel>
+            <TabPanel value={value} index={3} dir={theme.direction}>
+              <Usage />
             </TabPanel>
           </Container>
         </div>

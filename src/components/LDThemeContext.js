@@ -23,6 +23,14 @@ export const lightTheme = createTheme({
       default: "#f3f6f9",
     },
   },
+  typography: {
+    h1: {
+      fontSize: "1.5rem",
+    },
+    h2: {
+      fontSize: "1.0rem",
+    },
+  },
 });
 
 export const darkTheme = createTheme({
@@ -48,6 +56,14 @@ export const darkTheme = createTheme({
     background: {
       default: "#303030",
       paper: "#424242",
+    },
+  },
+  typography: {
+    h1: {
+      fontSize: "1.5rem",
+    },
+    h2: {
+      fontSize: "1.0rem",
     },
   },
 });

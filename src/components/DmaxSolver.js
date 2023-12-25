@@ -79,8 +79,7 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, 
 
     startWasmWorker.onmessage = function (e) {
       const worker_response = e.data;
-      //console.log("message received from worker: " + worker_response);
-      // console.log(worker_response);
+      console.log("[DEBUG] message received from worker: " + worker_response);
       updateDmaxOutput(worker_response);
 
       const lines = worker_response.trim().split("\n");
@@ -113,7 +112,8 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, 
       console.error("error message received from worker: " + workerError);
       updateDmaxOutput(workerError);
       setIsOptimizing(false);
-      startWasmWorker.terminate();
+      // 終了が早すぎると postmessage の受信が中断されてしまうので保留
+      // startWasmWorker.terminate();
     };
   } else {
     console.log("Your browser doesn't support web workers.");
@@ -173,7 +173,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       updateAllDmaxOutput(dmaxOutput);
       // 最適化完了をボタンに反映
       setIsOptimizing(false);
-      startWasmWorker.terminate();
+      // 終了が早すぎると postmessage の受信が中断されてしまうので保留
+      // startWasmWorker.terminate();
     }
   }, [dmaxOutput]);
 

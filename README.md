@@ -216,7 +216,7 @@ if (ENVIRONMENT_IS_PTHREAD) {
 # Reactのレンダリングタイミング
 そもそもReactデフォルトの機能でコンポーネントの再レンダリングが走るタイミングは以下のパターンになります。
 
-1. 親コンポーネントがレンダリングされた場合（子コンポーネントのpropsに変更があったかは関与しない)
+1. 親コンポーネントがレンダリングされた場合（子コンポーネントのpropsに変更があったかは関与しない）
 2. stateが変更された場合
   - クラスコンポーネントのthis.setState()
   - 関数コンポーネントのuseStateのセッター
@@ -229,6 +229,26 @@ if (ENVIRONMENT_IS_PTHREAD) {
 
 参考:[React、Reduxのレンダリングとメモ化のタイミングまとめ](https://qiita.com/obake_fe/items/252b48b61df435e68fc2)
 
+# webworker からの postmessage が途中で途切れる問題
+起動した webworker を terminate するタイミングが早すぎると未送信の postmessageが受信できなくなります。
+デバッグビルドでは動作が遅いため発生しづらいですが、プロダクションビルドでは高速に動作するため問題が発生しやすくなります。
+
+```js
+  useEffect(() => {
+    // dmax 最適化が完了したら allDmaxOutput に全ての中間結果を渡す (出力整形は DmaxResult と DmaxHistory コンポーネントで行う)
+    if (dmaxOutput.includes("SCIP Status")) {
+      updateAllDmaxOutput(dmaxOutput);
+      // 最適化完了をボタンに反映
+      setIsOptimizing(false);
+      // 終了処理が早すぎて message を受信できず終了する
+      // startWasmWorker.terminate();
+    }
+  }, [dmaxOutput]);
+```
+
+### 対策
+1. 正常系・異常系において wasm プログラムが終了する際に出力されるメッセージを固定する
+2. 終了処理を行わない
 
 # below is a README.md from Create React App
 

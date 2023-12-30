@@ -45,4 +45,4 @@ jobs:
 
             # Ensure pm2 starts on reboot
             pm2 save
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S pm2 startup
+            pm2 startup

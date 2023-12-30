@@ -26,6 +26,14 @@ jobs:
             git switch develop
             GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" git fetch origin develop && git reset --hard origin/develop
 
+            # nvm 環境の初期化
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+            # Node.jsの特定のバージョンを使用
+            nvm use v20.10.0
+
             # Install dependencies
             npm install
 

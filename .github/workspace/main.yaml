@@ -1,0 +1,40 @@
+name: Deploy dmax-wasm Next.js Application
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging Environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: ssh and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            eval `ssh-agent`
+            ssh-add ~/.ssh/id_remote
+            cd /home/potkrin/dmax-wasm-staging
+
+            # Fetch code from origin develop branch
+            git switch develop
+            GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" git fetch origin develop && git reset --hard origin/develop
+
+            # Install dependencies
+            npm install
+
+            # Build Next.js application
+            NODE_ENV=production npm run build
+
+            # Restart application using pm2
+            pm2 restart dmax-wasm
+
+            # Ensure pm2 starts on reboot
+            pm2 save
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S pm2 startup

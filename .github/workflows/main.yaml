@@ -40,8 +40,14 @@ jobs:
             # Build Next.js application
             NODE_ENV=production npm run build
 
-            # Restart application using pm2
-            pm2 restart dmax-wasm-staging
+            # Check if the pm2 process exists and restart or start accordingly
+            if pm2 show dmax-wasm-staging > /dev/null; then
+                echo "pm2 process exists, restarting..."
+                pm2 restart dmax-wasm-staging
+            else
+                echo "pm2 process does not exist, starting..."
+                pm2 start ecosystem.config.js
+            fi
 
             # Ensure pm2 starts on reboot
             pm2 save

@@ -41,7 +41,7 @@ jobs:
             NODE_ENV=production npm run build
 
             # Restart application using pm2
-            pm2 restart dmax-wasm
+            pm2 restart dmax-wasm-staging
 
             # Ensure pm2 starts on reboot
             pm2 save

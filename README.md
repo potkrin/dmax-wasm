@@ -1,10 +1,17 @@
 # TODO
 - バグ
+  - [x] test
+  - [ ] Next.js 移行対応
+    - [ ] images ファイルの修正
+    - [ ] SSG/SSR対応 window, localstorage など
+  - [ ] Fab をなんとかする
+  - ハンドルされていない例外の表示
   - error message received from worker: Uncaught ReferenceError: SharedArrayBuffer is not defined
   - スマホ向けUIが壊れている等 UI微調整
   - 読みやすい段落幅 https://www.gizmodo.jp/2023/12/google-gemini.html
   - 並列ソルバ起動 の欄 で1スレッドだけ表示されない
   - スクロールバー表示と見た目の変更
+  - CI/CDドキュメントを書く
   * DONE: スマホのサイドパネル用リンクとボタン
   * DONE: ドロップダウン選択時に Fabボタン(最適化) が動いてしまう問題
   * DONE: sharedArrayBuffer is not defined をcatchして表示する仕組み
@@ -84,8 +91,73 @@
 dmax シミュレータの wasm 版です。ブラウザ上で dmax を動作させることを目的とします。
 
 # 動かし方
+開発環境
 ```sh
-npm start
+hoge@:dmax-wasm$ hostname
+DESKTOP-BP23A1J
+
+hoge@:dmax-wasm$ pwd
+/home/hoge/work/react-tutorial/dmax-wasm
+
+hoge@:dmax-wasm$ npm run dev
+
+> dmax-wasm@0.1.0 dev
+> node server.js
+
+> Ready on http://localhost:3000
+ ○ Compiling / ...
+ ✓ Compiled / in 1815ms (2493 modules)
+
+```
+
+本番ビルドの動作確認
+```sh
+hoge@:dmax-wasm$ hostname
+DESKTOP-BP23A1J
+
+hoge@:dmax-wasm$ pwd
+/home/hoge/work/react-tutorial/dmax-wasm
+hoge@:dmax-wasm$ npm run build
+
+> dmax-wasm@0.1.0 build
+> next build --no-lint
+
+ ⚠ Linting is disabled
+ ✓ Checking validity of types
+   ▲ Next.js 14.0.4
+
+ ✓ Creating an optimized production build
+ ✓ Compiled successfully
+ ✓ Collecting page data
+ ✓ Generating static pages (3/3)
+ ✓ Collecting build traces
+ ✓ Finalizing page optimization
+
+Route (pages)                              Size     First Load JS
+┌ ○ / (418 ms)                             360 kB          439 kB
+├   /_app                                  0 B            78.4 kB
+├ ○ /404                                   182 B          78.6 kB
+└ λ /api/hello                             0 B            78.4 kB
++ First Load JS shared by all              78.7 kB
+  ├ chunks/framework-10fac88913917d91.js   45.2 kB
+  ├ chunks/main-18598cceffbdea39.js        31.8 kB
+  ├ chunks/pages/_app-fee1c4e9c5c504fd.js  300 B
+  ├ chunks/webpack-36d12a75f0098f30.js     1.05 kB
+  └ css/23bc28149f53614d.css               282 B
+
+○  (Static)   prerendered as static content
+λ  (Dynamic)  server-rendered on demand using Node.js
+
+hoge@:dmax-wasm$ npm start
+
+> dmax-wasm@0.1.0 start
+> next start
+
+   ▲ Next.js 14.0.4
+   - Local:        http://localhost:3000
+
+ ✓ Ready in 153ms
+
 ```
 
 # カスタムヘッダーの利用
@@ -96,15 +168,99 @@ npm install craco
 
 craco.config.js に設定を記述します。
 
+wasm をブラウザで利用するためのカスタムHTTPヘッダーを付与するため、Express サーバーを導入します。
+Express -> Next.js のようにアクセスされます。
+
+```sh
+npm install express
+```
+
+/server.js を定義し、npm コマンドを修正します。
+
+```js
+"scripts": {
+    "dev": "node server.js",
+    "build": "next build --no-lint",
+    "start": "next start",
+    "lint": "next lint"
+  },
+```
+
+以下のコマンドで開発環境のサーバーを起動します。
+
+```sh
+npm run dev
+```
+
+本番環境/ステージング環境では nginx の設定ファイルでカスタムHTTPヘッダーを付与します。
+
+```ini
+# リダイレクトを流される側の設定
+server {
+    # 設定しているウェブサイトへのリクエストを通すポート
+    # listen 443 ssl default_server;
+    listen 8000 ssl default_server;
+    # ウェブサイトのIPもしくはドメイン名
+    server_name www.mhrspeedrun.com;
+    ssl on;
+    ssl_certificate /etc/letsencrypt/live/www.mhrspeedrun.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.mhrspeedrun.com/privkey.pem;
+
+    # dmax-wasm (Next.jsサーバー) への振り分け
+    location /dmax {
+        proxy_pass http://localhost:3001/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        # カスタムヘッダーを追加
+        add_header Cross-Origin-Opener-Policy "same-origin";
+        add_header Cross-Origin-Embedder-Policy "require-corp";
+    }
+
+    location /_next/static/ {
+        proxy_pass http://localhost:3001/_next/static/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        # カスタムヘッダーを追加
+        add_header Cross-Origin-Opener-Policy "same-origin";
+        add_header Cross-Origin-Embedder-Policy "require-corp";
+    }
+
+    location /dmax-core/ {
+        proxy_pass http://localhost:3001/dmax-core/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        # カスタムヘッダーを追加
+        add_header Cross-Origin-Opener-Policy "same-origin";
+        add_header Cross-Origin-Embedder-Policy "require-corp";
+    }
+    ...略
+
+```
+
+
 # ファイル説明
 | ファイル | 説明 |
 | ---- | ---- |
-| public/dmax-core | wasm版 dmax のバイナリとその js グルーコード, 呼び出しのための webworker などを定義しているファイル群。public以下に配置しないと、**reactのテンプレートhtmlに上書きされてしまう**場合があるため、public以下に配置する。 |
+| pages/ | ルーティングに利用されるフォルダ |
+| pages/api/ | Next.js で提供したいAPIを定義するフォルダ (dmax-wasmでは利用しない予定) |
+| pages/index.js | **http://localhost:3000/ へのアクセスに対応するファイル。ここから App.js などの dmax-wasm のコンポーネント群を呼び出す。** |
+| components | pages から呼び出すコンポーネント群 |
+| .github/workflows/ | github Actions による CI/CD の設定ファイル |
+| exosystem.config.js | pm2 によるサーバー起動オプションを定義。github actions のスクリプトで利用 |
+| public/dmax-core/ | wasm版 dmax のバイナリとその js グルーコード, 呼び出しのための webworker などを定義しているファイル群。public以下に配置しないと、**reactのテンプレートhtmlに上書きされてしまう**場合があるため、public以下に配置する。 |
+| data/ | 静的なデータを定義 |
+| build-and-copy.sh | (DUPLICATED) 旧 create-react-app バージョンにおいて Django サーバーのローカルリポジトリにファイルをコピーするのに利用していたスクリプトファイル。不要だが残しておく。 |
+
+
 
 # 動作重くない？
 以下の手順によりプロダクションビルドで試してみてください。
 ```sh
-npm run build && serve -s build
+$ npm run build
+$ npm start
 ```
 
 単一のstate (中身はオブジェクト) で全てのUIコンポーネントの状態管理しているため、ある一つのUIに入力を行うとほぼすべてのUIパーツに再レンダリングが走ります。
@@ -114,7 +270,9 @@ npm run build && serve -s build
 - メモ化
 - React ContextAPI の利用 ...
 
-# Django デプロイ用ビルド手順
+Pixel3a (4年半程前の機種) でアクセスしたところストレスフルな動作だったので分割&メモ化を検討します。
+
+# [DUPLICATED] Django デプロイ用ビルド手順 (古い手順)
 Django において cms/static/cms 以下にファイルを配置することを想定
 
 ```sh
@@ -179,7 +337,8 @@ cms/static/cms/
 2. styled コンポーネント https://github.com/potkrin/unmount-caused-by-styled-div/tree/master
 3. React.StrictMode を利用すると再マウントされる
 
-# wasm バイナリを再コンパイルした場合, brachistochrone.js に以下を追記する
+# エラーハンドリング: Shared Array Buffer is not defined
+- wasm バイナリを再コンパイルした場合, brachistochrone.js に以下を追記する
 ```js
 if (ENVIRONMENT_IS_PTHREAD) {
   wasmMemory = Module["wasmMemory"];

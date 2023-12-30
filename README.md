@@ -161,13 +161,6 @@ hoge@:dmax-wasm$ npm start
 ```
 
 # カスタムヘッダーの利用
-wasm をブラウザで利用するためのカスタムHTTPヘッダーを付与するため、craco を導入します。
-```
-npm install craco
-```
-
-craco.config.js に設定を記述します。
-
 wasm をブラウザで利用するためのカスタムHTTPヘッダーを付与するため、Express サーバーを導入します。
 Express -> Next.js のようにアクセスされます。
 
@@ -242,6 +235,7 @@ server {
 
 
 # ファイル説明
+参考: [Next.js Pages Router チュートリアル](https://nextjs.org/learn-pages-router/basics/create-nextjs-app)
 | ファイル | 説明 |
 | ---- | ---- |
 | pages/ | ルーティングに利用されるフォルダ |
@@ -271,6 +265,126 @@ $ npm start
 - React ContextAPI の利用 ...
 
 Pixel3a (4年半程前の機種) でアクセスしたところストレスフルな動作だったので分割&メモ化を検討します。
+
+# エラーハンドリング: Shared Array Buffer is not defined
+- wasm バイナリを再コンパイルした場合, brachistochrone.js に以下を追記する
+```js
+if (ENVIRONMENT_IS_PTHREAD) {
+  wasmMemory = Module["wasmMemory"];
+} else {
+  if (Module["wasmMemory"]) {
+    wasmMemory = Module["wasmMemory"];
+  } else {
+    wasmMemory = new WebAssembly.Memory({
+      "initial": INITIAL_MEMORY / 65536,
+      "maximum": INITIAL_MEMORY / 65536,
+      "shared": true,
+    });
+
+    // ここから追加
+    if (typeof SharedArrayBuffer === "undefined") {
+      throw new Error("SharedArrayBuffer is not defined");
+    }
+    // ここまで追加
+
+    if (!(wasmMemory.buffer instanceof SharedArrayBuffer)) {
+      err(
+        "requested a shared WebAssembly.Memory but the returned buffer is not a SharedArrayBuffer, indicating that while the browser has SharedArrayBuffer it does not have WebAssembly threads support - you may need to set a flag"
+      );
+      if (ENVIRONMENT_IS_NODE) {
+        err(
+          "(on node you may need: --experimental-wasm-threads --experimental-wasm-bulk-memory and/or recent version)"
+        );
+      }
+      throw Error("bad memory");
+    }
+  }
+}
+```
+
+# webworker からの postmessage が途中で途切れる問題
+起動した webworker を terminate するタイミングが早すぎると未送信の postmessageが受信できなくなります。
+デバッグビルドでは動作が遅いため発生しづらいですが、プロダクションビルドでは高速に動作するため問題が発生しやすくなります。
+
+```js
+  useEffect(() => {
+    // dmax 最適化が完了したら allDmaxOutput に全ての中間結果を渡す (出力整形は DmaxResult と DmaxHistory コンポーネントで行う)
+    if (dmaxOutput.includes("SCIP Status")) {
+      updateAllDmaxOutput(dmaxOutput);
+      // 最適化完了をボタンに反映
+      setIsOptimizing(false);
+      // 終了処理が早すぎて message を受信できず終了する
+      // startWasmWorker.terminate();
+    }
+  }, [dmaxOutput]);
+```
+
+### 対策
+1. 正常系・異常系において wasm プログラムが終了する際に出力されるメッセージを固定する
+2. 終了処理を行わない
+
+
+
+# アンマウントでstateが消える問題
+## 考えられる原因
+1. 自身を含む祖先の条件分岐等でレンダーされなくなるときアンマウントされる (hiddenやcssによる非表示で解決できる)
+2. styled コンポーネント https://github.com/potkrin/unmount-caused-by-styled-div/tree/master
+3. React.StrictMode を利用すると再マウントされる
+
+## styled('div') の子要素内でタブ切り替えを実行するとタブ子要素がアンマウントされる問題
+以下のリポジトリで再現可能
+- https://github.com/potkrin/unmount-caused-by-styled-div
+
+なにが問題か？
+- タブ切り替えを行うと、タブ子要素がアンマウントされタブ子要素の state がリセットされてしまうという問題
+- 一つのタブ内で重い処理とその中間出力表示を行う予定なので、中間出力を管理している state が消えると致命的
+
+#### おしえて ChatGPT-4 先生！
+ChatGPT 4
+
+> コード内でstyledコンポーネント（AppDiv）を使用するとタブ切替時にアンマウントが発生する理由は、AppDivコンポーネントがApp関数コンポーネント内で定義されているためです。この配置により、Appコンポーネントの状態（この場合はタブの状態）が変更されるたびに、Appコンポーネントが再レンダリングされます。そして、AppDivも再作成され、新しいインスタンスとして扱われます。
+>
+> Reactでは、コンポーネントのインスタンスが変わると、そのコンポーネント内の子要素も新しいものとして扱われます。これにより、子要素はアンマウントされ、新しいインスタンスがマウントされます。そのため、TabChildコンポーネントもアンマウントされ、新しいインスタンスがマウントされます。
+> 
+> 一方、\<div>要素の場合、これはプリミティブなHTML要素であり、再レンダリング時に新しいインスタンスが生成されることはありません。従って、\<div>を使用する場合、子要素は不要にアンマウントされることはありません。
+> 
+> この問題を解決するためには、AppDivコンポーネントをAppコンポーネントの外に移動させることが効果的です。これにより、AppDivはアプリケーションのライフサイクルにわたって一貫したインスタンスを保持し、その子要素の不必要なアンマウントを防ぐことができます。
+
+
+アンマウントで消えてほしくない state は親コンポーネントで定義して ContextAPI 経由で子・孫コンポーネントに渡したほうが安定かも
+
+再現手順
+```sh
+git clone git@github.com:potkrin/unmount-caused-by-styled-div.git
+cd unmount-caused-by-styled-div
+
+# npm を導入しておいてください
+# $ npm --version
+#   6.14.15
+
+npm install
+npm start
+# ブラウザで http://localhost:3000/ 等にアクセス
+# devtools のコンソールを開いた状態でタブを切り替える
+```
+
+
+# Reactのレンダリングタイミング
+そもそもReactデフォルトの機能でコンポーネントの再レンダリングが走るタイミングは以下のパターンになります。
+
+1. 親コンポーネントがレンダリングされた場合（子コンポーネントのpropsに変更があったかは関与しない）
+2. stateが変更された場合
+  - クラスコンポーネントのthis.setState()
+  - 関数コンポーネントのuseStateのセッター
+  - 関数コンポーネントのuseReducerの dispatch()
+3. ContextのValueが変更された場合（ConsumerComponent限定）
+
+※stateが変更された場合は、変更前と変更後でstateをshallow比較して差分があった時のみ再レンダリングされる
+
+※強制レンダリングであるforceUpdateの実行は除く
+
+参考:[React、Reduxのレンダリングとメモ化のタイミングまとめ](https://qiita.com/obake_fe/items/252b48b61df435e68fc2)
+
 
 # [DUPLICATED] Django デプロイ用ビルド手順 (古い手順)
 Django において cms/static/cms 以下にファイルを配置することを想定
@@ -330,87 +444,6 @@ cms/static/cms/
         ├── main.8e3880be.js.LICENSE.txt
         └── main.8e3880be.js.map
 ```
-
-# アンマウントでstateが消える問題
-原因
-1. 自身を含む祖先の条件分岐等でレンダーされなくなるときアンマウントされる (hiddenやcssによる非表示で解決できる)
-2. styled コンポーネント https://github.com/potkrin/unmount-caused-by-styled-div/tree/master
-3. React.StrictMode を利用すると再マウントされる
-
-# エラーハンドリング: Shared Array Buffer is not defined
-- wasm バイナリを再コンパイルした場合, brachistochrone.js に以下を追記する
-```js
-if (ENVIRONMENT_IS_PTHREAD) {
-  wasmMemory = Module["wasmMemory"];
-} else {
-  if (Module["wasmMemory"]) {
-    wasmMemory = Module["wasmMemory"];
-  } else {
-    wasmMemory = new WebAssembly.Memory({
-      "initial": INITIAL_MEMORY / 65536,
-      "maximum": INITIAL_MEMORY / 65536,
-      "shared": true,
-    });
-
-    // ここから追加
-    if (typeof SharedArrayBuffer === "undefined") {
-      throw new Error("SharedArrayBuffer is not defined");
-    }
-    // ここまで追加
-
-    if (!(wasmMemory.buffer instanceof SharedArrayBuffer)) {
-      err(
-        "requested a shared WebAssembly.Memory but the returned buffer is not a SharedArrayBuffer, indicating that while the browser has SharedArrayBuffer it does not have WebAssembly threads support - you may need to set a flag"
-      );
-      if (ENVIRONMENT_IS_NODE) {
-        err(
-          "(on node you may need: --experimental-wasm-threads --experimental-wasm-bulk-memory and/or recent version)"
-        );
-      }
-      throw Error("bad memory");
-    }
-  }
-}
-```
-
-# Reactのレンダリングタイミング
-そもそもReactデフォルトの機能でコンポーネントの再レンダリングが走るタイミングは以下のパターンになります。
-
-1. 親コンポーネントがレンダリングされた場合（子コンポーネントのpropsに変更があったかは関与しない）
-2. stateが変更された場合
-  - クラスコンポーネントのthis.setState()
-  - 関数コンポーネントのuseStateのセッター
-  - 関数コンポーネントのuseReducerの dispatch()
-3. ContextのValueが変更された場合（ConsumerComponent限定）
-
-※stateが変更された場合は、変更前と変更後でstateをshallow比較して差分があった時のみ再レンダリングされる
-
-※強制レンダリングであるforceUpdateの実行は除く
-
-参考:[React、Reduxのレンダリングとメモ化のタイミングまとめ](https://qiita.com/obake_fe/items/252b48b61df435e68fc2)
-
-# webworker からの postmessage が途中で途切れる問題
-起動した webworker を terminate するタイミングが早すぎると未送信の postmessageが受信できなくなります。
-デバッグビルドでは動作が遅いため発生しづらいですが、プロダクションビルドでは高速に動作するため問題が発生しやすくなります。
-
-```js
-  useEffect(() => {
-    // dmax 最適化が完了したら allDmaxOutput に全ての中間結果を渡す (出力整形は DmaxResult と DmaxHistory コンポーネントで行う)
-    if (dmaxOutput.includes("SCIP Status")) {
-      updateAllDmaxOutput(dmaxOutput);
-      // 最適化完了をボタンに反映
-      setIsOptimizing(false);
-      // 終了処理が早すぎて message を受信できず終了する
-      // startWasmWorker.terminate();
-    }
-  }, [dmaxOutput]);
-```
-
-### 対策
-1. 正常系・異常系において wasm プログラムが終了する際に出力されるメッセージを固定する
-2. 終了処理を行わない
-
-
 
 # 以下は Next.js の README.md
 

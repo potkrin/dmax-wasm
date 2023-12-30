@@ -1,0 +1,64 @@
+import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom/client";
+// import "./index.css";
+import App from "../components/App";
+// import reportWebVitals from "./reportWebVitals";
+
+import { theme } from "../components/ThemeProvider";
+import { ThemeProvider } from "@emotion/react";
+
+// const root = ReactDOM.createRoot(document.getElementById("root"));
+// root.render(
+//   // タブ切り替え時にアンマウント→stateリセットの問題を引き起こすのでStrictModeは使わない
+//   // <React.StrictMode>
+//   <ThemeProvider theme={theme}>
+//     <App />
+//   </ThemeProvider>
+//   // {/* </React.StrictMode> */}
+// );
+
+// // // If you want to start measuring performance in your app, pass a function
+// // // to log results (for example: reportWebVitals(console.log))
+// // // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+// // reportWebVitals();
+
+import Head from "next/head";
+// import Layout, { siteTitle } from "../components/layout";
+// import utilStyles from "../styles/utils.module.css";
+// import { getSortedPostsData } from "../lib/posts";
+import Link from "next/link";
+// import Date from "../components/date";
+
+// export async function getStaticProps() {
+//   const allPostsData = getSortedPostsData();
+//   return {
+//     props: {
+//       allPostsData,
+//     },
+//   };
+// }
+
+export default function Home() {
+  const [isClientSide, setIsClientSide] = useState(false);
+
+  useEffect(() => {
+    // コンポーネントがクライアントサイドでマウントされたときにフラグを true に設定
+    setIsClientSide(true);
+  }, []);
+
+  if (!isClientSide) {
+    // クライアントサイドでマウントされるまでは何もレンダリングしない、またはプレースホルダーを表示
+    return null; // またはローディングインジケーターなど
+  }
+
+  return (
+    <>
+      <Head>
+        <title>Dmax</title>
+      </Head>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </>
+  );
+}

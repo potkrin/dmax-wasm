@@ -1,69 +1,72 @@
 # TODO
 - バグ
-  - [x] test
+  - [ ] Fab をなんとかする
+  - [ ] swipable 再検討
+  - [ ] ハンドルされていない例外の表示
+  - [ ] error message received from worker: Uncaught ReferenceError: SharedArrayBuffer is not defined
+  - [ ] スマホ向けUIが壊れている等 UI微調整
+  - [ ] 読みやすい段落幅 https://www.gizmodo.jp/2023/12/google-gemini.html
+  - [ ] 並列ソルバ起動 の欄 で1スレッドだけ表示されない
+  - [ ] スクロールバー表示と見た目の変更
+  - [ ] CI/CDドキュメントを書く
+  - [ ] 警告表示
+    - [ ] スマホの動作速度 
+    - [ ] localstorage 消える問題
+  - [x] スマホのサイドパネル用リンクとボタン
+  - [x] ドロップダウン選択時に Fabボタン(最適化) が動いてしまう問題
+  - [x] sharedArrayBuffer is not defined をcatchして表示する仕組み
+  - [x] 水やられが計算に反映されない
+  - [x] QAテーブルに色を反映させる
+  - [x] 履歴へデータを移すタイミングが遅い (たぶん計算完了時に移行になっている)
+  - [x] カラーテーマをlocalstorageに保存
+  - [x] 計算中にタブを切り替えると処理が中断される
+  - [x] 計算中にタブを切り替えると state が消えて計算結果がわからなくなる
+    - [x] 原因不明なので contextAPI に切り替える方針
+  - [x] 最適化不可能のときのアイコンがほしい
+  - [x] 中止を押したときの表示がおかしい
+  - [x] 装備が組めなかったときに "並列ソルバ起動" がクルクル回り続ける
+  - [x] 護石で同じスキルが追加できてしまう問題 再現方法: 攻撃→見切り→攻撃削除→見切り
+  - [x] 傀異錬成防具未選択状態で登録を押すとエラー
+  - [x] 空の護石を追加出来てしまう問題
+- High 最優先:
+  - [ ] ユーザデータDB保存 API提供
+    - [ ] APIの実装 (セッション認証付き)
+    - [ ] 同期処理
+    - [ ] 同期選択用UI [stepper を利用](https://m1.material.io/components/steppers.html#steppers-specs) 
+  - [ ] 使い方
   - [ ] Next.js 移行対応
     - [ ] images ファイルの修正
     - [ ] SSG/SSR対応 window, localstorage など
-  - [ ] Fab をなんとかする
-  - ハンドルされていない例外の表示
-  - error message received from worker: Uncaught ReferenceError: SharedArrayBuffer is not defined
-  - スマホ向けUIが壊れている等 UI微調整
-  - 読みやすい段落幅 https://www.gizmodo.jp/2023/12/google-gemini.html
-  - 並列ソルバ起動 の欄 で1スレッドだけ表示されない
-  - スクロールバー表示と見た目の変更
-  - CI/CDドキュメントを書く
-  - 警告表示
-    - スマホの動作速度 
-    - localstorage 消える問題
-  * DONE: スマホのサイドパネル用リンクとボタン
-  * DONE: ドロップダウン選択時に Fabボタン(最適化) が動いてしまう問題
-  * DONE: sharedArrayBuffer is not defined をcatchして表示する仕組み
-  * DONE: 水やられが計算に反映されない
-  * DONE: QAテーブルに色を反映させる
-  * DONE: 履歴へデータを移すタイミングが遅い (たぶん計算完了時に移行になっている)
-  * DONE: カラーテーマをlocalstorageに保存
-  * DONE: 計算中にタブを切り替えると処理が中断される
-  * DONE: 計算中にタブを切り替えると state が消えて計算結果がわからなくなる
-    * DONE: 原因不明なので contextAPI に切り替える方針
-  * DONE: 最適化不可能のときのアイコンがほしい
-  * DONE: 中止を押したときの表示がおかしい
-  * DONE: 装備が組めなかったときに "並列ソルバ起動" がクルクル回り続ける
-  * DONE: 護石で同じスキルが追加できてしまう問題 再現方法: 攻撃→見切り→攻撃削除→見切り
-  * DONE: 傀異錬成防具未選択状態で登録を押すとエラー
-  * DONE: 空の護石を追加出来てしまう問題
-- High 最優先:
-  - ユーザデータDB保存 API提供
-  - 使い方
-  - cloudflare + nextjs の設定
-  * ステージング環境
-  * CI/CD: [デプロイやり方](https://softwarenote.info/p3789/)
-  * DONE: ヘッダ/メニュー
-  * DONE: ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
+  - [x] ステージング環境
+  - [x] CI/CD: [デプロイやり方](https://softwarenote.info/p3789/)
+  - [x] ヘッダ/メニュー
+  - [x] ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
 - Midle 実装予定:
-  - 狂竜症感染率ツールチップ
-  - コンテンツの高さが足りないときに body の白色が見えてしまう (再現方法: めいっぱい縮小表示するなどしてウィンドウの高さを埋められないようにする)
-  - サーバにユーザデータ保存
-  - ひらがなカタカナ検索
-  - 結果の欄を読みやすいUIにする
-  - 水やられ時の肉質を表示
-  - light/darkのカラーテーマを適切に切り替える(theme.pallet.primary.mainをそれぞれのモードに対応する色に)
-    - [MUI v5 Theme ～基本の使い方からカスタマイズまで～](https://zenn.dev/longbridge/articles/c100d0311ed1be)
-    - [ここで定義したcolorThemeを import して theme と入れ替えればいいのでは？](https://github.com/potkrin/dmax-wasm/blob/d167ca8702337a3e14c26e030bf0c7dafcce83f9/src/App.js#L226)
-    - カラー自動決定してくれるサイト↑
-    - ContextAPI 孫コンポーネントに渡せるらしい
-  - タブ移動で入力中の項目が消える 再現方法: 護石タブでスキル入力→傀異錬成タブに移動→護石タブに戻る
-  - 処理やデータの流れを図にしたい(特にdmax中間出力の処理)
-  - プリセット
-  - マイセット
-  - 履歴
+  - [ ] cloudflare + nextjs の設定
+  - [ ] 狂竜症感染率ツールチップ
+  - [ ] コンテンツの高さが足りないときに body の白色が見えてしまう (再現方法: めいっぱい縮小表示するなどしてウィンドウの高さを埋められないようにする)
+  - [ ] サーバにユーザデータ保存
+  - [ ] ひらがなカタカナ検索
+  - [ ] 結果の欄を読みやすいUIにする
+  - [ ] 水やられ時の肉質を表示
+  - [ ] light/darkのカラーテーマを適切に切り替える(theme.pallet.primary.mainをそれぞれのモードに対応する色に)
+    - [ ] [MUI v5 Theme ～基本の使い方からカスタマイズまで～](https://zenn.dev/longbridge/articles/c100d0311ed1be)
+    - [ ] [ここで定義したcolorThemeを import して theme と入れ替えればいいのでは？](https://github.com/potkrin/dmax-wasm/blob/d167ca8702337a3e14c26e030bf0c7dafcce83f9/src/App.js#L226)
+    - [ ] カラー自動決定してくれるサイト↑
+    - [ ] ContextAPI 孫コンポーネントに渡せるらしい
+  - [ ] タブ移動で入力中の項目が消える 再現方法: 護石タブでスキル入力→傀異錬成タブに移動→護石タブに戻る
+  - [ ] 処理やデータの流れを図にしたい(特にdmax中間出力の処理)
+  - [ ] プリセット
+  - [ ] マイセット
+  - [ ] 履歴
 - いつか:
-  - スキルシミュモード
-  - ダメージ計算モード
-  - ダメージ計算伸びグラフモード
-  - scip-wasm メモリ問題, 他ライブラリ問題
-  - 中間結果を表示できないか?
-  - 別武器に対応
-  - APIアクセス制限
+  - [ ] スキルシミュモード
+  - [ ] ダメージ計算モード
+  - [ ] ダメージ計算伸びグラフモード
+  - [ ] scip-wasm メモリ問題, 他ライブラリ問題
+  - [ ] 中間結果を表示できないか?
+  - [ ] 別武器に対応
+  - [ ] APIアクセス制限
 
 # TODO
 - 狂竜症感染率を NumberTextField に変更
@@ -91,6 +94,38 @@
 - Tab切り替えの SwipeableView の最有効化
   - Fab の position がずれる問題のため無効化している
   - https://x.com/snowo0213/status/1713148238122066232?s=20
+
+# 護石・錬成データ リモート管理設計（サーバーのDB上で管理）
+## なぜ分離するか
+当初はlocalstorage上のデータをサーバーのDBに保存するデータと同期する計画でした。
+しかし、非ログイン状態での更新や別ブラウザによる更新を考慮するとlocalstorage側とDB側のどちらのデータをユーザーが望んでいるのかを判断するのが難しく、それによって同期制御も複雑になりそうだったのでやめました。
+複雑になる原因はデータの保存箇所が2箇所あることなので、単一責任の原則に則りlocalstorageに保存するデータとDBに保存するデータを完全に分離して管理する方針ですすめます。
+
+- データ保存場所: サーバーDB上のレコード 
+- ServerCharmData: ブラウザ上の護石データ（サーバーDB上のレコードのGET結果）
+- データの流れ
+  - 追加/上書き/削除:
+    1. POST (ServerCharmData + 護石データ差分) 
+    2. GET -> ServerCharmData に保存
+  - 取得:
+    1. GET (ServerCharmData - 削除護石) 
+
+## モード管理
+モード
+1. ServerCharmData モード: サーバー上のデータを利用 (ブラウザ間共有あり)
+2. LocalCharmData モード: localstorage に保存したデータを利用 (ブラウザ間共有なし)
+
+状態管理変数 ServerCarmDataMode : True/False
+- True:
+  - userCharmData = ServerCharmData 
+  - ServerCharmManager
+- False:
+  - userCharmData = localstorage.getItem(userCharmData)
+  - LocalCharmManager
+
+
+
+
 
 # これは何?
 dmax シミュレータの wasm 版です。ブラウザ上で dmax を動作させることを目的とします。

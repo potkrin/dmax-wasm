@@ -9,12 +9,20 @@ import {
   FormControlLabel,
   Checkbox,
   Divider,
+  ButtonGroup,
+  Tooltip,
 } from "@mui/material";
 import MiddleOutput from "./MiddleOutput";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
+import CloudIcon from "@mui/icons-material/Cloud";
+import CloudOffIcon from "@mui/icons-material/CloudOff";
+import DevicesIcon from "@mui/icons-material/Devices";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { commonStyles, useStyles } from "./DmaxMain";
+import { useLoginContext } from "./LoginContext";
+import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
+import { LDThemeContext } from "./LDThemeContext";
 
 const defaultMiddleOutputInfo = {
   "launch": {
@@ -314,6 +322,15 @@ export const DmaxOutput = ({
   // middleOutputInfo : dmaxOutput を解析してリアルタイムで表示する中間出力
   const [middleOutputInfo, setMiddleOutputInfo] = useState(initMiddleOutputInfo);
 
+  const {
+    isLoggedIn,
+    setIsLoggedIn,
+    isDialogOpen,
+    setIsDialogOpen,
+    handleCloseDialog,
+    checkLoginStatus,
+  } = useLoginContext();
+
   useEffect(() => {
     updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInfo);
   }, [dmaxOutput]);
@@ -324,6 +341,15 @@ export const DmaxOutput = ({
       setResetMiddleOutputInfo(false);
     }
   }, [resetMiddleOutputInfo]);
+
+  const { charmValue, setCharmValue, isCharmDataFetched, setIsCharmDataFetched, value } =
+    useCharmAndQuriousArmorContext();
+  const { currentTheme } = React.useContext(LDThemeContext);
+
+  const useServerCharm = () => {
+    checkLoginStatus();
+    setCharmValue(1);
+  };
 
   return (
     <Grid item xs={12} md={6}>
@@ -387,9 +413,7 @@ export const DmaxOutput = ({
               </Typography>
             </Grid>
 
-            <Grid item xs={0.7}></Grid>
-
-            <Grid item xs={3}>
+            <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel
                   control={
@@ -402,6 +426,43 @@ export const DmaxOutput = ({
                 />
               </FormGroup>
             </Grid>
+            <Grid item xs={6}>
+              <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
+                <Button
+                  onClick={() => setCharmValue(0)}
+                  sx={{
+                    backgroundColor: charmValue === 0 ? currentTheme.palette.primary.main : "",
+                    color: charmValue === 0 ? currentTheme.palette.primary.contrastText : "",
+                  }}
+                  startIcon={<DevicesIcon />}
+                >
+                  ローカル
+                </Button>
+                <Tooltip
+                  title={isCharmDataFetched ? "" : "護石データが同期されていません"}
+                  open={!isCharmDataFetched && charmValue === 1 && value === 0}
+                  sx={{ zIndex: 1000 }}
+                  placement="top"
+                >
+                  <Button
+                    onClick={useServerCharm}
+                    sx={{
+                      backgroundColor:
+                        charmValue === 1 && isCharmDataFetched
+                          ? currentTheme.palette.primary.main
+                          : charmValue === 1 && !isCharmDataFetched
+                          ? currentTheme.palette.text.disabled
+                          : "",
+                      color: charmValue === 1 ? currentTheme.palette.primary.contrastText : "",
+                    }}
+                    startIcon={isCharmDataFetched ? <CloudIcon /> : <CloudOffIcon />}
+                  >
+                    サーバー
+                  </Button>
+                </Tooltip>
+              </ButtonGroup>
+            </Grid>
+
             <Grid item xs>
               <FormGroup>
                 <FormControlLabel

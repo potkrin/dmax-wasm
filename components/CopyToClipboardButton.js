@@ -30,8 +30,8 @@ export const CopyToClipboardButton = ({ textToCopy }) => {
 
   return (
     <Tooltip title={tooltipTitle}>
-      <IconButton onClick={handleCopyClick} aria-label="copy" size="large">
-        <ContentCopyIcon sx={{ marginTop: "4px" }} color="primary" />
+      <IconButton onClick={handleCopyClick} aria-label="copy">
+        <ContentCopyIcon color="primary" />
       </IconButton>
     </Tooltip>
   );

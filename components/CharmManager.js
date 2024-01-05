@@ -9,6 +9,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { CharmTable } from "./CharmTable";
 import { CharmInput } from "./CharmInput";
 import { commonStyles } from "./DmaxMain";
+import ConfirmDialog from "./ConfirmDialog";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -110,6 +111,16 @@ export function CharmManager() {
     }
   };
 
+  const handleOpenOverwriteConfirmDialog = () => {
+    setDialogMode("overwrite");
+    setOpenConfirmDialog(true);
+  };
+
+  const handleConfirmOverwrite = () => {
+    readFromCsvData("overwrite");
+    setOpenConfirmDialog(false);
+  };
+
   const writeToCsvData = () => {
     let csv = "";
     for (const charm of userCharmData) {
@@ -134,11 +145,11 @@ export function CharmManager() {
     setCsvData(csv);
   };
 
-  // テーブルで複数選択された護石を userCharmData から削除 (引数は削除対象インデックス)
-  const deleteUserCharms = (deleteTargetIndexes) => {
-    const newCharmData = userCharmData.filter((_, index) => !deleteTargetIndexes.includes(index));
-    setUserCharmData(newCharmData);
-  };
+  // // テーブルで複数選択された護石を userCharmData から削除 (引数は削除対象インデックス)
+  // const deleteUserCharms = (deleteTargetIndexes) => {
+  //   const newCharmData = userCharmData.filter((_, index) => !deleteTargetIndexes.includes(index));
+  //   setUserCharmData(newCharmData);
+  // };
 
   // userCharmData が変更されたら localstorage に保存する
   useEffect(() => {
@@ -152,6 +163,32 @@ export function CharmManager() {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  // 削除時に確認ダイアログを表示する
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [dialogMode, setDialogMode] = useState("delete");
+  const [deleteIndexes, setDeleteIndexes] = useState([]);
+
+  const handleOpenDeleteConfirmDialog = (indexes) => {
+    setDeleteIndexes(indexes);
+    setDialogMode("delete");
+    setOpenConfirmDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteUserCharms(deleteIndexes);
+    setOpenConfirmDialog(false);
+  };
+
+  const handleCloseConfirmDialog = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  // テーブルで複数選択された護石を userCharmData から削除 (引数は削除対象インデックス)
+  const deleteUserCharms = (deleteTargetIndexes) => {
+    const newCharmData = userCharmData.filter((_, index) => !deleteTargetIndexes.includes(index));
+    setUserCharmData(newCharmData);
   };
 
   return (
@@ -172,6 +209,15 @@ export function CharmManager() {
           {error}
         </Alert>
       </Snackbar>
+
+      {/* 削除・上書き確認ダイアログ */}
+      <ConfirmDialog
+        openConfirmDialog={openConfirmDialog}
+        handleCloseConfirmDialog={handleCloseConfirmDialog}
+        handleConfirmDelete={handleConfirmDelete}
+        handleConfirmOverwrite={handleConfirmOverwrite}
+        dialogMode={dialogMode}
+      />
 
       <Grid container spacing={3}>
         {/* データ表示 */}
@@ -240,7 +286,7 @@ export function CharmManager() {
                         variant="contained"
                         color="primary"
                         disabled={csvData === ""}
-                        onClick={() => readFromCsvData("overwrite")}
+                        onClick={handleOpenOverwriteConfirmDialog}
                         sx={{ mr: 1 }}
                         startIcon={<KeyboardDoubleArrowDownIcon />}
                       >
@@ -264,7 +310,11 @@ export function CharmManager() {
         </Grid>
 
         <Grid item xs={12}>
-          <CharmTable userCharmData={userCharmData} deleteUserCharms={deleteUserCharms} />
+          <CharmTable
+            userCharmData={userCharmData}
+            deleteUserCharms={deleteUserCharms}
+            handleOpenDeleteConfirmDialog={handleOpenDeleteConfirmDialog}
+          />
         </Grid>
       </Grid>
     </>

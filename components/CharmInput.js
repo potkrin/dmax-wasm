@@ -54,7 +54,7 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
   const registerCharm = () => {
     // 空の護石を登録しない
     let hasSlot = false;
-    for (const slot in slots) if (slot !== 0) hasSlot = true;
+    for (const slot of slots) if (slot !== 0) hasSlot = true;
 
     if (selectedSkills.length === 0 && !hasSlot) return;
 

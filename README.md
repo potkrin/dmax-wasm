@@ -1,17 +1,22 @@
 # TODO
 - バグ
+  - [ ] スマホ向けUIが壊れている等 UI微調整
+    - [ ] button group で押下後に色が戻らない
+  - [ ] button group のマウスオーバー時の色がおかしい
+  - [ ] 弾矢強化のUIを変更不可に変更
+  - [ ] 巨大state分割&usememo検討
   - [ ] Fab をなんとかする
   - [ ] swipable 再検討
-  - [ ] ハンドルされていない例外の表示
-  - [ ] error message received from worker: Uncaught ReferenceError: SharedArrayBuffer is not defined
-  - [ ] スマホ向けUIが壊れている等 UI微調整
+  - [ ] wasm ハンドルされていない例外の表示
+  - [x] error message received from worker: Uncaught ReferenceError: SharedArrayBuffer is not defined
   - [ ] 読みやすい段落幅 https://www.gizmodo.jp/2023/12/google-gemini.html
   - [ ] 並列ソルバ起動 の欄 で1スレッドだけ表示されない
   - [ ] スクロールバー表示と見た目の変更
-  - [ ] CI/CDドキュメントを書く
+  - [ ] スレッド数変更機能
   - [ ] 警告表示
     - [ ] スマホの動作速度 
     - [ ] localstorage 消える問題
+  - [x] CI/CDドキュメントを書く
   - [x] スマホのサイドパネル用リンクとボタン
   - [x] ドロップダウン選択時に Fabボタン(最適化) が動いてしまう問題
   - [x] sharedArrayBuffer is not defined をcatchして表示する仕組み
@@ -29,10 +34,46 @@
   - [x] 傀異錬成防具未選択状態で登録を押すとエラー
   - [x] 空の護石を追加出来てしまう問題
 - High 最優先:
-  - [ ] ユーザデータDB保存 API提供
+  - [ ] ユーザ護石データDB保存 API提供
+    - [x] APIの実装 (セッション認証付き)
+    - [x] 同期処理
+    - [x] 最適化時の利用データの差し替え
+    - [x] 護石データが未登録の状態でのPOST処理がおかしい
+    - [x] 未ログイン時自動遷移
+    - [x] API URL 環境変数化
+    - [x] nginx サーバー立ててログイン時の?next=の挙動確認
+    - [x] UI
+      - [x] APIエラーを通知
+      - [x] 手動同期ボタン
+      - [x] local/server の切り替えタブ
+      - [x] ログイン遷移
+        - [x] ログイン画面遷移ダイアログ
+        - [x] 自動遷移オプション
+      - [x] ログイン/ログアウトボタン
+      - [x] ログイン中のみ自動同期
+      - [x] 自動同期不具合 (ログイン状態でdmax開く→護石→サーバー選択→同期)
+      - [x] ドロワーにログインボタン追加
+      - [x] local/server の選択肢を localstorage に保存
+      - [x] 未同期なのかデータが空なのかがわかるテーブルUIにする
+      - [x] csvコピペボタン (ローカル⇔サーバのデータ移動で利用)
+      - [x] local/server の状態表示 (タブ上, 最適化パネル) fetch 済みか否か local/server-fetched/server-not-fetched
+      - [x] local/server がひと目で分かるように
+      - [x] ツールチップがダイアログを貫通してしまう (z-index?)
+      - [x] ツールチップが「最適化」タブ以外でも表示されている
+      - [x] 削除や上書き操作に警告
+        - [x] Server
+        - [x] Local
+      - [x] メタデータ表示
+  - [ ] ユーザ傀異錬成データDB保存 API提供
     - [ ] APIの実装 (セッション認証付き)
     - [ ] 同期処理
-    - [ ] 同期選択用UI [stepper を利用](https://m1.material.io/components/steppers.html#steppers-specs) 
+    - [ ] 最適化時の利用データの差し替え
+    - [ ] 未ログイン時自動遷移
+    - [ ] UI
+      - [ ] local/server の切り替えタブ
+      - [ ] 手動同期ボタン
+      - [ ] メタデータ表示
+      - [ ] 削除や上書き操作に警告
   - [ ] 使い方
   - [ ] Next.js 移行対応
     - [ ] images ファイルの修正
@@ -42,6 +83,8 @@
   - [x] ヘッダ/メニュー
   - [x] ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
 - Midle 実装予定:
+  - [ ] 状態管理ライブラリ Recoil 検討
+  - [ ] WebSockets などによるリアルタイム同期
   - [ ] cloudflare + nextjs の設定
   - [ ] 狂竜症感染率ツールチップ
   - [ ] コンテンツの高さが足りないときに body の白色が見えてしまう (再現方法: めいっぱい縮小表示するなどしてウィンドウの高さを埋められないようにする)

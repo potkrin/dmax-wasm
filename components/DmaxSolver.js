@@ -18,6 +18,7 @@ import { DmaxHistory } from "./DmaxHistory";
 // import "../App.css";
 import { theme } from "./ThemeProvider";
 import { applyWaterBlight } from "./HelperFunction";
+import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -218,10 +219,12 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   // DmaxOutput のリアルタイム中間出力をリセットする state
   const [resetMiddleOutputInfo, setResetMiddleOutputInfo] = useState(false);
 
+  const { serverCharmData, charmValue } = useCharmAndQuriousArmorContext();
+
   // 最適化の開始
   const startOptimization = () => {
     setResetMiddleOutputInfo(true);
-    // ローカルサーバーの endpoint
+    // // ローカルサーバーの endpoint
     // const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
     // 本番サーバーの endpoint
@@ -232,7 +235,14 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
     if (!excludeCharm) {
       // ユーザの護石を全防具データに追加
-      const userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
+      let userCharmData = null;
+      if (charmValue === 0) {
+        // localsotrage から護石データを取得
+        userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
+      } else {
+        // サーバー上の護石データを取得
+        userCharmData = JSON.parse(JSON.stringify(serverCharmData));
+      }
       userArmors.push(...userCharmData);
     }
 

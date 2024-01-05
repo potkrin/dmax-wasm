@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Box, Button, ThemeProvider, createTheme } from "@mui/material";
+import { Box, Button, Chip, ThemeProvider, Tooltip, Typography, createTheme } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import { LDThemeContext } from "./LDThemeContext";
+import ManualSyncButton from "./ManualSyncButton";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-export function CharmTable({ userCharmData, deleteUserCharms }) {
+export function CharmTable({
+  userCharmData,
+  deleteUserCharms,
+  fetchUserCharmData,
+  handleOpenDeleteConfirmDialog,
+  userCharmMetaData,
+}) {
   //should be memoized or stable
   const columns = useMemo(
     () => [
@@ -99,21 +107,48 @@ export function CharmTable({ userCharmData, deleteUserCharms }) {
             });
 
             // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
-            deleteUserCharms(deleteTargetRows);
+            // deleteUserCharms(deleteTargetRows);
+            handleOpenDeleteConfirmDialog(deleteTargetRows);
             table.resetRowSelection();
           };
 
           return (
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <Button
-                color="secondary"
-                disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-                onClick={handleDelete}
-                variant="contained"
-              >
-                削除
-              </Button>
-            </div>
+            <>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <Button
+                  color="secondary"
+                  disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
+                  onClick={handleDelete}
+                  variant="contained"
+                  startIcon={<DeleteIcon />}
+                >
+                  削除
+                </Button>
+                {fetchUserCharmData && <ManualSyncButton fetchUserCharmData={fetchUserCharmData} />}
+                {userCharmMetaData && (
+                  <div>
+                    <Tooltip title="最終更新日時とデータの更新回数" placement="top">
+                      <Typography
+                        variant="body1"
+                        component="div"
+                        sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                        color="text.secondary"
+                      >
+                        {new Date(userCharmMetaData.updated_at).toLocaleString()}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        component="div"
+                        sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                        color="text.secondary"
+                      >
+                        ver.{userCharmMetaData.revision_number}
+                      </Typography>
+                    </Tooltip>
+                  </div>
+                )}
+              </div>
+            </>
           );
         }}
       />

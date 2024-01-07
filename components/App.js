@@ -38,6 +38,11 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import CloudIcon from "@mui/icons-material/Cloud";
+import CloudOffIcon from "@mui/icons-material/CloudOff";
+import DevicesIcon from "@mui/icons-material/Devices";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+
 import MuiAlert from "@mui/material/Alert";
 
 import { LDThemeContext, lightTheme, darkTheme } from "./LDThemeContext";
@@ -272,7 +277,7 @@ function App() {
             <ListItemIcon>{isLoggedIn ? <LogoutIcon /> : <LoginIcon />}</ListItemIcon>
             {isLoggedIn ? (
               <a
-                href={`${process.env.API_BASE_URL}/accounts/logout/`}
+                href={`${process.env.API_BASE_URL}/accounts/logout/?next=/dmax`}
                 style={{
                   color: currentTheme.palette.primary.contrastText,
                   textDecoration: "none",
@@ -282,7 +287,7 @@ function App() {
               </a>
             ) : (
               <a
-                href={`${process.env.API_BASE_URL}/accounts/login/`}
+                href={`${process.env.API_BASE_URL}/accounts/login/?next=/dmax`}
                 // target="_blank"
                 // rel="noopener noreferrer"
                 style={{
@@ -312,7 +317,7 @@ function App() {
   const fetchLoginStatus = () => {
     console.log("fetchLoginStatus");
     fetchWithRetry(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/en/dmax/check-login/`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/dmax-api/v1/check-login/`,
       {
         method: "GET",
         credentials: "include", // クッキーベースの認証に必要
@@ -366,7 +371,7 @@ function App() {
   const checkLoginStatus = () => {
     // ログイン状態を確認した後に charmdata の取得する処理を一連の Promise で定義 (分離すると非同期に処理されてしまうため)
     fetchWithRetry(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/en/dmax/check-login/`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/dmax-api/v1/check-login/`,
       {
         method: "GET",
         credentials: "include", // クッキーベースの認証に必要
@@ -380,7 +385,7 @@ function App() {
           setIsLoggedIn(false);
           // 未ログインなのでログインダイアログを開く
           if (localStorage.getItem("loginAutoRedirect") === "true") {
-            window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login`;
+            window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/?next=/dmax`;
           } else {
             setIsDialogOpen(true);
           }
@@ -395,7 +400,7 @@ function App() {
           setIsLoggedIn(false);
           // 未ログインなのでログインダイアログを開く
           if (localStorage.getItem("loginAutoRedirect") === "true") {
-            window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/`;
+            window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/?next=/dmax`;
           } else {
             setIsDialogOpen(true);
           }
@@ -566,8 +571,28 @@ function App() {
                       aria-label="tabs example"
                       sx={{ minHeight: "0px" }}
                     >
-                      <Tab label="最適化" sx={{ minHeight: "0px" }} {...a11yProps(0)} />
-                      <Tab label="護石" sx={{ minHeight: "0px" }} {...a11yProps(1)} />
+                      <Tab
+                        label="最適化"
+                        sx={{ minHeight: "0px" }}
+                        {...a11yProps(0)}
+                        icon={<TrendingUpIcon />}
+                        iconPosition="start"
+                      />
+                      <Tab
+                        label="護石"
+                        sx={{ minHeight: "0px" }}
+                        {...a11yProps(1)}
+                        icon={
+                          charmValue === 0 ? (
+                            <DevicesIcon />
+                          ) : isCharmDataFetched ? (
+                            <CloudIcon />
+                          ) : (
+                            <CloudOffIcon />
+                          )
+                        }
+                        iconPosition="start"
+                      />
                       <Tab label="傀異錬成" sx={{ minHeight: "0px" }} {...a11yProps(2)} />
                       <Tab label="使い方" sx={{ minHeight: "0px" }} {...a11yProps(3)} />
                     </Tabs>

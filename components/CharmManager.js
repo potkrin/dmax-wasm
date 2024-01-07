@@ -10,6 +10,7 @@ import { CharmTable } from "./CharmTable";
 import { CharmInput } from "./CharmInput";
 import { commonStyles } from "./DmaxMain";
 import ConfirmDialog from "./ConfirmDialog";
+import CopyToClipboardButton from "./CopyToClipboardButton";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -191,6 +192,12 @@ export function CharmManager() {
     setUserCharmData(newCharmData);
   };
 
+  // CSVテキストボックスのコピーボタン用
+  const [textToCopy, setTextToCopy] = useState("");
+  useEffect(() => {
+    setTextToCopy(csvData);
+  }, [csvData]);
+
   return (
     <>
       {/* エラー出力 */}
@@ -240,15 +247,23 @@ export function CharmManager() {
                 height: "90%",
               }}
             >
-              <Typography
-                variant="subtitle2"
-                gutterBottom
-                align="left"
-                marginBottom={2}
-                sx={commonStyles.customHeaderNoMargin}
-              >
-                CSV 入出力
-              </Typography>
+              <Grid container alignItems="flex-start">
+                <Grid item xs>
+                  <Typography
+                    variant="subtitle2"
+                    gutterBottom
+                    align="left"
+                    marginBottom={2}
+                    sx={commonStyles.customHeaderNoMargin}
+                  >
+                    CSV 入出力
+                  </Typography>
+                </Grid>
+                <Grid item xs={1}>
+                  <CopyToClipboardButton textToCopy={textToCopy} />
+                </Grid>
+              </Grid>
+
               <Box sx={{ height: "100%" }}>
                 <TextField
                   label="CSV"

@@ -83,35 +83,6 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
     tempCharm.name = name;
     console.log(tempCharm);
     setUserCharmData((prev) => [...prev, tempCharm]);
-
-    // 以下はサーバに護石データを送信する処理 (未実装。将来的に実装予定)
-    // // サーバに護石データを送信
-    // const username = "testuserConsole";
-    // const charmdata = "hoge";
-
-    // // const apiUrl = "http://127.0.0.1:8000/en/dmax/charmdata/";
-    // const apiUrl = "http://127.0.0.1:8000/en/dmax/authcharmdata/";
-
-    // const data = JSON.stringify({ username, charmdata });
-
-    // fetch(apiUrl, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "X-CSRFToken": csrfToken,
-    //   },
-    //   credentials: "include",
-    //   body: data,
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log("Success:", data);
-    //     // 成功した処理
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error:", error);
-    //     // エラー処理
-    //   });
   };
 
   // Autoselect のテキストボックスに入力されている値 (onFocus でリセットするために定義)

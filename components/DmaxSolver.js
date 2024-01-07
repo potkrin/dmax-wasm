@@ -224,11 +224,11 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   // 最適化の開始
   const startOptimization = () => {
     setResetMiddleOutputInfo(true);
-    // // ローカルサーバーの endpoint
-    // const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
+    // ローカルサーバーの endpoint
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/en/cms/dmaxapi/`;
 
-    // 本番サーバーの endpoint
-    const apiUrl = "https://www.mhrspeedrun.com/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
+    // // 本番サーバーの endpoint
+    // const apiUrl = "https://www.mhrspeedrun.com/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
     // 最適化に含める防具データ定義 (オプションに応じて 護石, 傀異錬成防具を追加)
     const userArmors = JSON.parse(JSON.stringify(armors));
@@ -266,6 +266,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
     fetch(apiUrl, {
       method: "POST",
+      credentials: "include", // クッキーベースの認証に必要
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": csrfToken,

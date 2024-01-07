@@ -56,7 +56,7 @@ export function ServerCharmManager() {
 
     // ログイン状態を確認した後に charmdata の取得する処理を一連の Promise で定義 (分離すると非同期に処理されてしまうため)
     fetchWithRetry(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/en/dmax/check-login/`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/dmax-api/v1/check-login/`,
       {
         method: "GET",
         credentials: "include", // クッキーベースの認証に必要
@@ -76,7 +76,7 @@ export function ServerCharmManager() {
           setIsLoggedIn(true);
           // ログイン中なので charmdata を取得する
           fetchWithRetry(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/en/dmax/charmdata/`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/dmax-api/v1/user-equip-data/?equip_type=charm`,
             {
               method: "GET",
               credentials: "include", // クッキーベースの認証に必要
@@ -97,9 +97,9 @@ export function ServerCharmManager() {
               } else {
                 console.log("fetch sucess: server_charmdata" + JSON.stringify(data));
                 console.log("local_charmdata: " + JSON.stringify(userCharmData));
-                setUserCharmData(data[0].charmdata);
-                setNextUserCharmData(data[0].charmdata);
-                const { charmdata, ...metaData } = data[0];
+                setUserCharmData(data[0].equip_data);
+                setNextUserCharmData(data[0].equip_data);
+                const { equip_data, ...metaData } = data[0];
                 setUserCharmMetaData(metaData);
               }
               setIsCharmDataFetched(true);
@@ -262,7 +262,7 @@ export function ServerCharmManager() {
     }
     console.log("nextUserCharmData has been changed. call POST API");
     fetchWithRetry(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/en/dmax/charmdata/`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/dmax-api/v1/user-equip-data/?equip_type=charm`,
       {
         method: "POST",
         credentials: "include", // クッキーベースの認証に必要
@@ -271,7 +271,8 @@ export function ServerCharmManager() {
           "X-CSRFToken": Cookies.get("csrftoken"), // CSRFトークンをヘッダーに含める
         },
         body: JSON.stringify({
-          charmdata: nextUserCharmData,
+          equip_type: "charm",
+          equip_data: nextUserCharmData,
         }),
       },
       3,
@@ -285,8 +286,8 @@ export function ServerCharmManager() {
       .then((data) => {
         console.log(`Response Data: ` + JSON.stringify(data));
         console.log(`Update userCharmData here!`);
-        setUserCharmData(data.charmdata);
-        const { charmdata, ...metaData } = data;
+        setUserCharmData(data.equip_data);
+        const { equip_data, ...metaData } = data;
         setUserCharmMetaData(metaData);
       })
       .catch((error) => {
@@ -317,7 +318,7 @@ export function ServerCharmManager() {
   // const checkLoginStatus = () => {
   //   // ログイン状態を確認した後に charmdata の取得する処理を一連の Promise で定義 (分離すると非同期に処理されてしまうため)
   //   fetchWithRetry(
-  //     "http://127.0.0.1:8000/en/dmax/check-login/",
+  //     "http://127.0.0.1:8000/dmax-api/v1/check-login/",
   //     {
   //       method: "GET",
   //       credentials: "include", // クッキーベースの認証に必要

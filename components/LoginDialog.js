@@ -20,7 +20,7 @@ function LoginDialog({ open, onClose, onLogin }) {
   };
 
   const handleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/`;
+    window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/?next=/dmax`;
   };
 
   return (

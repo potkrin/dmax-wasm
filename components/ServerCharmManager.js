@@ -35,7 +35,6 @@ export function ServerCharmManager() {
   const [nextUserCharmData, setNextUserCharmData] = useState([]);
   const [userCharmMetaData, setUserCharmMetaData] = useState(null);
 
-  // const [isCharmDataFetched, setIsCharmDataFetched] = useState(false);
   const { isCharmDataFetched, setIsCharmDataFetched } = useCharmAndQuriousArmorContext();
 
   const {
@@ -49,10 +48,6 @@ export function ServerCharmManager() {
 
   const fetchUserCharmData = () => {
     console.log("ServerCharmManager: fetch charmdata from server");
-    // if (!isLoggedIn) {
-    //   console.log("not logged in. skip fetching userCharmData");
-    //   return;
-    // }
 
     // ログイン状態を確認した後に charmdata の取得する処理を一連の Promise で定義 (分離すると非同期に処理されてしまうため)
     fetchWithRetry(

@@ -42,6 +42,7 @@ import CloudIcon from "@mui/icons-material/Cloud";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
 import DevicesIcon from "@mui/icons-material/Devices";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import InfoIcon from "@mui/icons-material/Info";
 
 import MuiAlert from "@mui/material/Alert";
 
@@ -56,6 +57,7 @@ import {
 } from "./CharmAndQuriousArmorContext";
 import { LoginContext } from "./LoginContext";
 import { fetchWithRetry } from "../lib/utils";
+import QuriousArmorTab from "./QuriousArmorTab";
 
 /**
  * TODO:
@@ -234,10 +236,17 @@ function App() {
 
   // ServerCharmData 共有用 state
   const [serverCharmData, setServerCharmData] = useState([]);
+  const [serverQuriousArmorData, setServerQuriousArmorData] = useState([]);
+
   let initCharmValue = localStorage.getItem("charmValue");
   if (initCharmValue === "1") initCharmValue = 1;
   else initCharmValue = 0;
   const [charmValue, setCharmValue] = useState(initCharmValue);
+
+  let initQuriousArmorValue = localStorage.getItem("quriousArmorValue");
+  if (initQuriousArmorValue === "1") initQuriousArmorValue = 1;
+  else initQuriousArmorValue = 0;
+  const [quriousArmorValue, setQuriousArmorValue] = useState(initQuriousArmorValue);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -279,7 +288,7 @@ function App() {
               <a
                 href={`${process.env.API_BASE_URL}/accounts/logout/?next=/dmax`}
                 style={{
-                  color: currentTheme.palette.primary.contrastText,
+                  color: currentTheme.palette.text.primary,
                   textDecoration: "none",
                 }}
               >
@@ -291,7 +300,7 @@ function App() {
                 // target="_blank"
                 // rel="noopener noreferrer"
                 style={{
-                  color: currentTheme.palette.primary.contrastText,
+                  color: currentTheme.palette.text.primary,
                   textDecoration: "none",
                 }}
               >
@@ -417,6 +426,7 @@ function App() {
   };
 
   const [isCharmDataFetched, setIsCharmDataFetched] = useState(false);
+  const [isQuriousArmorDataFetched, setIsQuriousArmorDataFetched] = useState(false);
 
   // // アンマウント-stateリセット問題を引き起こすので使用しない
   // // <div className="App"></div> の背景色を変更するために styled-components を使用
@@ -435,7 +445,15 @@ function App() {
             setCharmValue,
             isCharmDataFetched,
             setIsCharmDataFetched,
+
             value,
+
+            serverQuriousArmorData,
+            setServerQuriousArmorData,
+            quriousArmorValue,
+            setQuriousArmorValue,
+            isQuriousArmorDataFetched,
+            setIsQuriousArmorDataFetched,
           }}
         >
           <LoginContext.Provider
@@ -502,7 +520,10 @@ function App() {
               ))}
             </Box> */}
                       <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                        <Button sx={{ color: currentTheme.palette.primary.contrastText }}>
+                        <Button
+                          sx={{ color: currentTheme.palette.primary.contrastText }}
+                          startIcon={<OpenInNewIcon />}
+                        >
                           <a
                             href="https://www.mhrspeedrun.com/cms/quest/"
                             target="_blank"
@@ -593,8 +614,28 @@ function App() {
                         }
                         iconPosition="start"
                       />
-                      <Tab label="傀異錬成" sx={{ minHeight: "0px" }} {...a11yProps(2)} />
-                      <Tab label="使い方" sx={{ minHeight: "0px" }} {...a11yProps(3)} />
+                      <Tab
+                        label="傀異錬成"
+                        sx={{ minHeight: "0px" }}
+                        {...a11yProps(2)}
+                        icon={
+                          quriousArmorValue === 0 ? (
+                            <DevicesIcon />
+                          ) : isQuriousArmorDataFetched ? (
+                            <CloudIcon />
+                          ) : (
+                            <CloudOffIcon />
+                          )
+                        }
+                        iconPosition="start"
+                      />
+                      <Tab
+                        label="使い方"
+                        sx={{ minHeight: "0px" }}
+                        {...a11yProps(3)}
+                        icon={<InfoIcon />}
+                        iconPosition="start"
+                      />
                     </Tabs>
                   </AppBar>
                 </HideOnScroll>
@@ -633,7 +674,7 @@ function App() {
                     <CharmTab />
                   </TabPanel>
                   <TabPanel value={value} index={2} dir={theme.direction}>
-                    <QuriousArmorManager />
+                    <QuriousArmorTab />
                   </TabPanel>
                   <TabPanel value={value} index={3} dir={theme.direction}>
                     <Usage />

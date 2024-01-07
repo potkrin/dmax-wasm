@@ -1,0 +1,64 @@
+import { Tabs, Tab, Container } from "@mui/material";
+import QuriousArmorManager from "./QuriousArmorManager";
+import ServerQuriousArmorManager from "./ServerQuriousArmorManager";
+import { TabPanel } from "./App";
+import { useState } from "react";
+import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
+import CloudIcon from "@mui/icons-material/Cloud";
+import CloudOffIcon from "@mui/icons-material/CloudOff";
+import DevicesIcon from "@mui/icons-material/Devices";
+
+function QuriousArmorTab(props) {
+  // const [value, setValue] = useState(0);
+  const { quriousArmorValue, setQuriousArmorValue, isQuriousArmorDataFetched } =
+    useCharmAndQuriousArmorContext();
+
+  const handleChange = (event, newValue) => {
+    setQuriousArmorValue(newValue);
+    localStorage.setItem("quriousArmorValue", newValue);
+  };
+
+  return (
+    <>
+      <Tabs
+        value={quriousArmorValue}
+        onChange={handleChange}
+        indicatorColor="primary"
+        // textColor="inherit"
+        // variant="fullWidth"
+        aria-label="tabs example"
+        // sx={{ minHeight: "0px" }}
+      >
+        <Tab
+          label="ローカル"
+          sx={{ minHeight: "0px" }}
+          icon={<DevicesIcon />}
+          iconPosition="start"
+        />
+        <Tab
+          label="サーバー"
+          sx={{ minHeight: "0px" }}
+          icon={isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}
+          iconPosition="start"
+        />
+      </Tabs>
+      <Container
+        sx={{
+          paddingLeft: "0px !important",
+          paddingRight: "0px !important",
+          marginBottom: "0px !important", // 追加
+          paddingBottom: "0px !important", // 追加
+        }}
+      >
+        <TabPanel value={quriousArmorValue} index={0}>
+          <QuriousArmorManager />
+        </TabPanel>
+        <TabPanel value={quriousArmorValue} index={1}>
+          <ServerQuriousArmorManager />
+        </TabPanel>
+      </Container>
+    </>
+  );
+}
+
+export default QuriousArmorTab;

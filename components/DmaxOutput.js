@@ -342,13 +342,29 @@ export const DmaxOutput = ({
     }
   }, [resetMiddleOutputInfo]);
 
-  const { charmValue, setCharmValue, isCharmDataFetched, setIsCharmDataFetched, value } =
-    useCharmAndQuriousArmorContext();
+  const {
+    charmValue,
+    setCharmValue,
+    isCharmDataFetched,
+    setIsCharmDataFetched,
+    value,
+    serverQuriousArmorData,
+    setServerQuriousArmorData,
+    quriousArmorValue,
+    setQuriousArmorValue,
+    isQuriousArmorDataFetched,
+    setIsQuriousArmorDataFetched,
+  } = useCharmAndQuriousArmorContext();
   const { currentTheme } = React.useContext(LDThemeContext);
 
   const useServerCharm = () => {
     checkLoginStatus();
     setCharmValue(1);
+  };
+
+  const useServerQuriousArmor = () => {
+    checkLoginStatus();
+    setQuriousArmorValue(1);
   };
 
   return (
@@ -429,6 +445,58 @@ export const DmaxOutput = ({
             <Grid item xs={6}>
               <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
                 <Button
+                  onClick={() => setQuriousArmorValue(0)}
+                  sx={{
+                    backgroundColor:
+                      quriousArmorValue === 0 ? currentTheme.palette.primary.main : "",
+                    color: quriousArmorValue === 0 ? currentTheme.palette.primary.contrastText : "",
+                  }}
+                  startIcon={<DevicesIcon />}
+                >
+                  ローカル
+                </Button>
+                <Tooltip
+                  title={isQuriousArmorDataFetched ? "" : "傀異錬成データが同期されていません"}
+                  open={!isQuriousArmorDataFetched && quriousArmorValue === 1 && value === 0}
+                  sx={{ zIndex: 1000 }}
+                  placement="top"
+                >
+                  <Button
+                    onClick={useServerQuriousArmor}
+                    sx={{
+                      backgroundColor:
+                        quriousArmorValue === 1 && isQuriousArmorDataFetched
+                          ? currentTheme.palette.primary.main
+                          : quriousArmorValue === 1 && !isQuriousArmorDataFetched
+                          ? currentTheme.palette.text.disabled
+                          : "",
+                      color:
+                        quriousArmorValue === 1 ? currentTheme.palette.primary.contrastText : "",
+                    }}
+                    startIcon={isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}
+                  >
+                    サーバー
+                  </Button>
+                </Tooltip>
+              </ButtonGroup>
+            </Grid>
+
+            <Grid item xs={6}>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={excludeCharm}
+                      onChange={(e, v) => handleExcludeCharm(e, v)}
+                    />
+                  }
+                  label={<Typography style={{ "fontSize": "12px" }}>護石除外</Typography>}
+                />
+              </FormGroup>
+            </Grid>
+            <Grid item xs={6}>
+              <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
+                <Button
                   onClick={() => setCharmValue(0)}
                   sx={{
                     backgroundColor: charmValue === 0 ? currentTheme.palette.primary.main : "",
@@ -442,7 +510,7 @@ export const DmaxOutput = ({
                   title={isCharmDataFetched ? "" : "護石データが同期されていません"}
                   open={!isCharmDataFetched && charmValue === 1 && value === 0}
                   sx={{ zIndex: 1000 }}
-                  placement="top"
+                  placement="bottom"
                 >
                   <Button
                     onClick={useServerCharm}
@@ -461,20 +529,6 @@ export const DmaxOutput = ({
                   </Button>
                 </Tooltip>
               </ButtonGroup>
-            </Grid>
-
-            <Grid item xs>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={excludeCharm}
-                      onChange={(e, v) => handleExcludeCharm(e, v)}
-                    />
-                  }
-                  label={<Typography style={{ "fontSize": "12px" }}>護石除外</Typography>}
-                />
-              </FormGroup>
             </Grid>
           </Grid>
 

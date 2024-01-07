@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Button, ThemeProvider, createTheme } from "@mui/material";
+import { Button, ThemeProvider, createTheme, Tooltip, Typography } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import { LDThemeContext } from "./LDThemeContext";
+import ManualSyncButton from "./ManualSyncButton";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-export function QuriousArmorTable({ userQuriousArmorData, deleteUserQuriousArmors }) {
+export function QuriousArmorTable({
+  userQuriousArmorData,
+  deleteUserQuriousArmors,
+  fetchUserQuriousArmorData,
+  handleOpenDeleteConfirmDialog,
+  userQuriousArmorMetaData,
+}) {
   //should be memoized or stable
   const columns = useMemo(
     () => [
@@ -104,7 +112,7 @@ export function QuriousArmorTable({ userQuriousArmorData, deleteUserQuriousArmor
             });
 
             // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
-            deleteUserQuriousArmors(deleteTargetRows);
+            handleOpenDeleteConfirmDialog(deleteTargetRows);
             table.resetRowSelection();
           };
 
@@ -115,9 +123,35 @@ export function QuriousArmorTable({ userQuriousArmorData, deleteUserQuriousArmor
                 disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
                 onClick={handleDelete}
                 variant="contained"
+                startIcon={<DeleteIcon />}
               >
                 削除
               </Button>
+              {fetchUserQuriousArmorData && (
+                <ManualSyncButton fetchUserEquipData={fetchUserQuriousArmorData} />
+              )}
+              {userQuriousArmorMetaData && (
+                <div>
+                  <Tooltip title="最終更新日時とデータの更新回数" placement="top">
+                    <Typography
+                      variant="body1"
+                      component="div"
+                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                      color="text.secondary"
+                    >
+                      {new Date(userQuriousArmorMetaData.updated_at).toLocaleString()}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      component="div"
+                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                      color="text.secondary"
+                    >
+                      ver.{userQuriousArmorMetaData.revision_number}
+                    </Typography>
+                  </Tooltip>
+                </div>
+              )}
             </div>
           );
         }}

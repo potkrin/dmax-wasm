@@ -107,7 +107,6 @@ export function CharmTable({
             });
 
             // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
-            // deleteUserCharms(deleteTargetRows);
             handleOpenDeleteConfirmDialog(deleteTargetRows);
             table.resetRowSelection();
           };
@@ -124,7 +123,7 @@ export function CharmTable({
                 >
                   削除
                 </Button>
-                {fetchUserCharmData && <ManualSyncButton fetchUserCharmData={fetchUserCharmData} />}
+                {fetchUserCharmData && <ManualSyncButton fetchUserEquipData={fetchUserCharmData} />}
                 {userCharmMetaData && (
                   <div>
                     <Tooltip title="最終更新日時とデータの更新回数" placement="top">

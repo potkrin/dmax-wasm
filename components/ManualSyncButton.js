@@ -15,11 +15,11 @@ const manualSync = async (text) => {
   // }
 };
 
-export const ManualSyncButton = ({ fetchUserCharmData }) => {
+export const ManualSyncButton = ({ fetchUserEquipData }) => {
   const [tooltipTitle, setTooltipTitle] = useState("サーバーから同期");
 
   const handleCopyClick = async () => {
-    fetchUserCharmData();
+    fetchUserEquipData();
     setTooltipTitle("同期完了");
     // 一定時間後にツールチップのテキストを元に戻す
     setTimeout(() => setTooltipTitle("サーバーから同期"), 2000);

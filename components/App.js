@@ -286,7 +286,7 @@ function App() {
             <ListItemIcon>{isLoggedIn ? <LogoutIcon /> : <LoginIcon />}</ListItemIcon>
             {isLoggedIn ? (
               <a
-                href={`${process.env.API_BASE_URL}/accounts/logout/?next=/dmax`}
+                href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/logout/?next=/dmax`}
                 style={{
                   color: currentTheme.palette.text.primary,
                   textDecoration: "none",
@@ -296,7 +296,7 @@ function App() {
               </a>
             ) : (
               <a
-                href={`${process.env.API_BASE_URL}/accounts/login/?next=/dmax`}
+                href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/?next=/dmax`}
                 // target="_blank"
                 // rel="noopener noreferrer"
                 style={{

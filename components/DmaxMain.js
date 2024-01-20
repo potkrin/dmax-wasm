@@ -11,6 +11,7 @@ import {
   TextField,
   Divider,
 } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Paper from "@mui/material/Paper";
 import { Skill } from "./Skill";
 import { NonDamageSkill } from "./NonDamageSkill";
@@ -35,6 +36,9 @@ import { staticSkillData } from "../data/StaticData";
 import { userInputData as defaultUserInputData } from "../data/UserInputData";
 import SkillCard from "./SkillCard";
 // import useCustomStyles from "./CustomStyles";
+import { theme } from "./ThemeProvider";
+import { SkillAdditionalInput } from "./SkillAdditionalInput";
+import SkillColumnHeader from "./SkillColumnHeader";
 
 export const commonStyles = {
   customHeader: {
@@ -62,6 +66,15 @@ export const commonStyles = {
     // background: "transparent", // 背景透明に
     borderLeft: "solid 3px #8798ef", // 左線
     marginTop: "1em", // 上の余白
+    display: "inline-block", // インライン要素に
+    // borderBottom: "solid 1px #7db4e6", // 下線
+  },
+  customHeaderThinNoMargin: {
+    padding: "0.25em 0.5em", // 上下 左右の余白
+    // color: "#494949", // 文字色
+    // background: "transparent", // 背景透明に
+    borderLeft: "solid 3px #8798ef", // 左線
+    // marginTop: "1em", // 上の余白
     display: "inline-block", // インライン要素に
     // borderBottom: "solid 1px #7db4e6", // 下線
   },
@@ -181,6 +194,8 @@ export function DmaxMain({ fabRight, setFabRight }) {
 
     setAdditionalSkills((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
+
+  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   return (
     <div className="DmaxMain">
@@ -342,7 +357,15 @@ export function DmaxMain({ fabRight, setFabRight }) {
                 />
               ))}
           </Grid>
-          <Grid container>
+
+          {matches && (
+            <SkillAdditionalInput
+              userInputData={userInputData}
+              updateUserInputData={updateUserInputData}
+            />
+          )}
+
+          <Grid container paddingTop={3}>
             <Grid item xs={12}>
               <Typography
                 variant="subtitle2"
@@ -378,8 +401,8 @@ export function DmaxMain({ fabRight, setFabRight }) {
           >
             その他スキル
           </Typography>
-          <Grid container marginX={4} marginBottom={6}>
-            <Grid item xs={6} minHeight={"200px"}>
+          <Grid container paddingX={1} paddingBottom={6}>
+            <Grid item xs={12} md={6} minHeight={"200px"}>
               <Autocomplete
                 options={skillSuggestions}
                 onChange={handleSkillSelect}

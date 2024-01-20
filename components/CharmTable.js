@@ -95,8 +95,29 @@ export function CharmTable({
         data={tableData}
         enablePagination={false}
         enableRowSelection
+        enableDensityToggle={false}
+        enableFullScreenToggle={false}
+        enableHiding={false}
+        enableColumnFilters={false}
         enableMultiRowSelection
         enableSelectAll
+        // sx={{
+        //   "& .MuiBox-root css-wsew38": {
+        //     display: "flex",
+        //     flexDirection: "column",
+        //   },
+        // }}
+        // muiToolbarDropZoneProps={{
+        //   sx: { display: "flex", flexDirection: "column" },
+        // }}
+        // muiTopToolbarProps={{
+        //   sx: { display: "flex", flexDirection: "column" },
+        // }}
+        muiSearchTextFieldProps={{
+          // placeholder: "Search all users",
+          sx: { maxWidth: "180px" },
+          variant: "outlined",
+        }}
         renderTopToolbarCustomActions={({ table }) => {
           const handleDelete = () => {
             // 削除対象のインデックスを作成
@@ -113,7 +134,7 @@ export function CharmTable({
 
           return (
             <>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <Button
                   color="secondary"
                   disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}

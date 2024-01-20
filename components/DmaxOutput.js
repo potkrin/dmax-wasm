@@ -11,6 +11,8 @@ import {
   Divider,
   ButtonGroup,
   Tooltip,
+  useMediaQuery,
+  IconButton,
 } from "@mui/material";
 import MiddleOutput from "./MiddleOutput";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
@@ -23,6 +25,7 @@ import { commonStyles, useStyles } from "./DmaxMain";
 import { useLoginContext } from "./LoginContext";
 import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
 import { LDThemeContext } from "./LDThemeContext";
+import { theme } from "./ThemeProvider";
 
 const defaultMiddleOutputInfo = {
   "launch": {
@@ -367,6 +370,8 @@ export const DmaxOutput = ({
     setQuriousArmorValue(1);
   };
 
+  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+
   return (
     <Grid item xs={12} md={6}>
       <Card variant="outlined" sx={{ borderRadius: 1 }} backgroundColor="#f5f5f5">
@@ -415,73 +420,22 @@ export const DmaxOutput = ({
               )}
             </Grid>
           </Grid>
-          <Divider />
+
           <Grid container mt={2}>
-            <Grid item xs={12}>
+            <Grid item xs={4} md={3} sx={{ display: "flex", alignItems: "center" }}>
               <Typography
                 variant="subtitle2"
                 gutterBottom
                 align="left"
                 marginLeft={2}
-                sx={commonStyles.customHeaderThin}
+                sx={commonStyles.customHeaderThinNoMargin}
               >
-                除外オプション
+                護石
               </Typography>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={excludeQuriousArmor}
-                      onChange={(e, v) => handleExcludeQuriousArmor(e, v)}
-                    />
-                  }
-                  label={<Typography style={{ "fontSize": "12px" }}>傀異錬成除外</Typography>}
-                />
-              </FormGroup>
-            </Grid>
-            <Grid item xs={6}>
-              <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
-                <Button
-                  onClick={() => setQuriousArmorValue(0)}
-                  sx={{
-                    backgroundColor:
-                      quriousArmorValue === 0 ? currentTheme.palette.primary.main : "",
-                    color: quriousArmorValue === 0 ? currentTheme.palette.primary.contrastText : "",
-                  }}
-                  startIcon={<DevicesIcon />}
-                >
-                  ローカル
-                </Button>
-                <Tooltip
-                  title={isQuriousArmorDataFetched ? "" : "傀異錬成データが同期されていません"}
-                  open={!isQuriousArmorDataFetched && quriousArmorValue === 1 && value === 0}
-                  sx={{ zIndex: 1000 }}
-                  placement="top"
-                >
-                  <Button
-                    onClick={useServerQuriousArmor}
-                    sx={{
-                      backgroundColor:
-                        quriousArmorValue === 1 && isQuriousArmorDataFetched
-                          ? currentTheme.palette.primary.main
-                          : quriousArmorValue === 1 && !isQuriousArmorDataFetched
-                          ? currentTheme.palette.text.disabled
-                          : "",
-                      color:
-                        quriousArmorValue === 1 ? currentTheme.palette.primary.contrastText : "",
-                    }}
-                    startIcon={isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}
-                  >
-                    サーバー
-                  </Button>
-                </Tooltip>
-              </ButtonGroup>
-            </Grid>
-
-            <Grid item xs={6}>
+            {/* <Grid container sx={{ marginLeft: 3.5 }}> */}
+            <Grid item xs={3} md={3}>
               <FormGroup>
                 <FormControlLabel
                   control={
@@ -490,46 +444,217 @@ export const DmaxOutput = ({
                       onChange={(e, v) => handleExcludeCharm(e, v)}
                     />
                   }
-                  label={<Typography style={{ "fontSize": "12px" }}>護石除外</Typography>}
+                  label={<Typography>除外</Typography>}
                 />
               </FormGroup>
             </Grid>
-            <Grid item xs={6}>
-              <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
-                <Button
-                  onClick={() => setCharmValue(0)}
-                  sx={{
-                    backgroundColor: charmValue === 0 ? currentTheme.palette.primary.main : "",
-                    color: charmValue === 0 ? currentTheme.palette.primary.contrastText : "",
-                  }}
-                  startIcon={<DevicesIcon />}
-                >
-                  ローカル
-                </Button>
-                <Tooltip
-                  title={isCharmDataFetched ? "" : "護石データが同期されていません"}
-                  open={!isCharmDataFetched && charmValue === 1 && value === 0}
-                  sx={{ zIndex: 1000 }}
-                  placement="bottom"
-                >
+            <Grid item xs={4} md={6} sx={{ display: "flex", justifyContent: "center" }}>
+              {!matches ? (
+                <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
                   <Button
-                    onClick={useServerCharm}
+                    onClick={() => setCharmValue(0)}
+                    sx={{
+                      backgroundColor: charmValue === 0 ? currentTheme.palette.primary.main : "",
+                      color: charmValue === 0 ? currentTheme.palette.primary.contrastText : "",
+                    }}
+                    startIcon={<DevicesIcon />}
+                    size="small"
+                  >
+                    ローカル
+                  </Button>
+                  <Tooltip
+                    title={isCharmDataFetched ? "" : "護石データが同期されていません"}
+                    open={!isCharmDataFetched && charmValue === 1 && value === 0}
+                    sx={{ zIndex: 1000 }}
+                    placement="bottom"
+                  >
+                    <Button
+                      onClick={useServerCharm}
+                      sx={{
+                        backgroundColor:
+                          charmValue === 1 && isCharmDataFetched
+                            ? currentTheme.palette.primary.main
+                            : charmValue === 1 && !isCharmDataFetched
+                            ? currentTheme.palette.text.disabled
+                            : "",
+                        color: charmValue === 1 ? currentTheme.palette.primary.contrastText : "",
+                      }}
+                      startIcon={isCharmDataFetched ? <CloudIcon /> : <CloudOffIcon />}
+                      size="small"
+                    >
+                      サーバー
+                    </Button>
+                  </Tooltip>
+                </ButtonGroup>
+              ) : (
+                <>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    edge="start"
+                    onClick={() => setCharmValue(0)}
+                    sx={{
+                      mr: 2,
+                      display: { sm: "none" },
+                      color:
+                        charmValue === 0
+                          ? currentTheme.palette.primary.main
+                          : currentTheme.palette.text.hint,
+                    }}
+                  >
+                    {<DevicesIcon />}
+                  </IconButton>
+                  <Tooltip title="サーバーの護石データを利用" placement="top">
+                    <Tooltip
+                      title={isCharmDataFetched ? "" : "護石データが同期されていません"}
+                      open={!isCharmDataFetched && charmValue === 1 && value === 0}
+                      sx={{ zIndex: 1000 }}
+                      placement="top"
+                    >
+                      <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        edge="start"
+                        onClick={useServerCharm}
+                        sx={{
+                          mr: 2,
+                          display: { sm: "none" },
+                          color:
+                            charmValue === 1
+                              ? currentTheme.palette.primary.main
+                              : currentTheme.palette.text.hint,
+                        }}
+                      >
+                        {isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}
+                      </IconButton>
+                    </Tooltip>
+                  </Tooltip>
+                </>
+              )}
+            </Grid>
+            {/* </Grid> */}
+          </Grid>
+
+          <Grid container mt={2}>
+            <Grid item xs={4} md={3} sx={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                align="left"
+                marginLeft={2}
+                sx={commonStyles.customHeaderThinNoMargin}
+              >
+                傀異錬成
+              </Typography>
+            </Grid>
+
+            {/* <Grid container sx={{ marginLeft: 3.5 }}> */}
+            <Grid item xs={3} md={3}>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={excludeQuriousArmor}
+                      onChange={(e, v) => handleExcludeQuriousArmor(e, v)}
+                    />
+                  }
+                  label={<Typography>除外</Typography>}
+                />
+              </FormGroup>
+            </Grid>
+
+            <Grid item xs={4} md={6} sx={{ display: "flex", justifyContent: "center" }}>
+              {!matches ? (
+                <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
+                  <Button
+                    onClick={() => setQuriousArmorValue(0)}
                     sx={{
                       backgroundColor:
-                        charmValue === 1 && isCharmDataFetched
-                          ? currentTheme.palette.primary.main
-                          : charmValue === 1 && !isCharmDataFetched
-                          ? currentTheme.palette.text.disabled
-                          : "",
-                      color: charmValue === 1 ? currentTheme.palette.primary.contrastText : "",
+                        quriousArmorValue === 0 ? currentTheme.palette.primary.main : "",
+                      color:
+                        quriousArmorValue === 0 ? currentTheme.palette.primary.contrastText : "",
                     }}
-                    startIcon={isCharmDataFetched ? <CloudIcon /> : <CloudOffIcon />}
+                    startIcon={<DevicesIcon />}
+                    size="small"
                   >
-                    サーバー
+                    ローカル
                   </Button>
-                </Tooltip>
-              </ButtonGroup>
+
+                  <Tooltip
+                    title={isQuriousArmorDataFetched ? "" : "傀異錬成データが同期されていません"}
+                    open={!isQuriousArmorDataFetched && quriousArmorValue === 1 && value === 0}
+                    sx={{ zIndex: 1000 }}
+                    placement="top"
+                  >
+                    <Button
+                      onClick={useServerQuriousArmor}
+                      sx={{
+                        backgroundColor:
+                          quriousArmorValue === 1 && isQuriousArmorDataFetched
+                            ? currentTheme.palette.primary.main
+                            : quriousArmorValue === 1 && !isQuriousArmorDataFetched
+                            ? currentTheme.palette.text.disabled
+                            : "",
+                        color:
+                          quriousArmorValue === 1 ? currentTheme.palette.primary.contrastText : "",
+                      }}
+                      startIcon={isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}
+                      size="small"
+                    >
+                      サーバー
+                    </Button>
+                  </Tooltip>
+                </ButtonGroup>
+              ) : (
+                <>
+                  <Tooltip title="ローカルの傀異錬成データを利用" placement="bottom">
+                    <IconButton
+                      color="inherit"
+                      aria-label="open drawer"
+                      edge="start"
+                      onClick={() => setQuriousArmorValue(0)}
+                      sx={{
+                        mr: 2,
+                        display: { sm: "none" },
+                        color:
+                          quriousArmorValue === 0
+                            ? currentTheme.palette.primary.main
+                            : currentTheme.palette.text.hint,
+                      }}
+                    >
+                      {<DevicesIcon />}
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="サーバーの傀異錬成データを利用" placement="bottom">
+                    <Tooltip
+                      title={isQuriousArmorDataFetched ? "" : "傀異錬成データが同期されていません"}
+                      open={!isQuriousArmorDataFetched && quriousArmorValue === 1 && value === 0}
+                      sx={{ zIndex: 1000 }}
+                      placement="bottom"
+                    >
+                      <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        edge="start"
+                        onClick={useServerQuriousArmor}
+                        sx={{
+                          mr: 2,
+                          display: { sm: "none" },
+                          color:
+                            quriousArmorValue === 1
+                              ? currentTheme.palette.primary.main
+                              : currentTheme.palette.text.hint,
+                        }}
+                      >
+                        {isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}
+                      </IconButton>
+                    </Tooltip>
+                  </Tooltip>
+                </>
+              )}
             </Grid>
+            {/* </Grid> */}
           </Grid>
 
           <Grid container marginTop={2}>

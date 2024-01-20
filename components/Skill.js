@@ -14,6 +14,7 @@ import {
   InputAdornment,
   Divider,
   Paper,
+  Tooltip,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -21,8 +22,8 @@ import { NumberTextField } from "./NumberTextField";
 import { staticData } from "../data/StaticData";
 
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
-import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 import AddIcon from "@mui/icons-material/Add";
+import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { theme } from "./ThemeProvider";
 import { LDThemeContext } from "./LDThemeContext";
@@ -59,7 +60,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
 
   const skillInput = userInputData["スキル"][staticSkillData.name];
 
-  const buttonSize = "28px";
+  const buttonSize = "24px";
   const buttonSize2 = "24px";
 
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
@@ -68,27 +69,37 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
 
   return (
     <>
-      <Grid container mt={0.5} marginX={3}>
-        {staticSkillData.type !== "FixedLevelDamage" ? (
-          <Grid
-            item
-            xs={1}
-            md={0.5}
-            // sx={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}
-            sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}
-          >
+      <Grid container mt={0.5} paddingX={!matches ? 1 : 0.5} paddingBottom={matches && 1}>
+        {/* レベル固定チェックボックス */}
+        <Grid
+          item
+          xs={1}
+          md={0.5}
+          sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}
+        >
+          {staticSkillData.type !== "FixedLevelDamage" ? (
             <Checkbox
               checked={skillInput.fixLevel}
               onChange={(e, v) => handleChangeSkillInfo("fixLevel", e, v)}
               size="small"
               sx={{ alignItems: "center", marginTop: -0.8 }}
             />
-          </Grid>
-        ) : (
-          <Grid item xs={1} md={0.5}></Grid>
-        )}
+          ) : (
+            <Tooltip title="このスキルは固定レベルしか選択できません" placement="top">
+              <div>
+                <Checkbox
+                  checked
+                  disabled
+                  size="small"
+                  sx={{ alignItems: "center", marginTop: -0.8 }}
+                />
+              </div>
+            </Tooltip>
+          )}
+        </Grid>
 
-        <Grid item xs={6} md={2.8}>
+        {/* スキル名, スキルレベル, スライダー(md以上の画面のみ)*/}
+        <Grid item xs={5} md={2.8}>
           <Box display="flex" alignItems="center">
             <Typography
               variant="body1"
@@ -100,18 +111,20 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
             >
               {staticSkillData.name}
             </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: currentTheme.palette.secondary.main,
-                textAlign: "left",
-                display: "flex",
-                alignItems: "flex-start",
-                marginLeft: 1,
-              }}
-            >
-              {skillInput.minLevel > 0 ? `Lv.${skillInput.minLevel}` : ""}
-            </Typography>
+            {!matches && (
+              <Typography
+                variant="body1"
+                sx={{
+                  color: currentTheme.palette.secondary.main,
+                  textAlign: "left",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  marginLeft: 1,
+                }}
+              >
+                {skillInput.minLevel > 0 ? `Lv.${skillInput.minLevel}` : ""}
+              </Typography>
+            )}
           </Box>
           {!matches ? (
             <Box sx={{ width: 30 * staticSkillData.maxLevel, mt: -1, ml: 0.5 }}>
@@ -129,9 +142,9 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                 size="small"
                 sx={{
                   "& .MuiSlider-mark": {
-                    borderRadius: "2px",
-                    height: "4px",
-                    width: "4px",
+                    borderRadius: "6px",
+                    height: "6px",
+                    width: "6px",
                     color:
                       skillInput.minLevel > 0
                         ? currentTheme.palette.primary.main
@@ -150,9 +163,9 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                         : currentTheme.palette.text.hint,
                   },
                   "& .MuiSlider-thumb": {
-                    borderRadius: "1px",
-                    width: "10px",
-                    height: "10px",
+                    borderRadius: "2px",
+                    width: "12px",
+                    height: "12px",
                     color:
                       skillInput.minLevel > 0
                         ? currentTheme.palette.primary.main
@@ -162,6 +175,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
               />
             </Box>
           ) : (
+            <></>
+            /* 
             <>
               <IconButton
                 onClick={(e, v) =>
@@ -173,7 +188,13 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                 }
                 sx={{ marginTop: -1 }}
               >
-                <IndeterminateCheckBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
+                <IndeterminateCheckBoxOutlinedIcon
+                  sx={{
+                    width: buttonSize,
+                    height: buttonSize,
+                    color: currentTheme.palette.text.secondary,
+                  }}
+                />
               </IconButton>
               <IconButton
                 onClick={(e, v) =>
@@ -187,112 +208,61 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                 }
                 sx={{ marginTop: -1, marginLeft: 1 }}
               >
-                <AddBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
+                <AddBoxOutlinedIcon
+                  sx={{
+                    width: buttonSize,
+                    height: buttonSize,
+                    color: currentTheme.palette.text.secondary,
+                  }}
+                />
               </IconButton>
-            </>
+            </> 
+            */
           )}
         </Grid>
 
-        {/* {matches && (
-          <Grid
-            item
-            xs={2}
-            md={1.5}
-            sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}
-          >
-            <IconButton
-              onClick={(e, v) =>
-                handleChangeSkillInfo(
-                  "minLevel",
-                  e,
-                  skillInput.minLevel - 1 >= 0 ? skillInput.minLevel - 1 : 0
-                )
-              }
-              sx={{ marginTop: -1 }}
-            >
-              <IndeterminateCheckBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
-            </IconButton>
-            <IconButton
-              onClick={(e, v) =>
-                handleChangeSkillInfo(
-                  "minLevel",
-                  e,
-                  skillInput.minLevel + 1 <= staticSkillData.maxLevel
-                    ? skillInput.minLevel + 1
-                    : staticSkillData.maxLevel
-                )
-              }
-              sx={{ marginTop: -1, marginLeft: 1 }}
-            >
-              <AddBoxOutlinedIcon sx={{ width: buttonSize, height: buttonSize }} />
-            </IconButton>
-          </Grid>
-        )} */}
-
-        {staticSkillData.type === "Damage" ? (
-          <>
-            <Grid
-              item
-              xs={2}
-              md={1}
-              sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}
-            >
-              <Box>
-                <Box>
-                  <NumberTextField
-                    value={skillInput.activeRate}
-                    size="small"
-                    id="outlined-basic"
-                    variant="standard"
-                    onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
-                    min={0}
-                    max={100}
-                    inputProps={{
-                      style: { textAlign: "center", paddingLeft: "16px" },
-                      // endAdornment: <InputAdornment position="start">%</InputAdornment>,
-                    }}
-                    // sx={{ display: "flex", alignItems: "center", height: "100%", marginY: 1 }}
-                    sx={{
-                      marginBottom: -0.5,
-                      "& .MuiInput-underline:hover:before": {
-                        borderBottom: "none", // ホバー時の下線を非表示
-                      },
-                      "& .MuiInput-underline:after": {
-                        borderBottom: "none", // フォーカス時の下線を非表示
-                      },
-                      "& .MuiInput-underline:before": {
-                        borderBottom: "none", // デフォルトの下線を非表示
-                      },
-                    }}
-                  />
-                  {/* <IconButton
-                    onClick={(e, v) =>
-                      handleChangeSkillInfo(
-                        "minLevel",
-                        e,
-                        skillInput.minLevel - 1 >= 0 ? skillInput.minLevel - 1 : 0
-                      )
-                    }
-                    sx={{ marginTop: -1 }}
-                  >
-                    <RemoveIcon sx={{ width: buttonSize2, height: buttonSize2 }} />
-                  </IconButton>
-                  <IconButton
-                    onClick={(e, v) =>
-                      handleChangeSkillInfo(
-                        "minLevel",
-                        e,
-                        skillInput.minLevel + 1 <= staticSkillData.maxLevel
-                          ? skillInput.minLevel + 1
-                          : staticSkillData.maxLevel
-                      )
-                    }
-                    sx={{ marginTop: -1, marginLeft: 1 }}
-                  >
-                    <AddIcon sx={{ width: buttonSize2, height: buttonSize2 }} />
-                  </IconButton> */}
-                </Box>
-                <Slider
+        {/* ダメージ発動率 (ダメージ寄与スキルのみ) */}
+        {matches &&
+          (staticSkillData.type === "Damage" ? (
+            <>
+              <Grid
+                item
+                xs={2}
+                md={1}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <NumberTextField
+                  value={skillInput.activeRate}
+                  size="small"
+                  id="outlined-basic"
+                  variant="standard"
+                  onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
+                  min={0}
+                  max={100}
+                  inputProps={{
+                    style: {
+                      textAlign: "center",
+                      maxWidth: "45px",
+                    },
+                  }}
+                  sx={{
+                    marginBottom: -0.5,
+                    "& .MuiInput-underline:hover:before": {
+                      borderBottom: "none", // ホバー時の下線を非表示
+                    },
+                    "& .MuiInput-underline:after": {
+                      borderBottom: "none", // フォーカス時の下線を非表示
+                    },
+                    "& .MuiInput-underline:before": {
+                      borderBottom: "none", // デフォルトの下線を非表示
+                    },
+                  }}
+                />
+                {/* <Slider
                   value={skillInput.activeRate}
                   size="small"
                   aria-label="Temperature"
@@ -317,110 +287,235 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     },
                   }}
                   onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
+                /> */}
+              </Grid>
+            </>
+          ) : (
+            <Grid item xs={2} md={2}></Grid>
+          ))}
+
+        {/* レベル変更+/-ボタン (xs画面のみ) */}
+        {matches && (
+          <Grid
+            item
+            container
+            xs={4}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+            }}
+          >
+            <Grid item xs={4.5}>
+              <IconButton
+                onClick={(e, v) =>
+                  handleChangeSkillInfo(
+                    "minLevel",
+                    e,
+                    skillInput.minLevel - 1 >= 0 ? skillInput.minLevel - 1 : 0
+                  )
+                }
+                sx={{ marginTop: -1 }}
+              >
+                <RemoveIcon
+                  sx={{
+                    width: buttonSize,
+                    height: buttonSize,
+                    color: currentTheme.palette.text.secondary,
+                  }}
                 />
-              </Box>
+                {/* <IndeterminateCheckBoxOutlinedIcon
+                  sx={{
+                    width: buttonSize,
+                    height: buttonSize,
+                    color: currentTheme.palette.text.secondary,
+                  }}
+                /> */}
+              </IconButton>
             </Grid>
-            {/* <Grid item xs={2} md={1}>
-              <NumberTextField
-                value={skillInput.activeRate}
-                size="small"
-                id="outlined-basic"
-                variant="standard"
-                onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
-                min={0}
-                max={100}
-                // InputProps={{
-                //   endAdornment: <InputAdornment position="start">%</InputAdornment>,
-                // }}
-                sx={{ display: "flex", alignItems: "center", height: "100%", marginY: 1 }}
-              />
-            </Grid> */}
-          </>
-        ) : (
-          <Grid item xs={4} md={2}></Grid>
+            <Grid item xs={3} sx={{ display: "flex", justifyContent: "center" }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: currentTheme.palette.secondary.light,
+                  textAlign: "left",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  marginLeft: 1,
+                }}
+              >
+                {skillInput.minLevel > 0 ? `Lv.${skillInput.minLevel}` : ""}
+              </Typography>
+            </Grid>
+            <Grid item xs={4.5}>
+              <IconButton
+                onClick={(e, v) =>
+                  handleChangeSkillInfo(
+                    "minLevel",
+                    e,
+                    skillInput.minLevel + 1 <= staticSkillData.maxLevel
+                      ? skillInput.minLevel + 1
+                      : staticSkillData.maxLevel
+                  )
+                }
+                sx={{
+                  marginTop: -1,
+                  marginLeft: 1,
+                }}
+              >
+                <AddIcon
+                  sx={{
+                    width: buttonSize,
+                    height: buttonSize,
+                    color: currentTheme.palette.text.secondary,
+                  }}
+                />
+                {/* <AddBoxOutlinedIcon
+                  sx={{
+                    width: buttonSize,
+                    height: buttonSize,
+                    color: currentTheme.palette.text.secondary,
+                  }}
+                /> */}
+              </IconButton>
+            </Grid>
+          </Grid>
         )}
 
-        {/* <Grid item md={4}>
-        <Box sx={{ width: 50 * staticSkillData.maxLevel }}>
-          <Slider
-            aria-label="Temperature"
-            value={skillInput.minLevel}
-            valueLabelDisplay="auto"
-            step={1}
-            marks={Array.from({ length: staticSkillData.maxLevel + 1 }, (_, level) => ({
-              value: level,
-              label: String(level),
-            }))}
-            min={0}
-            max={staticSkillData.maxLevel}
-            onChange={(e, v) => handleChangeSkillInfo("minLevel", e, v)}
-            size="small"
-          />
-        </Box>
-      </Grid> */}
+        {/* md以上の画面のダメージ発動率 (ダメージ寄与スキルのみ) */}
+        {!matches &&
+          (staticSkillData.type === "Damage" ? (
+            <>
+              <Grid
+                item
+                xs={4}
+                md={1}
+                sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}
+              >
+                <Box>
+                  <Box>
+                    <NumberTextField
+                      value={skillInput.activeRate}
+                      size="small"
+                      id="outlined-basic"
+                      variant="standard"
+                      onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
+                      min={0}
+                      max={100}
+                      inputProps={{
+                        style: { textAlign: "center", paddingLeft: "16px" },
+                      }}
+                      sx={{
+                        marginBottom: -0.5,
+                        "& .MuiInput-underline:hover:before": {
+                          borderBottom: "none", // ホバー時の下線を非表示
+                        },
+                        "& .MuiInput-underline:after": {
+                          borderBottom: "none", // フォーカス時の下線を非表示
+                        },
+                        "& .MuiInput-underline:before": {
+                          borderBottom: "none", // デフォルトの下線を非表示
+                        },
+                      }}
+                    />
+                  </Box>
+                  <Slider
+                    value={skillInput.activeRate}
+                    size="small"
+                    aria-label="Temperature"
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={100}
+                    sx={{
+                      marginTop: "-8px",
+                      "& .MuiSlider-rail": {
+                        color:
+                          skillInput.activeRate > 0
+                            ? currentTheme.palette.primary.main
+                            : currentTheme.palette.text.disabled,
+                      },
+                      "& .MuiSlider-thumb": {
+                        width: "8px",
+                        height: "8px",
+                        color:
+                          skillInput.activeRate > 0
+                            ? currentTheme.palette.primary.main
+                            : currentTheme.palette.text.disabled,
+                      },
+                    }}
+                    onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
+                  />
+                </Box>
+              </Grid>
+            </>
+          ) : (
+            <>{/* <Grid item xs={v} md={2}></Grid> */}</>
+          ))}
+
+        {/* {matches && <Grid item xs={4}></Grid>} */}
 
         {/* 追加で入力項目が必要なスキルの処理 */}
-        {staticSkillData.name === "龍気変換" ? (
-          <Grid item xs md={2} sx={{ display: "flex", justifyContent: "center" }}>
-            <NumberTextField
-              label="全属性耐性合計"
-              size="small"
-              value={userInputData["その他"]["全属性耐性値"]}
-              onChange={(e, v) => handleChangeOther("全属性耐性値", e, v)}
-              min={0}
-              max={250}
-            />
-          </Grid>
-        ) : staticSkillData.name === "狂竜症【蝕】" ? (
-          <Grid item xs={2} md={2} sx={{ display: "flex", justifyContent: "center" }}>
-            <NumberTextField
-              label="狂竜症感染率"
-              size="small"
-              value={userInputData["その他"]["狂竜症【蝕】感染時割合"]}
-              onChange={(e, v) => handleChangeOther("狂竜症【蝕】感染時割合", e, v)}
-              min={0}
-              max={100}
-            />
-          </Grid>
-        ) : staticSkillData.name === "伏魔響命" ? (
-          <Grid item xs md={2} sx={{ display: "flex", justifyContent: "center" }}>
-            <FormControl style={{ width: "101px" }}>
-              <InputLabel id="demo-simple-select-label">キュリア</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+        {!matches && (
+          <Grid item xs={3} md={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
+            {staticSkillData.name === "龍気変換" ? (
+              <NumberTextField
+                label="全属性耐性合計"
                 size="small"
-                value={userInputData["その他"]["キュリア"]}
-                label={"キュリア"}
-                onChange={(e) => handleChangeOther("キュリア", e)}
-              >
-                {Object.entries(staticData["その他"]["キュリア"]).map(([_, value]) => (
-                  <MenuItem value={value}>{value}匹</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        ) : staticSkillData.name === "血氣覚醒" ? (
-          <Grid item xs md={2} sx={{ display: "flex", justifyContent: "center" }}>
-            <FormControl>
-              <InputLabel id="demo-simple-select-label">血氣覚醒</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                value={userInputData["その他"]["全属性耐性値"]}
+                onChange={(e, v) => handleChangeOther("全属性耐性値", e, v)}
+                min={0}
+                max={250}
+                sx={{ minWidth: "100px" }}
+              />
+            ) : staticSkillData.name === "狂竜症【蝕】" ? (
+              <NumberTextField
+                label="狂竜症感染率"
                 size="small"
-                value={userInputData["その他"]["血氣覚醒"]}
-                label={"血氣覚醒"}
-                onChange={(e) => handleChangeOther("血氣覚醒", e)}
-              >
-                {Object.entries(staticData["その他"]["血氣覚醒"]).map(([_, value]) => (
-                  <MenuItem value={value}>{value}段階目</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                value={userInputData["その他"]["狂竜症【蝕】感染時割合"]}
+                onChange={(e, v) => handleChangeOther("狂竜症【蝕】感染時割合", e, v)}
+                min={0}
+                max={100}
+                sx={{ minWidth: "100px" }}
+              />
+            ) : staticSkillData.name === "伏魔響命" ? (
+              <FormControl sx={{ minWidth: "100px" }}>
+                <InputLabel id="demo-simple-select-label">キュリア</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  size="small"
+                  value={userInputData["その他"]["キュリア"]}
+                  label={"キュリア"}
+                  onChange={(e) => handleChangeOther("キュリア", e)}
+                  sx={{ ...(matches && { maxHeight: "30px" }) }}
+                >
+                  {Object.entries(staticData["その他"]["キュリア"]).map(([_, value]) => (
+                    <MenuItem value={value}>{value}匹</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : staticSkillData.name === "血氣覚醒" ? (
+              <FormControl sx={{ minWidth: "100px" }}>
+                <InputLabel id="demo-simple-select-label">血氣覚醒</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  size="small"
+                  value={userInputData["その他"]["血氣覚醒"]}
+                  label={"血氣覚醒"}
+                  onChange={(e) => handleChangeOther("血氣覚醒", e)}
+                >
+                  {Object.entries(staticData["その他"]["血氣覚醒"]).map(([_, value]) => (
+                    <MenuItem value={value}>{value}段階目</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
+              <></>
+            )}
           </Grid>
-        ) : (
-          <Grid item xs md={2}></Grid>
         )}
+
         {/* <Grid item md={5.4}></Grid> */}
 
         {/* <Grid item md={2}></Grid>

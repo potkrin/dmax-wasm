@@ -68,6 +68,26 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
         />
       </GridItemInput>
       <GridItemInput item>
+        <FormControl fullWidth style={{ height: "100%" }}>
+          <InputLabel id="demo-simple-select-label">
+            {"怒り補正 (" + staticData["怒り補正"][userInputDataMonster["怒り補正"]] + ")"}
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            size="small"
+            value={userInputDataMonster["怒り補正"]}
+            label={"怒り補正 (" + staticData["怒り補正"][userInputDataMonster["怒り補正"]] + ")"}
+            onChange={(e, v) => handleChangeUserInputData("怒り補正", e, v)}
+            style={{ height: "100%", textAlign: "left" }}
+          >
+            {Object.entries(staticData["怒り補正"]).map(([key, value]) => (
+              <MenuItem value={key}>{key}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </GridItemInput>
+      <GridItemInput item>
         <FormGroup>
           <FormControlLabel
             control={
@@ -89,26 +109,6 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
             }
           />
         </FormGroup>
-      </GridItemInput>
-      <GridItemInput item>
-        <FormControl fullWidth style={{ height: "100%" }}>
-          <InputLabel id="demo-simple-select-label">
-            {"怒り補正 (" + staticData["怒り補正"][userInputDataMonster["怒り補正"]] + ")"}
-          </InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            size="small"
-            value={userInputDataMonster["怒り補正"]}
-            label={"怒り補正 (" + staticData["怒り補正"][userInputDataMonster["怒り補正"]] + ")"}
-            onChange={(e, v) => handleChangeUserInputData("怒り補正", e, v)}
-            style={{ height: "100%", textAlign: "left" }}
-          >
-            {Object.entries(staticData["怒り補正"]).map(([key, value]) => (
-              <MenuItem value={key}>{key}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
       </GridItemInput>
     </>
   );

@@ -1,9 +1,12 @@
 # TODO
 - バグ
   - [ ] スマホ向けUIが壊れている等 UI微調整
+    - [ ] スマホ画面ではタブのアイコンを上下に
+    - [ ] 護石・傀異錬成テーブルのスマホ向け修正
     - [ ] button group で押下後に色が戻らない
     - [ ] 数字入力がバグっている
     - [ ] スクロールバー
+  - [ ] dmax問題出力APIの移植
   - [ ] result history の更新タイミングがまた即時反映されなくなっている
   - [ ] テーマカラーの色候補: [Zenn](https://zenn.dev/ame_x/articles/e314ce3a84ad1f)
   - [ ] button group のマウスオーバー時の色がおかしい
@@ -13,13 +16,14 @@
   - [ ] swipable 再検討
   - [ ] wasm ハンドルされていない例外の表示
   - [x] error message received from worker: Uncaught ReferenceError: SharedArrayBuffer is not defined
+  - [ ] iOSメモリエラー時のリトライ処理
   - [ ] 読みやすい段落幅 https://www.gizmodo.jp/2023/12/google-gemini.html
   - [ ] 並列ソルバ起動 の欄 で1スレッドだけ表示されない
   - [ ] スクロールバー表示と見た目の変更
   - [ ] スレッド数変更機能
   - [ ] 警告表示
     - [ ] スマホの最適化処理の動作速度 
-    - [ ] localstorage 消える問題
+    - [ ] localstorage だけだとiOSなどで消える可能性が高い問題
   - [x] CI/CDドキュメントを書く
   - [x] スマホのサイドパネル用リンクとボタン
   - [x] ドロップダウン選択時に Fabボタン(最適化) が動いてしまう問題
@@ -82,6 +86,7 @@
   - [x] ヘッダ/メニュー
   - [x] ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
 - Midle 実装予定:
+  - [ ] 弾強化・闇討ちの発動率設定
   - [ ] 状態管理ライブラリ Recoil 検討
   - [ ] WebSockets などによるリアルタイム同期
   - [ ] cloudflare + nextjs の設定

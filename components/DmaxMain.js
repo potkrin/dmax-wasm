@@ -38,7 +38,6 @@ import SkillCard from "./SkillCard";
 // import useCustomStyles from "./CustomStyles";
 import { theme } from "./ThemeProvider";
 import { SkillAdditionalInput } from "./SkillAdditionalInput";
-import SkillColumnHeader from "./SkillColumnHeader";
 
 export const commonStyles = {
   customHeader: {

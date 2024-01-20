@@ -11,6 +11,10 @@ import { theme } from "./ThemeProvider";
 import Image from "next/image";
 import skillLevelPcDark from "../public/images/dmax-usage-skill-level-pc-dark.png";
 import skillLevelPcLight from "../public/images/dmax-usage-skill-level-pc-light.png";
+import fixLevelPcDark from "../public/images/dmax-usage-fix-level-pc-dark.png";
+import fixLevelPcLight from "../public/images/dmax-usage-fix-level-pc-light.png";
+import activeRatePcDark from "../public/images/dmax-usage-active-rate-pc-dark.png";
+import activeRatePcLight from "../public/images/dmax-usage-active-rate-pc-light.png";
 
 const CustomH1 = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
@@ -24,6 +28,33 @@ const CustomH2 = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
   // 他のスタイル規則もここに追加できます
 }));
+
+function UsageImage({ srcDark, srcLight, alt, currentTheme }) {
+  return (
+    <Box
+      sx={{
+        boxShadow:
+          "0 4px 8px 0 " +
+          (currentTheme.palette.mode === "dark"
+            ? currentTheme.palette.background.default
+            : currentTheme.palette.text.hint), // ここで影のスタイルを指定
+        borderRadius: 2, // 角丸の指定
+        overflow: "hidden", // Box内のコンテンツが角丸に合わせて切り取られるように設定
+        maxWidth: "600px",
+        margin: "1em",
+      }}
+    >
+      <Image
+        src={currentTheme.palette.mode === "dark" ? srcDark : srcLight}
+        alt={alt}
+        // width={100}
+        // height={300}
+        layout="responsive"
+        // style={{ width: "auto", height: "auto" }}
+      />
+    </Box>
+  );
+}
 
 function Usage() {
   const [open, setOpen] = useState(false);
@@ -39,7 +70,7 @@ function Usage() {
   const { currentTheme } = React.useContext(LDThemeContext);
 
   return (
-    <Paper>
+    <Paper sx={{ paddingBottom: "10em" }}>
       <Box sx={{ maxWidth: "800px", padding: 3 }}>
         <CustomH1 variant="h1" gutterBottom sx={{ paddingTop: "0em" }} theme={currentTheme}>
           DMAX: 自動ダメージ最大化シミュレーター
@@ -116,28 +147,12 @@ function Usage() {
         <Typography variant="body1" gutterBottom>
           下限レベルを可能な限り低く設定することによってより広い範囲から最大ダメージ構成を求めることが出来るので、より高いダメージの構成が見つかる可能性が上がります。
         </Typography>
-        <Box
-          sx={{
-            boxShadow:
-              "0 4px 8px 0 " +
-              (currentTheme.palette.mode === "dark"
-                ? currentTheme.palette.background.default
-                : currentTheme.palette.text.hint), // ここで影のスタイルを指定
-            borderRadius: 2, // 角丸の指定
-            overflow: "hidden", // Box内のコンテンツが角丸に合わせて切り取られるように設定
-            maxWidth: "600px",
-            margin: "1em",
-          }}
-        >
-          <Image
-            src={currentTheme.palette.mode === "dark" ? skillLevelPcDark : skillLevelPcLight}
-            alt="Your Image Description"
-            // width={100}
-            // height={300}
-            layout="responsive"
-            // style={{ width: "auto", height: "auto" }}
-          />
-        </Box>
+        <UsageImage
+          srcDark={skillLevelPcDark}
+          srcLight={skillLevelPcLight}
+          alt="スキル下限レベルの設定の画像"
+          currentTheme={currentTheme}
+        />
         <Typography
           variant="body1"
           gutterBottom
@@ -153,23 +168,32 @@ function Usage() {
         >
           例外として、スキル「闇討ち」と「弾・矢強化」は固定レベルしか選択できません。Lv2を指定した場合は必ずLv2となり、Lv3やLv1になることはありません。
           こちらは、最適化処理をできるだけ軽くするために固定レベルしか選択できないようにしています。
-          ("特殊な運用が必要" or "Lv3がほぼ必須" のため問題になることは少ないと思います)
+          (これらのスキルは "Lv3がほぼ必須" または "特殊な運用が必要"
+          のため問題になることは少ないと思います)
         </Typography>
         <CustomH2 variant="h2" gutterBottom>
           3. レベルを固定したいスキルを入力
         </CustomH2>
         <Typography variant="body1" gutterBottom>
-          <span style={{ color: theme.palette.secondary.main }}>
-            レベルを固定したいスキルはチェックボックスをON
-          </span>
-          にしてください。
+          DMAXのレベル選択は基本的に下限を指定しますが、レベルを固定したくなるスキルもあります。
+          <div>
+            <span style={{ color: theme.palette.secondary.main }}>
+              レベルを固定したいスキルはチェックボックスをON
+            </span>
+            にしてください。
+          </div>
         </Typography>
+        <UsageImage
+          srcDark={fixLevelPcDark}
+          srcLight={fixLevelPcLight}
+          alt="スキルレベルを固定をする設定の画像"
+          currentTheme={currentTheme}
+        />
         <Typography
           variant="body1"
           gutterBottom
           sx={{ color: currentTheme.palette.text.secondary }}
         >
-          DMAXのレベル選択は基本的に下限を指定しますが、レベルを固定したくなるスキルもあります。
           例えば、火事場を運用を想定して最適化した結果「狂竜症【蝕】」がLv1以上になってしまった場合、スキル効果によって回復されてしまい火事場運用ができません。
         </Typography>
         <Typography
@@ -191,6 +215,12 @@ function Usage() {
           </span>
           スキル発動率は、クエスト中にスキルが発動している割合を想定して入力してください。
         </Typography>
+        <UsageImage
+          srcDark={activeRatePcDark}
+          srcLight={activeRatePcLight}
+          alt="スキル発動率を設定する画像"
+          currentTheme={currentTheme}
+        />
 
         <Typography
           variant="body1"
@@ -201,6 +231,7 @@ function Usage() {
           するとダメージ計算式における「挑戦者」の効果を発動率をもとに期待値として計算してくれます。
         </Typography>
 
+        {/* 
         <Card
           sx={{
             // maxWidth: 345, // 最大幅
@@ -222,7 +253,7 @@ function Usage() {
             alt="Your Image Description"
             style={{ width: "auto", height: "auto" }}
           />
-        </Dialog>
+        </Dialog> */}
       </Box>
     </Paper>
   );

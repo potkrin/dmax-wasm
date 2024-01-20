@@ -7,6 +7,7 @@
     - [ ] 数字入力がバグっている
     - [ ] スクロールバー
   - [ ] dmax問題出力APIの移植
+  - [ ] 護石テーブルのサーバー護石のUIが壊れている
   - [ ] result history の更新タイミングがまた即時反映されなくなっている
   - [ ] テーマカラーの色候補: [Zenn](https://zenn.dev/ame_x/articles/e314ce3a84ad1f)
   - [ ] button group のマウスオーバー時の色がおかしい

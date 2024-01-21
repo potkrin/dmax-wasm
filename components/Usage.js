@@ -1,6 +1,21 @@
 import React from "react";
 import { styled } from "@mui/system";
-import { Box, Card, CardMedia, Dialog, List, ListItem, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardMedia,
+  Dialog,
+  List,
+  ListItem,
+  Paper,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 import { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -8,6 +23,7 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import { LDThemeContext } from "./LDThemeContext";
 import { theme } from "./ThemeProvider";
+
 import Image from "next/image";
 import skillLevelPcDark from "../public/images/dmax-usage-skill-level-pc-dark.png";
 import skillLevelPcLight from "../public/images/dmax-usage-skill-level-pc-light.png";
@@ -15,6 +31,10 @@ import fixLevelPcDark from "../public/images/dmax-usage-fix-level-pc-dark.png";
 import fixLevelPcLight from "../public/images/dmax-usage-fix-level-pc-light.png";
 import activeRatePcDark from "../public/images/dmax-usage-active-rate-pc-dark.png";
 import activeRatePcLight from "../public/images/dmax-usage-active-rate-pc-light.png";
+import localServerPcDark from "../public/images/dmax-usage-local-server-pc-dark.png";
+import localServerPcLight from "../public/images/dmax-usage-local-server-pc-light.png";
+import graphPcDark from "../public/images/dmax-usage-graph-pc-dark.png";
+import graphPcLight from "../public/images/dmax-usage-graph-pc-light.png";
 
 const CustomH1 = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
@@ -29,7 +49,7 @@ const CustomH2 = styled(Typography)(({ theme }) => ({
   // 他のスタイル規則もここに追加できます
 }));
 
-function UsageImage({ srcDark, srcLight, alt, currentTheme }) {
+function UsageImage({ srcDark, srcLight, alt, currentTheme, matches }) {
   return (
     <Box
       sx={{
@@ -41,7 +61,7 @@ function UsageImage({ srcDark, srcLight, alt, currentTheme }) {
         borderRadius: 2, // 角丸の指定
         overflow: "hidden", // Box内のコンテンツが角丸に合わせて切り取られるように設定
         maxWidth: "600px",
-        margin: "1em",
+        margin: matches ? "1em 0em" : "1em",
       }}
     >
       <Image
@@ -69,11 +89,13 @@ function Usage() {
 
   const { currentTheme } = React.useContext(LDThemeContext);
 
+  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+
   return (
     <Paper sx={{ paddingBottom: "10em" }}>
       <Box sx={{ maxWidth: "800px", padding: 3 }}>
         <CustomH1 variant="h1" gutterBottom sx={{ paddingTop: "0em" }} theme={currentTheme}>
-          DMAX: 自動ダメージ最大化シミュレーター
+          DMAX
         </CustomH1>
         <Typography variant="body1" gutterBottom>
           DMAXは「モンスターハンターライズ：サンブレイク」の自動ダメージ最大化シミュレーターです。
@@ -107,6 +129,138 @@ function Usage() {
             </TableBody>
           </Table>
         </Card>
+
+        <CustomH1 variant="h1" gutterBottom>
+          注意点
+        </CustomH1>
+        <CustomH2
+          variant="h2"
+          gutterBottom
+          sx={{
+            paddingTop: "0em",
+          }}
+        >
+          1. 護石と傀異錬成データの保存場所
+        </CustomH2>
+        <Typography variant="body1" gutterBottom>
+          護石と傀異錬成にはローカルとサーバーの2種類の保存場所があります。
+          <div>
+            <span style={{ color: theme.palette.secondary.main }}>
+              確実に保存したい場合はサーバーに保存
+            </span>
+            してください。
+          </div>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <span style={{ color: theme.palette.secondary.main }}>
+            Safari や iOS (iPhone, iPad) ではサーバーへの保存を特に推奨します。
+          </span>
+        </Typography>
+
+        <UsageImage
+          srcDark={localServerPcDark}
+          srcLight={localServerPcLight}
+          alt="ローカル護石とサーバー護石の画像"
+          currentTheme={currentTheme}
+          matches={matches}
+        />
+        <Typography
+          variant="body1"
+          gutterBottom
+          sx={{ color: currentTheme.palette.text.secondary }}
+        >
+          ローカルに保存する場合は簡単に利用できますが、Safari や iOS
+          上の全てのブラウザではブラウザにより自動的にデータが削除される可能性があります。
+          サーバーに保存する場合はログインが必要ですが、ブラウザによってデータが削除されるリスクはありません。
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <a
+            href="https://webkit.org/tracking-prevention/#:~:text=to%2024%20hours.-,7%2DDay%20Cap%20on%20All%20Script%2DWriteable%20Storage,-Trackers%20executing%20script"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: currentTheme.palette.text.hint,
+            }}
+          >
+            WebKit: 7-Day Cap on All Script-Writeable Storage
+          </a>
+        </Typography>
+        <Accordion
+          sx={{
+            boxShadow: "none", // 影を削除
+            border: "none", // 縁取りを削除
+            "&:not(:last-child)": {
+              borderBottom: 0, // 最後の要素以外の下縁を削除
+            },
+            "&:before": {
+              display: "none", // デフォルトの縁取りを削除
+            },
+          }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+            sx={{
+              flexDirection: "row-reverse", // アイコンとタイトルの順序を逆にする
+              "& .MuiAccordionSummary-expandIconWrapper": {
+                marginRight: "auto", // アイコンを左に寄せる
+              },
+              padding: 0,
+            }}
+          >
+            <Typography sx={{ color: currentTheme.palette.text.secondary }}>
+              ローカルとサーバーの違い
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography
+              variant="body1"
+              gutterBottom
+              sx={{ color: currentTheme.palette.text.secondary }}
+            >
+              「ローカル」ではブラウザの Local storage にデータが保存されます。Local storage
+              に保存されたデータは基本的に無期限に保存されますが、WebKit を利用したブラウザ (Safari,
+              iOS 上の全てのブラウザ) ではブラウザにより自動的にデータが削除されます。
+              またブラウザ間でデータが同期されないため、別の端末やブラウザから閲覧するときには手動でデータをコピーする必要があります。
+            </Typography>
+            <Typography
+              variant="body1"
+              gutterBottom
+              sx={{ color: currentTheme.palette.text.secondary }}
+            >
+              「サーバー」では当サイトを提供しているサーバー上にデータが保存されます。
+              そのため、ブラウザによりデータが自動的に削除されることはありません。
+              また、別の端末やブラウザから閲覧した際にも自動的にデータが同期されます。
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <CustomH2 variant="h2" gutterBottom>
+          2. ブラウザ版DMAXの実行速度
+        </CustomH2>
+        <Typography variant="body1" gutterBottom>
+          <span style={{ color: theme.palette.secondary.main }}>
+            モバイル端末ではCPUの性能不足により最適化に非常に時間がかかる可能性が高いです。(Android,
+            iOS等)
+          </span>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          Windows, macOS
+          等のデスクトップ・ラップトップ端末ではネイティブアプリ版DMAXに匹敵する速度で実行できます。
+        </Typography>
+        <CustomH2 variant="h2" gutterBottom>
+          3. ブラウザ版DMAXのメモリ制限
+        </CustomH2>
+        <Typography variant="body1" gutterBottom>
+          最適化実行中に
+          <span style={{ color: theme.palette.secondary.main }}>
+            メモリ使用量の上限に到達すると最適化が強制終了されてしまいます。
+          </span>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          メモリ上限は環境によって異なりますが、 iOS では約1GB、Android や Windows、macOS
+          では約4GBがメモリ上限です。
+        </Typography>
 
         <CustomH1 variant="h1" gutterBottom>
           使い方
@@ -152,6 +306,7 @@ function Usage() {
           srcLight={skillLevelPcLight}
           alt="スキル下限レベルの設定の画像"
           currentTheme={currentTheme}
+          matches={matches}
         />
         <Typography
           variant="body1"
@@ -188,6 +343,7 @@ function Usage() {
           srcLight={fixLevelPcLight}
           alt="スキルレベルを固定をする設定の画像"
           currentTheme={currentTheme}
+          matches={matches}
         />
         <Typography
           variant="body1"
@@ -220,6 +376,7 @@ function Usage() {
           srcLight={activeRatePcLight}
           alt="スキル発動率を設定する画像"
           currentTheme={currentTheme}
+          matches={matches}
         />
 
         <Typography
@@ -230,6 +387,27 @@ function Usage() {
           例えば、モンスターの怒り時のみ効果が発動する「挑戦者」の場合、攻撃時間に占める怒り状態の割合を想定してスキル発動率を入力します。
           するとダメージ計算式における「挑戦者」の効果を発動率をもとに期待値として計算してくれます。
         </Typography>
+
+        <CustomH2 variant="h2" gutterBottom>
+          5. 最適化実行とグラフ
+        </CustomH2>
+        <Typography variant="body1" gutterBottom>
+          最適化実行ボタンを押すと最適化が実行され、しばらくするとグラフが表示されます。
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          下の線は最大ダメージの下界を示しています。その時点でこのダメージまで出せる装備が見つかっていることを意味します。
+          上の線は最大ダメージの上界を示しています。その時点でこのダメージより高いダメージを出せる装備は無いことがわかっていることを意味します。
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          上下の線が一致したら最適化完了です。
+        </Typography>
+        <UsageImage
+          srcDark={graphPcDark}
+          srcLight={graphPcLight}
+          alt="グラフの画像"
+          currentTheme={currentTheme}
+          matches={matches}
+        />
 
         {/* 
         <Card

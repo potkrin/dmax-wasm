@@ -1,5 +1,6 @@
 # TODO
 - バグ
+  - [ ] ログインしないと API 通信で403になり最適化が実行できない (ログインすればローカル/サーバーどちらもいける)
   - [ ] スマホ向けUIが壊れている等 UI微調整
     - [ ] スマホ画面ではタブのアイコンを上下に
     - [ ] 護石・傀異錬成テーブルのスマホ向け修正
@@ -353,6 +354,16 @@ $ npm start
 - React ContextAPI の利用 ...
 
 Pixel3a (4年半程前の機種) でアクセスしたところストレスフルな動作だったので分割&メモ化を検討します。
+
+# ブラウザ別の制限事項
+- [Webブラウザ、レンダリングエンジン、JavaScriptエンジンの整理&図視化](https://qiita.com/umashiba/items/8cb47825624c5cb043d6)
+### wasm のメモリ上限
+- iOS: 1GB (たぶんWebKitの制限?)
+- その他: 4GB (wasm32の制限)
+### localstorage の有効期限
+- [WebKit:7-Day Cap on All Script-Writeable Storage](https://webkit.org/tracking-prevention/#:~:text=to%2024%20hours.-,7%2DDay%20Cap%20on%20All%20Script%2DWriteable%20Storage,-Trackers%20executing%20script)
+- WebKit のブラウザ(iOS上の全てのブラウザ&Safari)は7日で localstorage や indexedDB などの保存データをユーザーの同意を得ず勝手に消す
+- ストレージとはいったい...? 勘弁してほしい
 
 # エラーハンドリング: Shared Array Buffer is not defined
 - wasm バイナリを再コンパイルした場合, brachistochrone.js に以下を追記する

@@ -164,27 +164,6 @@ function Usage() {
           currentTheme={currentTheme}
           matches={matches}
         />
-        <Typography
-          variant="body1"
-          gutterBottom
-          sx={{ color: currentTheme.palette.text.secondary }}
-        >
-          ローカルに保存する場合は簡単に利用できますが、Safari や iOS
-          上の全てのブラウザではブラウザにより自動的にデータが削除される可能性があります。
-          サーバーに保存する場合はログインが必要ですが、ブラウザによってデータが削除されるリスクはありません。
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          <a
-            href="https://webkit.org/tracking-prevention/#:~:text=to%2024%20hours.-,7%2DDay%20Cap%20on%20All%20Script%2DWriteable%20Storage,-Trackers%20executing%20script"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: currentTheme.palette.text.hint,
-            }}
-          >
-            WebKit: 7-Day Cap on All Script-Writeable Storage
-          </a>
-        </Typography>
         <Accordion
           sx={{
             boxShadow: "none", // 影を削除
@@ -214,6 +193,28 @@ function Usage() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
+            <Typography
+              variant="body1"
+              gutterBottom
+              sx={{ color: currentTheme.palette.text.secondary }}
+            >
+              ローカルに保存する場合は簡単に利用できますが、Safari や iOS
+              上の全てのブラウザではブラウザにより自動的にデータが削除される可能性があります。
+              サーバーに保存する場合はログインが必要ですが、ブラウザによってデータが削除されるリスクはありません。
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              <a
+                href="https://webkit.org/tracking-prevention/#:~:text=to%2024%20hours.-,7%2DDay%20Cap%20on%20All%20Script%2DWriteable%20Storage,-Trackers%20executing%20script"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: currentTheme.palette.text.hint,
+                }}
+              >
+                WebKit: 7-Day Cap on All Script-Writeable Storage
+              </a>
+            </Typography>
+
             <Typography
               variant="body1"
               gutterBottom

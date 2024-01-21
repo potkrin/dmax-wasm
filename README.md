@@ -1,7 +1,18 @@
 # TODO
 - バグ
-  - [ ] ログインしないと API 通信で403になり最適化が実行できない (ログインすればローカル/サーバーどちらもいける)
+  - [x] ログインしないと API 通信で403になり最適化が実行できない (ログインすればローカル/サーバーどちらもいける)
+  - [x] 「ログイン状態の確認に失敗しました」のメッセージがおかしい(未ログイン状態なのにでる)
+  - [x] 認証が機能しているかチェック (護石など)
+  - [x] ダメージスキルのところに "使い方" タブへ誘導するボタン
+  - [ ] BEの問題作成APIをcmsからdmaxに移植する
+  - [ ] Next.js 移行対応
+    - [x] images ファイルの修正 (なにか変わってるか確認?)
+    - [ ] SSG/SSR対応 window, localstorage など
+  - [ ] ステージング環境の nginx 設定、バックエンド設定
+  - [ ] fabicon 設定
   - [ ] スマホ向けUIが壊れている等 UI微調整
+    - [ ] iPhone で閲覧するとなぜか画面を左右に引っ張れる
+    - [ ] iPhone で閲覧すると発動率100が見切れる
     - [ ] スマホ画面ではタブのアイコンを上下に
     - [ ] 護石・傀異錬成テーブルのスマホ向け修正
     - [ ] button group で押下後に色が戻らない
@@ -79,15 +90,16 @@
   - [ ] ユーザ傀異錬成データDB保存 API提供
     - [x] APIの実装 (セッション認証付き)
     - [ ] UIと同期処理の実装
-  - [ ] 使い方
-  - [ ] Next.js 移行対応
-    - [ ] images ファイルの修正
-    - [ ] SSG/SSR対応 window, localstorage など
+  - [x] 使い方
   - [x] ステージング環境
   - [x] CI/CD: [デプロイやり方](https://softwarenote.info/p3789/)
   - [x] ヘッダ/メニュー
   - [x] ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
 - Midle 実装予定:
+  - [ ] [PageSpeed Insights](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
+    - [2024/01/21 22:42:28 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
+  - [ ] [更新履歴ページ](https://damage.paimon.app/)
+  - [ ] SNSやDiscord等に貼り付けたときのサムネ概要表示 (embed?)
   - [ ] 追加スキルの追加方法 ポップアップ&複数選択可能 [参考](https://mhrise-simulator.vercel.app/)
   - [ ] 弾強化・闇討ちの発動率設定
   - [ ] 状態管理ライブラリ Recoil 検討

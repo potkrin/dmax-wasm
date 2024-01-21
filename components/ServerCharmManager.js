@@ -61,7 +61,7 @@ export function ServerCharmManager() {
     )
       .then((response) => {
         console.log(`Response Status Code: ${response.status}`); // ステータスコードを表示
-        if (response.status === 403) {
+        if (response.status === 401) {
           setIsLoggedIn(false);
         } else if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();

@@ -42,7 +42,7 @@ import CloudIcon from "@mui/icons-material/Cloud";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
 import DevicesIcon from "@mui/icons-material/Devices";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import InfoIcon from "@mui/icons-material/Info";
+import HelpIcon from "@mui/icons-material/Help";
 
 import MuiAlert from "@mui/material/Alert";
 
@@ -336,7 +336,7 @@ function App() {
     )
       .then((response) => {
         console.log(`Response Status Code: ${response.status}`); // ステータスコードを表示
-        if (response.status === 403) {
+        if (response.status === 401) {
           setIsLoggedIn(false);
         } else if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
@@ -633,7 +633,7 @@ function App() {
                         label="使い方"
                         sx={{ minHeight: "0px" }}
                         {...a11yProps(3)}
-                        icon={<InfoIcon />}
+                        icon={<HelpIcon />}
                         iconPosition="start"
                       />
                     </Tabs>
@@ -668,7 +668,7 @@ function App() {
                   {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
 
                   <TabPanel value={value} index={0} dir={theme.direction}>
-                    <DmaxMain fabRight={fabRight} setFabRight={setFabRight} />
+                    <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
                   </TabPanel>
                   <TabPanel value={value} index={1} dir={theme.direction}>
                     <CharmTab />

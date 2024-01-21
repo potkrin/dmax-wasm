@@ -10,6 +10,8 @@ import {
   Autocomplete,
   TextField,
   Divider,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Paper from "@mui/material/Paper";
@@ -31,6 +33,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import PrintIcon from "@mui/icons-material/Print";
 import ShareIcon from "@mui/icons-material/Share";
 import TuneIcon from "@mui/icons-material/Tune";
+import HelpIcon from "@mui/icons-material/Help";
 
 import { staticSkillData } from "../data/StaticData";
 import { userInputData as defaultUserInputData } from "../data/UserInputData";
@@ -103,7 +106,7 @@ const actions = [
   { icon: <ShareIcon />, name: "Share" },
 ];
 
-export function DmaxMain({ fabRight, setFabRight }) {
+export function DmaxMain({ fabRight, setFabRight, setValue }) {
   useEffect(() => {
     return () => {
       console.log("ChildComponent: DmaxMain がアンマウントされました");
@@ -208,7 +211,14 @@ export function DmaxMain({ fabRight, setFabRight }) {
               <TuneIcon sx={{ marginTop: "4px", marginLeft: "4px" }} color="primary" />
             </Grid>
             <Grid item ml={1}>
-              <Typography variant="h6">条件設定</Typography>
+              <Typography variant="h6">
+                条件設定
+                <Tooltip title="ヘルプ" placement="top">
+                  <IconButton aria-label="help" color="primary" onClick={() => setValue(3)}>
+                    <HelpIcon />
+                  </IconButton>
+                </Tooltip>
+              </Typography>
             </Grid>
           </Grid>
           <Box sx={{ marginTop: "8px" }}>
@@ -334,6 +344,11 @@ export function DmaxMain({ fabRight, setFabRight }) {
             sx={commonStyles.customHeader}
           >
             ダメージスキル
+            <Tooltip title="ヘルプ" placement="top">
+              <IconButton aria-label="help" color="primary" onClick={() => setValue(3)}>
+                <HelpIcon />
+              </IconButton>
+            </Tooltip>
           </Typography>
 
           <Grid container>

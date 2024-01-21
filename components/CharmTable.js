@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Box, Button, Chip, ThemeProvider, Tooltip, Typography, createTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  ThemeProvider,
+  Tooltip,
+  Typography,
+  createTheme,
+  useMediaQuery,
+} from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import { LDThemeContext } from "./LDThemeContext";
 import ManualSyncButton from "./ManualSyncButton";
@@ -54,6 +63,8 @@ export function CharmTable({
 
   const { currentTheme, toggleTheme } = React.useContext(LDThemeContext);
 
+  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+
   // from: https://v1.material-react-table.com/docs/guides/customize-components
   const tableTheme = useMemo(
     () =>
@@ -101,18 +112,6 @@ export function CharmTable({
         enableColumnFilters={false}
         enableMultiRowSelection
         enableSelectAll
-        // sx={{
-        //   "& .MuiBox-root css-wsew38": {
-        //     display: "flex",
-        //     flexDirection: "column",
-        //   },
-        // }}
-        // muiToolbarDropZoneProps={{
-        //   sx: { display: "flex", flexDirection: "column" },
-        // }}
-        // muiTopToolbarProps={{
-        //   sx: { display: "flex", flexDirection: "column" },
-        // }}
         muiSearchTextFieldProps={{
           // placeholder: "Search all users",
           sx: { maxWidth: "180px" },
@@ -134,7 +133,13 @@ export function CharmTable({
 
           return (
             <>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <div
+                style={{
+                  gap: "0.5rem",
+                  display: "flex",
+                  flexDirection: matches ? "column" : "row",
+                }}
+              >
                 <Button
                   color="secondary"
                   disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}

@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Button, ThemeProvider, createTheme, Tooltip, Typography } from "@mui/material";
+import {
+  Button,
+  ThemeProvider,
+  createTheme,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
 import { LDThemeContext } from "./LDThemeContext";
 import ManualSyncButton from "./ManualSyncButton";
@@ -58,6 +65,8 @@ export function QuriousArmorTable({
 
   const { currentTheme, toggleTheme } = React.useContext(LDThemeContext);
 
+  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+
   // from: https://v1.material-react-table.com/docs/guides/customize-components
   const tableTheme = useMemo(
     () =>
@@ -99,9 +108,24 @@ export function QuriousArmorTable({
         data={tableData}
         enablePagination={false}
         enableRowSelection
+        enableDensityToggle={false}
+        enableFullScreenToggle={false}
+        enableHiding={false}
+        enableColumnFilters={false}
         enableMultiRowSelection
         enableSelectAll
-        enableColumnResizing
+        muiSearchTextFieldProps={{
+          // placeholder: "Search all users",
+          sx: { maxWidth: "180px" },
+          variant: "outlined",
+        }}
+        // columns={columns}
+        // data={tableData}
+        // enablePagination={false}
+        // enableRowSelection
+        // enableMultiRowSelection
+        // enableSelectAll
+        // enableColumnResizing
         renderTopToolbarCustomActions={({ table }) => {
           const handleDelete = () => {
             // 削除対象のインデックスを作成
@@ -117,7 +141,13 @@ export function QuriousArmorTable({
           };
 
           return (
-            <div style={{ display: "flex", gap: "0.5rem" }}>
+            <div
+              style={{
+                gap: "0.5rem",
+                display: "flex",
+                flexDirection: matches ? "column" : "row",
+              }}
+            >
               <Button
                 color="secondary"
                 disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}

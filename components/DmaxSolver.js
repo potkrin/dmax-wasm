@@ -224,8 +224,12 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   // 最適化の開始
   const startOptimization = () => {
     setResetMiddleOutputInfo(true);
-    // ローカルサーバーの endpoint
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/en/cms/dmaxapi/`;
+
+    // ローカルサーバーの endpoint (dmax-core)
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/dmax-api/v1/dmax-problem/`;
+
+    // // ローカルサーバーの endpoint (cms)
+    // const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/en/cms/dmaxapi/`;
 
     // // 本番サーバーの endpoint
     // const apiUrl = "https://www.mhrspeedrun.com/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる

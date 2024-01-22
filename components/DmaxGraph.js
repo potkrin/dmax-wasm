@@ -41,7 +41,6 @@ export const DmaxGraph = ({ chartData }) => {
           alignItems: "center",
         }}
         height={610}
-        backgroundColor="#ffffff"
       >
         <LineChart width={chartWidth} height={450} data={chartData} margin="auto" display="block">
           <XAxis

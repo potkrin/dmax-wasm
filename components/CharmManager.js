@@ -23,18 +23,23 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 // 体術    ,3,通常弾・連射矢強化,2,3,1,1
 
 export function CharmManager() {
-  // localstorage に保存されている護石データがあれば読み込み
-  let initUserCharmData;
-  const cacheUserInputData = localStorage.getItem("userCharmData");
-  if (cacheUserInputData !== null) {
-    initUserCharmData = JSON.parse(cacheUserInputData);
-  } else {
-    initUserCharmData = [];
-  }
-
   // 護石データを一元管理するデータ
   // このデータを起点に localstorage への保存, csv からの読み込み, csv への書き出し, テーブルへの表示 の処理を行う
-  const [userCharmData, setUserCharmData] = useState(initUserCharmData);
+  const [userCharmData, setUserCharmData] = useState([]);
+
+  // useEffectを使用して、コンポーネントがマウントされた後にlocalStorageからデータを読み込む
+  useEffect(() => {
+    const localStorageUserInputData = localStorage.getItem("userCharmData");
+    if (localStorageUserInputData !== null) {
+      setUserCharmData(JSON.parse(localStorageUserInputData));
+    }
+  }, []);
+
+  // userCharmData が変更されたら localstorage に保存する
+  useEffect(() => {
+    localStorage.setItem("userCharmData", JSON.stringify(userCharmData));
+    console.log("userCharmData has been changed, and saved to localstorage");
+  }, [userCharmData]);
 
   // ユーザが入力した csv データ
   const [csvData, setCsvData] = useState("");
@@ -152,12 +157,6 @@ export function CharmManager() {
   //   setUserCharmData(newCharmData);
   // };
 
-  // userCharmData が変更されたら localstorage に保存する
-  useEffect(() => {
-    localStorage.setItem("userCharmData", JSON.stringify(userCharmData));
-    console.log("userCharmData has been changed, and saved to localstorage");
-  }, [userCharmData]);
-
   // エラー出力用 Snackbar 管理
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
@@ -235,8 +234,10 @@ export function CharmManager() {
         <Grid item xs={12} md={6}>
           <Card
             variant="outlined"
-            sx={{ borderRadius: 1, height: "100%" }}
-            backgroundColor="#f5f5f5"
+            sx={{
+              borderRadius: 1,
+              height: "100%",
+            }}
           >
             <Box
               sx={{

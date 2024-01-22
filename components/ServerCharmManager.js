@@ -458,8 +458,10 @@ export function ServerCharmManager() {
         <Grid item xs={12} md={6}>
           <Card
             variant="outlined"
-            sx={{ borderRadius: 1, height: "100%" }}
-            backgroundColor="#f5f5f5"
+            sx={{
+              borderRadius: 1,
+              height: "100%",
+            }}
           >
             <Box
               sx={{

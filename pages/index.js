@@ -29,6 +29,7 @@ import Head from "next/head";
 import Link from "next/link";
 // import Date from "../components/date";
 
+// 今回は SSG に外部データを必要としないのでコメントアウト
 // export async function getStaticProps() {
 //   const allPostsData = getSortedPostsData();
 //   return {
@@ -39,17 +40,22 @@ import Link from "next/link";
 // }
 
 export default function Home() {
-  const [isClientSide, setIsClientSide] = useState(false);
+  // 現在 SSG 対応のためにコメントアウトしている
+  // localStorage や windown などがある状態で SSG したい場合は以下を有効にする
 
-  useEffect(() => {
-    // コンポーネントがクライアントサイドでマウントされたときにフラグを true に設定
-    setIsClientSide(true);
-  }, []);
+  // const [isClientSide, setIsClientSide] = useState(false);
 
-  if (!isClientSide) {
-    // クライアントサイドでマウントされるまでは何もレンダリングしない、またはプレースホルダーを表示
-    return null; // またはローディングインジケーターなど
-  }
+  // useEffect(() => {
+  //   // コンポーネントがクライアントサイドでマウントされたときにフラグを true に設定
+  //   setIsClientSide(true);
+  // }, []);
+
+  // if (!isClientSide) {
+  //   // クライアントサイドでマウントされるまでは何もレンダリングしない、またはプレースホルダーを表示
+  //   return null; // またはローディングインジケーターなど
+  // }
+
+  // ここまで
 
   return (
     <>

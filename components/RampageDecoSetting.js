@@ -29,7 +29,7 @@ export const RampageDecoSetting = ({ userInputDataRampageDeco, updateUserInputDa
   return (
     <>
       {staticData["百竜装飾品"].map((item) => (
-        <GridItemInput item>
+        <GridItemInput item key={item}>
           <FormGroup>
             <FormControlLabel
               control={

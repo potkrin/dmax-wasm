@@ -16,7 +16,7 @@ export const DangoSetting = ({ userInputDataDango, updateUserInputData }) => {
   return (
     <>
       {Object.keys(staticData["食事"]).map((key) => (
-        <GridItemInput item>
+        <GridItemInput item key={key}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">{key}</InputLabel>
             <Select
@@ -29,7 +29,9 @@ export const DangoSetting = ({ userInputDataDango, updateUserInputData }) => {
               sx={{ fontSize: "14px" }}
             >
               {Object.values(staticData["食事"][key]).map((value) => (
-                <MenuItem value={value}>{value}</MenuItem>
+                <MenuItem key={key} value={value}>
+                  {value}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>

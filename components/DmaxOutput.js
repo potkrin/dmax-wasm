@@ -374,7 +374,7 @@ export const DmaxOutput = ({
 
   return (
     <Grid item xs={12} md={6}>
-      <Card variant="outlined" sx={{ borderRadius: 1 }} backgroundColor="#f5f5f5">
+      <Card variant="outlined" sx={{ borderRadius: 1 }}>
         <Box
           style={{
             height: "610px",

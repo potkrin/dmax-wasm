@@ -214,9 +214,28 @@ function App() {
     setMobileOpen((prevState) => !prevState);
   };
 
-  const [currentTheme, setCurrentTheme] = React.useState(
-    localStorage.getItem("colorTheme") === "dark" ? darkTheme : lightTheme
-  );
+  const [currentTheme, setCurrentTheme] = React.useState(lightTheme);
+  const [charmValue, setCharmValue] = useState(0);
+  const [quriousArmorValue, setQuriousArmorValue] = useState(0);
+
+  // コンポーネントがマウントされた後にlocalStorageからデータを読み込む
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("colorTheme") === "dark" ? darkTheme : lightTheme;
+    setCurrentTheme(storedTheme);
+
+    let initCharmValue = localStorage.getItem("charmValue");
+    if (initCharmValue === "1") initCharmValue = 1;
+    else initCharmValue = 0;
+    setCharmValue(initCharmValue);
+
+    let initQuriousArmorValue = localStorage.getItem("quriousArmorValue");
+    if (initQuriousArmorValue === "1") initQuriousArmorValue = 1;
+    else initQuriousArmorValue = 0;
+    setQuriousArmorValue(initQuriousArmorValue);
+  }, []);
+
+  //  localStorage.getItem("colorTheme") === "dark" ? darkTheme : lightTheme
+
   const toggleTheme = () => {
     if (currentTheme === lightTheme) {
       localStorage.setItem("colorTheme", "dark");
@@ -237,16 +256,6 @@ function App() {
   // ServerCharmData 共有用 state
   const [serverCharmData, setServerCharmData] = useState([]);
   const [serverQuriousArmorData, setServerQuriousArmorData] = useState([]);
-
-  let initCharmValue = localStorage.getItem("charmValue");
-  if (initCharmValue === "1") initCharmValue = 1;
-  else initCharmValue = 0;
-  const [charmValue, setCharmValue] = useState(initCharmValue);
-
-  let initQuriousArmorValue = localStorage.getItem("quriousArmorValue");
-  if (initQuriousArmorValue === "1") initQuriousArmorValue = 1;
-  else initQuriousArmorValue = 0;
-  const [quriousArmorValue, setQuriousArmorValue] = useState(initQuriousArmorValue);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -390,7 +399,7 @@ function App() {
     )
       .then((response) => {
         console.log(`Response Status Code: ${response.status}`); // ステータスコードを表示
-        if (response.status === 403) {
+        if (response.status === 401) {
           setIsLoggedIn(false);
           // 未ログインなのでログインダイアログを開く
           if (localStorage.getItem("loginAutoRedirect") === "true") {

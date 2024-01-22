@@ -18,6 +18,7 @@ export function SlotLevels({ slotLevel, setSlotLevel }) {
           <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
             {slotLevels.map((level) => (
               <Button
+                key={level}
                 onClick={() => setSlotLevel(level)}
                 sx={{
                   backgroundColor: slotLevel === level ? currentTheme.palette.primary.main : "",

@@ -18,16 +18,15 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 export function QuriousArmorManager() {
-  let initUserQuriousArmorData;
-  const cacheUserQuriousArmorData = localStorage.getItem("userQuriousArmorData");
-  if (cacheUserQuriousArmorData !== null) {
-    initUserQuriousArmorData = JSON.parse(cacheUserQuriousArmorData);
-  } else {
-    initUserQuriousArmorData = [];
-  }
-
   // localstorage に保存されるユーザの傀異錬成防具データ
-  const [userQuriousArmorData, setUserQuriousArmorData] = useState(initUserQuriousArmorData);
+  const [userQuriousArmorData, setUserQuriousArmorData] = useState([]);
+
+  // SSG対応: クライアントサイドでマウントされたとき localstorage からデータを読み込む
+  useEffect(() => {
+    const localStorageUserQuriousArmorData = localStorage.getItem("userQuriousArmorData");
+    if (localStorageUserQuriousArmorData !== null)
+      setUserQuriousArmorData(JSON.parse(localStorageUserQuriousArmorData));
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("userQuriousArmorData", JSON.stringify(userQuriousArmorData));
@@ -263,11 +262,7 @@ export function QuriousArmorManager() {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Card
-            variant="outlined"
-            sx={{ borderRadius: 1, height: "100%" }}
-            backgroundColor="#f5f5f5"
-          >
+          <Card variant="outlined" sx={{ borderRadius: 1, height: "100%" }}>
             <Box
               sx={{
                 margin: "20px",

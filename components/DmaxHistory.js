@@ -138,7 +138,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
               variant="scrollable"
               value={value}
               onChange={handleChange}
-              scrollButtons="hidden"
+              // scrollButtons="hidden"
               aria-label="Vertical tabs example"
               sx={{
                 borderRight: 1,
@@ -202,8 +202,8 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
                 display: "none", // Webkitブラウザ用のスクロールバーを非表示にする
               },
               // MSIEやEdge用の設定
-              "-ms-overflow-style": "none", // IE 10+ スクロールバーを非表示
-              "scrollbar-width": "none", // Firefox スクロールバーを非表示
+              "msOverflowStyle": "none", // IE 10+ スクロールバーを非表示
+              "scrollbarWidth": "none", // Firefox スクロールバーを非表示
             }}
           >
             {historyList.map((option, index) => (

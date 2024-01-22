@@ -5,10 +5,13 @@
   - [x] 認証が機能しているかチェック (護石など)
   - [x] ダメージスキルのところに "使い方" タブへ誘導するボタン
   - [x] BEの問題作成APIをcmsからdmaxに移植する
+  - [x] 護石と傀異錬成でログイン用ダイアログが開かなくなってしまった
+  - [ ] ローカルストレージを利用する場合に警告
   - [ ] Next.js 移行対応
-    - [x] images ファイルの修正 (なにか変わってるか確認?)
+    - [ ] images ファイルの修正 (なにか変わってるか確認?)
     - [ ] SSG/SSR対応 window, localstorage など
   - [ ] ステージング環境の nginx 設定、バックエンド設定
+  - [ ] console にでている warning を消す
   - [ ] fabicon 設定
   - [ ] スマホ向けUIが壊れている等 UI微調整
     - [ ] iPhone で閲覧するとなぜか画面を左右に引っ張れる
@@ -98,7 +101,11 @@
 - Midle 実装予定:
   - [ ] デバッグビルドにのみ print する設定?(いるか？)
   - [ ] [PageSpeed Insights](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
-    - [2024/01/21 22:42:28 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
+    - SSG対応前
+      - [2024/01/21 22:42:28 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
+      - [2024/01/22 15:16:17 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/mg6qzk9212?form_factor=desktop)
+      - [2024/01/22 16:18:24 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/ael5x5e6bs?form_factor=mobile)
+    - SSG対応後
   - [ ] [更新履歴ページ](https://damage.paimon.app/)
   - [ ] SNSやDiscord等に貼り付けたときのサムネ概要表示 (embed?)
   - [ ] 追加スキルの追加方法 ポップアップ&複数選択可能 [参考](https://mhrise-simulator.vercel.app/)

@@ -50,7 +50,7 @@ export const WeaponSetting = ({
   return (
     <>
       {numberFieldKeys.map((key) => (
-        <GridItemInput item>
+        <GridItemInput item key={key}>
           <NumberTextField
             value={userInputDataWeapon[key]}
             size="small"
@@ -66,7 +66,7 @@ export const WeaponSetting = ({
       ))}
 
       {Object.keys(staticData["武器"]).map((key) => (
-        <GridItemInput item>
+        <GridItemInput item key={key}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">{key}</InputLabel>
             <Select
@@ -105,7 +105,9 @@ export const WeaponSetting = ({
                   return a.localeCompare(b); // それ以外はアルファベット順
                 })
                 .map((key) => (
-                  <MenuItem value={key}>{key}</MenuItem>
+                  <MenuItem key={key} value={key}>
+                    {key}
+                  </MenuItem>
                 ))}
             </Select>
           </FormControl>

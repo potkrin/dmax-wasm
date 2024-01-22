@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -9,10 +9,14 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
 function LoginDialog({ open, onClose }) {
-  let initAutoRedirect = localStorage.getItem("loginAutoRedirect");
-  if (initAutoRedirect === "true") initAutoRedirect = true;
-  else initAutoRedirect = false;
-  const [autoRedirect, setAutoRedirect] = useState(initAutoRedirect);
+  const [autoRedirect, setAutoRedirect] = useState(false);
+
+  // SSG対応: クライアントサイドでマウントされたときにフラグを true に設定
+  useEffect(() => {
+    const localStorageLoginAutoRedirect = localStorage.getItem("loginAutoRedirect");
+    if (localStorageLoginAutoRedirect === "true") setAutoRedirect(true);
+    else setAutoRedirect(false);
+  }, []);
 
   const handleAutoRedirectChange = (event) => {
     setAutoRedirect(event.target.checked);

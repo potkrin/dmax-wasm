@@ -489,8 +489,10 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                   onChange={(e) => handleChangeOther("キュリア", e)}
                   sx={{ ...(matches && { maxHeight: "30px" }) }}
                 >
-                  {Object.entries(staticData["その他"]["キュリア"]).map(([_, value]) => (
-                    <MenuItem value={value}>{value}匹</MenuItem>
+                  {Object.entries(staticData["その他"]["キュリア"]).map(([key, value]) => (
+                    <MenuItem key={key} value={value}>
+                      {value}匹
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -505,8 +507,10 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                   label={"血氣覚醒"}
                   onChange={(e) => handleChangeOther("血氣覚醒", e)}
                 >
-                  {Object.entries(staticData["その他"]["血氣覚醒"]).map(([_, value]) => (
-                    <MenuItem value={value}>{value}段階目</MenuItem>
+                  {Object.entries(staticData["その他"]["血氣覚醒"]).map(([key, value]) => (
+                    <MenuItem key={key} value={value}>
+                      {value}段階目
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>

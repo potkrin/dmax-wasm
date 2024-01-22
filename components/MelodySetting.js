@@ -22,7 +22,7 @@ export const MelodySetting = ({ userInputDataMelody, updateUserInputData }) => {
   return (
     <>
       {staticData["旋律"].map((item) => (
-        <GridItemInput item>
+        <GridItemInput item key={item}>
           <FormGroup>
             <FormControlLabel
               control={

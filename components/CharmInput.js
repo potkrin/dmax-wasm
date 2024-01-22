@@ -144,8 +144,10 @@ export function CharmInput({ userCharmData, setUserCharmData }) {
       <Box ref={ref}>
         <Card
           variant="outlined"
-          sx={{ borderRadius: 1, padding: "20px" }}
-          backgroundColor="#f5f5f5"
+          sx={{
+            borderRadius: 1,
+            padding: "20px",
+          }}
         >
           <Typography
             variant="subtitle2"

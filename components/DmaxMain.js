@@ -116,18 +116,21 @@ export function DmaxMain({ fabRight, setFabRight, setValue }) {
   // const classes = useStyles();
   // const classes = useCustomStyles();
   const classes = {};
-  // スキル以外のユーザ入力データを保持
-  const cacheUserInputData = localStorage.getItem("userInputData");
 
-  // localstorage に過去のユーザ入力が保存されていればそれを読み込む (なければ静的ファイルからを読み込む)
-  let initUserInputData;
-  if (cacheUserInputData !== null) {
-    initUserInputData = JSON.parse(cacheUserInputData);
-  } else {
-    initUserInputData = defaultUserInputData;
-  }
+  const [userInputData, setUserInputData] = useState(defaultUserInputData);
+  const [additionalSkills, setAdditionalSkills] = useState([]);
 
-  const [userInputData, setUserInputData] = useState(initUserInputData);
+  // SSG対応: クライアントサイトでマウントされた後に localstorage から読み込む
+  useEffect(() => {
+    const localStorageUserInputData = localStorage.getItem("userInputData");
+    if (localStorageUserInputData !== null) {
+      setUserInputData(JSON.parse(localStorageUserInputData));
+    }
+    const localStorageAdditionalSkills = localStorage.getItem("additionalSkills");
+    if (localStorageAdditionalSkills !== null) {
+      setAdditionalSkills(JSON.parse(localStorageAdditionalSkills));
+    }
+  }, []);
 
   const updateUserInputData = (key, value) => {
     setUserInputData((prevData) => ({
@@ -146,14 +149,6 @@ export function DmaxMain({ fabRight, setFabRight, setValue }) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // 追加スキルの管理
-  let initAdditionalSkills = localStorage.getItem("additionalSkills");
-  if (initAdditionalSkills !== null) {
-    initAdditionalSkills = JSON.parse(initAdditionalSkills);
-  } else {
-    initAdditionalSkills = [];
-  }
-  const [additionalSkills, setAdditionalSkills] = useState(initAdditionalSkills);
   const [skillSuggestions, setSkillSuggestions] = useState(
     Object.keys(staticSkillData).filter((key) => staticSkillData[key].type === "NonDamage")
   );
@@ -356,6 +351,7 @@ export function DmaxMain({ fabRight, setFabRight, setValue }) {
               .filter((key) => staticSkillData[key].type === "FixedLevelDamage")
               .map((key) => (
                 <Skill
+                  key={key}
                   staticSkillData={staticSkillData[key]}
                   userInputData={userInputData}
                   updateUserInputData={updateUserInputData}
@@ -365,6 +361,7 @@ export function DmaxMain({ fabRight, setFabRight, setValue }) {
               .filter((key) => staticSkillData[key].type === "Damage")
               .map((key) => (
                 <Skill
+                  key={key}
                   staticSkillData={staticSkillData[key]}
                   userInputData={userInputData}
                   updateUserInputData={updateUserInputData}
@@ -397,6 +394,7 @@ export function DmaxMain({ fabRight, setFabRight, setValue }) {
               .filter((key) => staticSkillData[key].type === "FreqNonDamage")
               .map((key) => (
                 <Skill
+                  key={key}
                   staticSkillData={staticSkillData[key]}
                   userInputData={userInputData}
                   updateUserInputData={updateUserInputData}

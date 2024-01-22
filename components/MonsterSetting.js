@@ -82,7 +82,9 @@ export const MonsterSetting = ({ userInputDataMonster, updateUserInputData }) =>
             style={{ height: "100%", textAlign: "left" }}
           >
             {Object.entries(staticData["怒り補正"]).map(([key, value]) => (
-              <MenuItem value={key}>{key}</MenuItem>
+              <MenuItem key={key} value={key}>
+                {key}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>

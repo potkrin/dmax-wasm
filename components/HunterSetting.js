@@ -32,7 +32,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
       {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "boolean")
         .map(([key, _]) => (
-          <GridItemInput item>
+          <GridItemInput item key={key}>
             <FormGroup>
               <FormControlLabel
                 control={
@@ -50,7 +50,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
       {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "object")
         .map(([key, _]) => (
-          <GridItemInput item>
+          <GridItemInput item key={key}>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">{key}</InputLabel>
               <Select
@@ -62,7 +62,9 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
                 onChange={(e) => handleChangeUserInputData(key, e)}
               >
                 {Object.entries(staticData["ハンター"][key]).map(([_, value]) => (
-                  <MenuItem value={value}>{value}</MenuItem>
+                  <MenuItem key={key} value={value}>
+                    {value}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -72,7 +74,7 @@ export const HunterSetting = ({ userInputDataHunter, updateUserInputData }) => {
       {Object.entries(staticData["ハンター"])
         .filter(([_, value]) => typeof value === "number")
         .map(([key, _]) => (
-          <GridItemInput item>
+          <GridItemInput item key={key}>
             <NumberTextField
               value={userInputDataHunter[key]}
               size="small"

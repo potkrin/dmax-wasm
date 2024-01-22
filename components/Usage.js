@@ -67,9 +67,11 @@ function UsageImage({ srcDark, srcLight, alt, currentTheme, matches }) {
       <Image
         src={currentTheme.palette.mode === "dark" ? srcDark : srcLight}
         alt={alt}
-        // width={100}
+        // layout="fill"
+        // objectFit="cover" // または他の object-fit の値
+        width={600}
         // height={300}
-        layout="responsive"
+        // layout="responsive"
         // style={{ width: "auto", height: "auto" }}
       />
     </Box>
@@ -98,7 +100,7 @@ function Usage() {
           DMAX
         </CustomH1>
         <Typography variant="body1" gutterBottom>
-          DMAXは「モンスターハンターライズ：サンブレイク」の自動ダメージ最大化シミュレーターです。
+          DMAXは「モンスターハンターライズサンブレイク」の自動ダメージ最大化シミュレーターです。
         </Typography>
         <Typography variant="body1" gutterBottom>
           モンスターの肉質・武器種・必須スキル等を指定すると、指定した条件の中で最大ダメージを実現する装備構成を自動で見つけてくれます。
@@ -144,12 +146,11 @@ function Usage() {
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           護石と傀異錬成にはローカルとサーバーの2種類の保存場所があります。
-          <div>
-            <span style={{ color: theme.palette.secondary.main }}>
-              確実に保存したい場合はサーバーに保存
-            </span>
-            してください。
-          </div>
+          <br />
+          <span style={{ color: theme.palette.secondary.main }}>
+            確実に保存したい場合はサーバーに保存
+          </span>
+          してください。
         </Typography>
         <Typography variant="body1" gutterBottom>
           <span style={{ color: theme.palette.secondary.main }}>
@@ -332,12 +333,11 @@ function Usage() {
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           DMAXのレベル選択は基本的に下限を指定しますが、レベルを固定したくなるスキルもあります。
-          <div>
-            <span style={{ color: theme.palette.secondary.main }}>
-              レベルを固定したいスキルはチェックボックスをON
-            </span>
-            にしてください。
-          </div>
+          <br />
+          <span style={{ color: theme.palette.secondary.main }}>
+            レベルを固定したいスキルはチェックボックスをON
+          </span>
+          にしてください。
         </Typography>
         <UsageImage
           srcDark={fixLevelPcDark}

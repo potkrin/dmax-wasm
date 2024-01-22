@@ -1,18 +1,16 @@
 # TODO
-- バグ
-  - [x] ログインしないと API 通信で403になり最適化が実行できない (ログインすればローカル/サーバーどちらもいける)
-  - [x] 「ログイン状態の確認に失敗しました」のメッセージがおかしい(未ログイン状態なのにでる)
-  - [x] 認証が機能しているかチェック (護石など)
-  - [x] ダメージスキルのところに "使い方" タブへ誘導するボタン
-  - [x] BEの問題作成APIをcmsからdmaxに移植する
-  - [x] 護石と傀異錬成でログイン用ダイアログが開かなくなってしまった
+- **バグ**
+  - [ ] 弾矢強化のUIを変更不可に変更
+  - [ ] button group のマウスオーバー時の色がおかしい
+  - [ ] スクロールバー表示と見た目の変更
+  - [ ] result history の更新タイミングがまた即時反映されなくなっている
+  - [ ] swipable 再検討
+  - [ ] iOSメモリエラー時のリトライ処理
+  - [ ] スレッド数変更機能
   - [ ] ローカルストレージを利用する場合に警告
-  - [ ] Next.js 移行対応
-    - [ ] images ファイルの修正 (なにか変わってるか確認?)
-    - [ ] SSG/SSR対応 window, localstorage など
-  - [ ] ステージング環境の nginx 設定、バックエンド設定
-  - [ ] console にでている warning を消す
   - [ ] fabicon 設定
+  - [ ] ステージング環境の nginx 設定、バックエンド設定
+  - [ ] SSG 対応で白黒点滅するようになった問題
   - [ ] スマホ向けUIが壊れている等 UI微調整
     - [ ] iPhone で閲覧するとなぜか画面を左右に引っ張れる
     - [ ] iPhone で閲覧すると発動率100が見切れる
@@ -21,25 +19,28 @@
     - [ ] button group で押下後に色が戻らない
     - [ ] 数字入力がバグっている
     - [ ] スクロールバー
-  - [ ] dmax問題出力APIの移植
-  - [ ] 護石テーブルのサーバー護石のUIが壊れている
-  - [ ] result history の更新タイミングがまた即時反映されなくなっている
-  - [ ] テーマカラーの色候補: [Zenn](https://zenn.dev/ame_x/articles/e314ce3a84ad1f)
-  - [ ] button group のマウスオーバー時の色がおかしい
-  - [ ] 弾矢強化のUIを変更不可に変更
   - [ ] 巨大state分割&usememo検討
+  - [x] Next.js 移行対応
+    - [x] images ファイルの修正 (なにか変わってるか確認?)
+    - [x] SSG/SSR対応 window, localstorage など
+  - [x] console にでている warning を消す
+  - [x] dmax問題出力APIの移植
+  - [x] 護石テーブルのサーバー護石のUIが壊れている
+  - [ ] テーマカラーの色候補: [Zenn](https://zenn.dev/ame_x/articles/e314ce3a84ad1f)
   - [ ] Fab をなんとかする
-  - [ ] swipable 再検討
   - [ ] wasm ハンドルされていない例外の表示
   - [x] error message received from worker: Uncaught ReferenceError: SharedArrayBuffer is not defined
-  - [ ] iOSメモリエラー時のリトライ処理
-  - [ ] 読みやすい段落幅 https://www.gizmodo.jp/2023/12/google-gemini.html
-  - [ ] 並列ソルバ起動 の欄 で1スレッドだけ表示されない
-  - [ ] スクロールバー表示と見た目の変更
-  - [ ] スレッド数変更機能
+  - [x] 読みやすい段落幅 https://www.gizmodo.jp/2023/12/google-gemini.html
+  - [x] 並列ソルバ起動 の欄 で1スレッドだけ表示されない
   - [ ] 警告表示
     - [ ] スマホの最適化処理の動作速度 
     - [ ] localstorage だけだとiOSなどで消える可能性が高い問題
+  - [x] ログインしないと API 通信で403になり最適化が実行できない (ログインすればローカル/サーバーどちらもいける)
+  - [x] 「ログイン状態の確認に失敗しました」のメッセージがおかしい(未ログイン状態なのにでる)
+  - [x] 認証が機能しているかチェック (護石など)
+  - [x] ダメージスキルのところに "使い方" タブへ誘導するボタン
+  - [x] BEの問題作成APIをcmsからdmaxに移植する
+  - [x] 護石と傀異錬成でログイン用ダイアログが開かなくなってしまった
   - [x] CI/CDドキュメントを書く
   - [x] スマホのサイドパネル用リンクとボタン
   - [x] ドロップダウン選択時に Fabボタン(最適化) が動いてしまう問題
@@ -57,7 +58,8 @@
   - [x] 護石で同じスキルが追加できてしまう問題 再現方法: 攻撃→見切り→攻撃削除→見切り
   - [x] 傀異錬成防具未選択状態で登録を押すとエラー
   - [x] 空の護石を追加出来てしまう問題
-- High 最優先:
+
+- **High 最優先:**
   - [x] [最適化問題作成APIリクエスト先変更]
   - [x] [ローカルのCSVコピペボタンがない]
   - [x] ユーザ護石データDB保存 API提供
@@ -98,7 +100,8 @@
   - [x] CI/CD: [デプロイやり方](https://softwarenote.info/p3789/)
   - [x] ヘッダ/メニュー
   - [x] ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
-- Midle 実装予定:
+
+- **Midle 実装予定:**
   - [ ] デバッグビルドにのみ print する設定?(いるか？)
   - [ ] [PageSpeed Insights](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
     - SSG対応前
@@ -106,6 +109,8 @@
       - [2024/01/22 15:16:17 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/mg6qzk9212?form_factor=desktop)
       - [2024/01/22 16:18:24 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/ael5x5e6bs?form_factor=mobile)
     - SSG対応後
+      - [2024/01/22 17:56:21 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/bfmu5ix4zl?form_factor=mobile)
+      - [2024/01/22 17:59:50 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/d1syh34che?form_factor=mobile)
   - [ ] [更新履歴ページ](https://damage.paimon.app/)
   - [ ] SNSやDiscord等に貼り付けたときのサムネ概要表示 (embed?)
   - [ ] 追加スキルの追加方法 ポップアップ&複数選択可能 [参考](https://mhrise-simulator.vercel.app/)
@@ -129,7 +134,8 @@
   - [ ] プリセット
   - [ ] マイセット
   - [ ] 履歴
-- いつか:
+
+- **いつか:**
   - [ ] スキルシミュモード
   - [ ] ダメージ計算モード
   - [ ] ダメージ計算伸びグラフモード

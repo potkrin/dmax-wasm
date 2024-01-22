@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
-function LoginDialog({ open, onClose, onLogin }) {
+function LoginDialog({ open, onClose }) {
   let initAutoRedirect = localStorage.getItem("loginAutoRedirect");
   if (initAutoRedirect === "true") initAutoRedirect = true;
   else initAutoRedirect = false;
@@ -28,7 +28,8 @@ function LoginDialog({ open, onClose, onLogin }) {
       <DialogTitle>ログインが必要です</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          この機能を使用するにはログインする必要があります。アカウントにログインしてすべての機能を利用しましょう。
+          <div>サーバーにデータを保存するためにはログインが必要です。</div>
+          <div>ログインする、もしくはローカルのデータ を利用してください。</div>
         </DialogContentText>
         <FormControlLabel
           control={<Checkbox checked={autoRedirect} onChange={handleAutoRedirectChange} />}

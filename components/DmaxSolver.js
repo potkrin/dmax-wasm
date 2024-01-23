@@ -175,6 +175,12 @@ function call_worker_wasm_memory_main(problem_data, updateDmaxOutput) {
       const workerError = e.message;
       console.log("error message received from worker: " + workerError);
       console.error("error message received from worker: " + workerError);
+      // RangeError: Out of memory が発生したらメモリ不足と表示
+      if (workerError.includes("RangeError: Out of memory")) {
+        console.log(
+          "[wasm-memory-test] DmaxSolver has recieved message 'RangeError: Out of memory' from worker"
+        );
+      }
       updateDmaxOutput(workerError);
       // 終了が早すぎると postmessage の受信が中断されてしまうので保留
       // startWasmWorker.terminate();

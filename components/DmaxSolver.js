@@ -125,6 +125,69 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, 
 
 // dmax-core を呼び出すための処理 ここまで
 
+// wasm-memory-test を呼び出すための処理 ここから
+
+function call_worker_wasm_memory_main(problem_data, updateDmaxOutput) {
+  supportsNestedWebWorkers(updateDmaxOutput);
+
+  // gonextbench = false;
+  if (window.Worker) {
+    console.log("webworker enable");
+
+    if (startWasmWorker) {
+      startWasmWorker.terminate();
+    }
+    console.log("Solve Start TimeStamp: " + new Date().toISOString());
+    updateDmaxOutput("Solve Start TimeStamp: " + new Date().toISOString());
+    startWasmWorker = new Worker("/dmax-core/wasm-memory-test/workerWasmMemoryTest.js", {
+      name: "startWasmWorker",
+    });
+
+    updateDmaxOutput("webworker launched");
+
+    startWasmWorker.postMessage(["file.nl", 4, 3072, problem_data]);
+    console.log("Message posted to worker");
+
+    startWasmWorker.onmessage = function (e) {
+      const worker_response = e.data;
+      console.log("[DEBUG] message received from worker: " + worker_response);
+      updateDmaxOutput(worker_response);
+
+      const lines = worker_response.trim().split("\n");
+
+      for (const line of lines) {
+        if (line.includes("s|")) {
+          const [time, usedMemory, upperLimit, lowerLimit, gap] = line
+            .split("|")
+            .map((item) => item.trim());
+          console.log({
+            time: parseFloat(time.replace("$", "").replace("s", "")),
+            usedMemory: usedMemory.replace("M", ""),
+            upperLimit: parseFloat(upperLimit),
+            lowerLimit: parseFloat(lowerLimit),
+            gap: parseFloat(gap),
+          });
+        }
+      }
+    };
+
+    startWasmWorker.onerror = function (e) {
+      const workerError = e.message;
+      console.log("error message received from worker: " + workerError);
+      console.error("error message received from worker: " + workerError);
+      updateDmaxOutput(workerError);
+      // 終了が早すぎると postmessage の受信が中断されてしまうので保留
+      // startWasmWorker.terminate();
+    };
+  } else {
+    console.log("Your browser doesn't support web workers.");
+    updateDmaxOutput("Your browser doesn't support web workers.");
+    updateDmaxOutput("Nested Web Workers are not supported");
+  }
+}
+
+// wasm-memory-test を呼び出すための処理 ここまで
+
 // CSRFトークンを取得するためのヘルパー関数
 // Django 本番環境で必要
 function getCsrfToken() {
@@ -220,6 +283,11 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   const [resetMiddleOutputInfo, setResetMiddleOutputInfo] = useState(false);
 
   const { serverCharmData, charmValue } = useCharmAndQuriousArmorContext();
+
+  // window を利用するためマウント後に実行
+  useEffect(() => {
+    call_worker_wasm_memory_main(null, updateDmaxOutput);
+  }, []);
 
   // 最適化の開始
   const startOptimization = () => {

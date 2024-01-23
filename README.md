@@ -1,15 +1,24 @@
 # TODO
 - **バグ**
+  - [ ] iOSメモリエラー時のリトライ処理
+    - [x] 同じエラーを開発環境で再現できるか？ 無理だった (4GB>にすると実行時にOOMで落とされる. iOSのエラーとは違う)
+    - [x] メモリ上限検証用の wasm バイナリと js グルーコード, worker 一式
+      - バイナリ作成: /home/hoge/work/wasm-memory-test/wasm-memory-test.worker.js
+      - worker作成: /mnt/d/work/sslServer/workerWasmMemoryTest.js
+      - とりあえず配置: /home/hoge/work/react-tutorial/dmax-wasm/public/wasm-memory-test/wasm-memory-test.wasm
+    - [ ] 検証バイナリを利用して上限判定
+    - [ ] ローカルストレージに実行可能メモリ上限を保存 (有効期限付き)
+
+  - [ ] ステージング環境の nginx 設定、バックエンド設定
   - [ ] 弾矢強化のUIを変更不可に変更
   - [ ] button group のマウスオーバー時の色がおかしい
   - [ ] スクロールバー表示と見た目の変更
   - [ ] result history の更新タイミングがまた即時反映されなくなっている
   - [ ] swipable 再検討
-  - [ ] iOSメモリエラー時のリトライ処理
   - [ ] スレッド数変更機能
   - [ ] ローカルストレージを利用する場合に警告
+  - [ ] webworker で発生した全ての例外をUI上に表示する
   - [ ] fabicon 設定
-  - [ ] ステージング環境の nginx 設定、バックエンド設定
   - [ ] SSG 対応で白黒点滅するようになった問題
   - [ ] スマホ向けUIが壊れている等 UI微調整
     - [ ] iPhone で閲覧するとなぜか画面を左右に引っ張れる

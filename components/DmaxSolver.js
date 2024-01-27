@@ -169,9 +169,10 @@ function call_worker_wasm_main(
 
 // リトライ処理付き wasm-worker 呼び出し: Out of Memory が発生した場合、1GBメモリ制限ありで再び wasm-worker を呼び出す
 function wasm_worker_with_retry(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing) {
+  console.log("wasm_worker_with_retry: test with 1GB memory limit wasm-worker");
   try {
     // メモリ制限なしで wasm-worker を呼び出す
-    call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, false);
+    call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, true);
   } catch (e) {
     console.log("catched error: " + e);
     if (e.message === "RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS") {

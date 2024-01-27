@@ -57,7 +57,14 @@ function supportsNestedWebWorkers(updateDmaxOutput) {
   }
 }
 
-function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing) {
+// limit_memory: true ならメモリ 1GB 制限の wasm バイナリを起動する worker を呼び出す
+function call_worker_wasm_main(
+  problem_data,
+  updateDmaxOutput,
+  updateChartData,
+  setIsOptimizing,
+  limit_memory
+) {
   supportsNestedWebWorkers(updateDmaxOutput);
 
   // gonextbench = false;
@@ -67,9 +74,31 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, 
     if (startWasmWorker) {
       startWasmWorker.terminate();
     }
+
+    // メモリ制限を行うかどうか切り替える
+    let workerPath = "/dmax-core/worker3.js";
+    if (limit_memory) {
+      workerPath = "/dmax-core/worker1GB.js";
+    } else {
+      // 過去1週間以内に oom 発生記録があれば 1GB 制限の wasm バイナリを起動する
+      const data = localStorage.getItem("OutOfMemoryOn4GB");
+      if (data) {
+        const oomInfo = JSON.parse(data);
+        if (oomInfo.oom) {
+          const oomTime = new Date(oomInfo.time);
+          const now = new Date();
+          const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+          if (oneWeekAgo < oomTime) {
+            workerPath = "/dmax-core/worker1GB.js";
+          }
+        }
+      }
+    }
+
     console.log("Solve Start TimeStamp: " + new Date().toISOString());
     updateDmaxOutput("Solve Start TimeStamp: " + new Date().toISOString());
-    startWasmWorker = new Worker("/dmax-core/worker3.js", {
+    startWasmWorker = new Worker(workerPath, {
       name: "startWasmWorker",
     });
 
@@ -115,6 +144,21 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, 
       setIsOptimizing(false);
       // 終了が早すぎると postmessage の受信が中断されてしまうので保留
       // startWasmWorker.terminate();
+
+      // 特定のエラーメッセージに基づいて処理を行う
+      if (
+        workerError.includes(
+          "RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS"
+        )
+      ) {
+        // Out of Memory が発生した際の処理
+        console.error("RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS");
+        const oomInfo = { "oom": true, "time": new Date().toISOString() };
+        localStorage.setItem("OutOfMemoryOn4GB", JSON.stringify(oomInfo));
+
+        // 新しい例外を投げる
+        throw new Error("RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS");
+      }
     };
   } else {
     console.log("Your browser doesn't support web workers.");
@@ -123,76 +167,24 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, 
   }
 }
 
-// dmax-core を呼び出すための処理 ここまで
-
-// wasm-memory-test を呼び出すための処理 ここから
-
-function call_worker_wasm_memory_main(problem_data, updateDmaxOutput) {
-  supportsNestedWebWorkers(updateDmaxOutput);
-
-  // gonextbench = false;
-  if (window.Worker) {
-    console.log("webworker enable");
-
-    if (startWasmWorker) {
-      startWasmWorker.terminate();
+// リトライ処理付き wasm-worker 呼び出し: Out of Memory が発生した場合、1GBメモリ制限ありで再び wasm-worker を呼び出す
+function wasm_worker_with_retry(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing) {
+  try {
+    // メモリ制限なしで wasm-worker を呼び出す
+    call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, false);
+  } catch (e) {
+    console.log("catched error: " + e);
+    if (e.message === "RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS") {
+      // Out of Memory が発生した場合、メモリ制限ありで再び wasm-worker を呼び出す
+      console.log(
+        "RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS occured. try 1GB limited memory wasm-worker"
+      );
+      call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, true);
+    } else {
+      console.error("An unexpected error occured: " + e);
     }
-    console.log("Solve Start TimeStamp: " + new Date().toISOString());
-    updateDmaxOutput("Solve Start TimeStamp: " + new Date().toISOString());
-    startWasmWorker = new Worker("/dmax-core/wasm-memory-test/workerWasmMemoryTest.js", {
-      name: "startWasmWorker",
-    });
-
-    updateDmaxOutput("webworker launched");
-
-    startWasmWorker.postMessage(["file.nl", 4, 3072, problem_data]);
-    console.log("Message posted to worker");
-
-    startWasmWorker.onmessage = function (e) {
-      const worker_response = e.data;
-      console.log("[DEBUG] message received from worker: " + worker_response);
-      updateDmaxOutput(worker_response);
-
-      const lines = worker_response.trim().split("\n");
-
-      for (const line of lines) {
-        if (line.includes("s|")) {
-          const [time, usedMemory, upperLimit, lowerLimit, gap] = line
-            .split("|")
-            .map((item) => item.trim());
-          console.log({
-            time: parseFloat(time.replace("$", "").replace("s", "")),
-            usedMemory: usedMemory.replace("M", ""),
-            upperLimit: parseFloat(upperLimit),
-            lowerLimit: parseFloat(lowerLimit),
-            gap: parseFloat(gap),
-          });
-        }
-      }
-    };
-
-    startWasmWorker.onerror = function (e) {
-      const workerError = e.message;
-      console.log("error message received from worker: " + workerError);
-      console.error("error message received from worker: " + workerError);
-      // RangeError: Out of memory が発生したらメモリ不足と表示
-      if (workerError.includes("RangeError: Out of memory")) {
-        console.log(
-          "[wasm-memory-test] DmaxSolver has recieved message 'RangeError: Out of memory' from worker"
-        );
-      }
-      updateDmaxOutput(workerError);
-      // 終了が早すぎると postmessage の受信が中断されてしまうので保留
-      // startWasmWorker.terminate();
-    };
-  } else {
-    console.log("Your browser doesn't support web workers.");
-    updateDmaxOutput("Your browser doesn't support web workers.");
-    updateDmaxOutput("Nested Web Workers are not supported");
   }
 }
-
-// wasm-memory-test を呼び出すための処理 ここまで
 
 // CSRFトークンを取得するためのヘルパー関数
 // Django 本番環境で必要
@@ -281,19 +273,10 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     setProcessingUserArmorsData(newData);
   };
 
-  useEffect(() => {
-    console.log("processingUserArmorsData = " + JSON.stringify(processingUserArmorsData, null, 4));
-  }, [processingUserArmorsData]);
-
   // DmaxOutput のリアルタイム中間出力をリセットする state
   const [resetMiddleOutputInfo, setResetMiddleOutputInfo] = useState(false);
 
   const { serverCharmData, charmValue } = useCharmAndQuriousArmorContext();
-
-  // window を利用するためマウント後に実行
-  useEffect(() => {
-    call_worker_wasm_memory_main(null, updateDmaxOutput);
-  }, []);
 
   // 最適化の開始
   const startOptimization = () => {
@@ -370,7 +353,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         // 前回の中間出力データを消去
         eraseDmaxOutput();
         eraseChartData();
-        call_worker_wasm_main(data, updateDmaxOutput, updateChartData, setIsOptimizing);
+        // call_worker_wasm_main(data, updateDmaxOutput, updateChartData, setIsOptimizing);
+        wasm_worker_with_retry(data, updateDmaxOutput, updateChartData, setIsOptimizing);
       })
       .catch((error) => {
         setOpenStart(false);

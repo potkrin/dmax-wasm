@@ -6,6 +6,9 @@
       - バイナリ作成: /home/hoge/work/wasm-memory-test/wasm-memory-test.worker.js
       - worker作成: /mnt/d/work/sslServer/workerWasmMemoryTest.js
       - とりあえず配置: /home/hoge/work/react-tutorial/dmax-wasm/public/wasm-memory-test/wasm-memory-test.wasm
+      - worker 呼び出し関数でエラー処理&リトライ処理 
+        - 4GBworker呼び出し→失敗→1GBworker呼び出し
+        - 成功→localstorageに書き込み  
     - [ ] 検証バイナリを利用して上限判定
     - [ ] ローカルストレージに実行可能メモリ上限を保存 (有効期限付き)
 

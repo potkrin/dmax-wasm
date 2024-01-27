@@ -146,17 +146,17 @@ function call_worker_wasm_main(
       // startWasmWorker.terminate();
 
       // 特定のエラーメッセージに基づいて処理を行う
-      if (workerError.includes("RangeError: Out of Memory")) {
+      if (workerError.includes("RangeError: Out of memory")) {
         // Out of Memory が発生した際の処理
-        console.error("RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS");
-        console.error("RangeError: Out of Memory Occured on Webworker - throw new Error");
+        console.error("RangeError: Out of memory occured on webworker - commonly occurs on iOS");
+        console.error("RangeError: Out of memory occured on webworker - throw new Error");
         const oomInfo = { "oom": true, "time": new Date().toISOString() };
         localStorage.setItem("OutOfMemoryOn4GB", JSON.stringify(oomInfo));
 
         // 新しい例外を投げる
-        throw new Error("RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS");
+        throw new Error("RangeError: Out of memory occured on webworker - commonly occurs on iOS");
       } else {
-        console.error("Not an RangeError: Out of Memory. error was: " + workerError);
+        console.error("Not an 'RangeError: Out of memory'. the error was: " + workerError);
       }
     };
   } else {
@@ -174,10 +174,10 @@ function wasm_worker_with_retry(problem_data, updateDmaxOutput, updateChartData,
     call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, false);
   } catch (e) {
     console.log("catched error: " + e);
-    if (e.message === "RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS") {
+    if (e.message === "RangeError: Out of memory occured on webworker") {
       // Out of Memory が発生した場合、メモリ制限ありで再び wasm-worker を呼び出す
       console.log(
-        "RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS occured. try 1GB limited memory wasm-worker"
+        "RangeError: Out of memory occured on webworker - commonly occurs on iOS occured. try 1GB limited memory wasm-worker"
       );
       call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, true);
     } else {

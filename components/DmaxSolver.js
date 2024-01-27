@@ -146,18 +146,17 @@ function call_worker_wasm_main(
       // startWasmWorker.terminate();
 
       // 特定のエラーメッセージに基づいて処理を行う
-      if (
-        workerError.includes(
-          "RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS"
-        )
-      ) {
+      if (workerError.includes("RangeError: Out of Memory")) {
         // Out of Memory が発生した際の処理
         console.error("RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS");
+        console.error("RangeError: Out of Memory Occured on Webworker - throw new Error");
         const oomInfo = { "oom": true, "time": new Date().toISOString() };
         localStorage.setItem("OutOfMemoryOn4GB", JSON.stringify(oomInfo));
 
         // 新しい例外を投げる
         throw new Error("RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS");
+      } else {
+        console.error("Not an RangeError: Out of Memory. error was: " + workerError);
       }
     };
   } else {
@@ -172,7 +171,7 @@ function wasm_worker_with_retry(problem_data, updateDmaxOutput, updateChartData,
   console.log("wasm_worker_with_retry: test with 1GB memory limit wasm-worker");
   try {
     // メモリ制限なしで wasm-worker を呼び出す
-    call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, true);
+    call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, false);
   } catch (e) {
     console.log("catched error: " + e);
     if (e.message === "RangeError: Out of Memory Occured on Webworker - commonly occurs on iOS") {

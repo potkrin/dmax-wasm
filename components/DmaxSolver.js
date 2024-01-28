@@ -1,6 +1,6 @@
 /* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/
 
-import { React, useState, useRef, useEffect, forwardRef } from "react";
+import { React, useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Grid, Button, Fab, Box } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -197,7 +197,8 @@ const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const DmaxSolver = ({ userInputData, fabRight }) => {
+export const DmaxSolver = forwardRef((props, ref) => {
+  const { userInputData, fabRight } = props;
   // useTheme() を使用して、テーマのブレークポイントにアクセス
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
@@ -276,7 +277,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   // DmaxOutput のリアルタイム中間出力をリセットする state
   const [resetMiddleOutputInfo, setResetMiddleOutputInfo] = useState(false);
 
-  const { serverCharmData, charmValue } = useCharmAndQuriousArmorContext();
+  const { serverCharmData, charmValue, isOptimizing, setIsOptimizing } =
+    useCharmAndQuriousArmorContext();
 
   // DmaxSolverコンポーネントへの参照を作成 (自動スクロールに利用)
   const dmaxSolverRef = useRef(null);
@@ -386,8 +388,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     }
   };
 
-  // 最適化ボタンをトグルする
-  const [isOptimizing, setIsOptimizing] = useState(false);
+  // // 最適化ボタンをトグルする
+  // const [isOptimizing, setIsOptimizing] = useState(false);
 
   const handleToggle = () => {
     // ユーザ入力による中断の場合メッセージを追加(表示への反映に利用)
@@ -402,6 +404,10 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     // state の更新は非同期に行われる点に注意 (setIsOptimizing 直後に if (isOptimizing) 等としても反映されない)
     setIsOptimizing(!isOptimizing);
   };
+
+  useImperativeHandle(ref, () => ({
+    handleToggle,
+  }));
 
   useEffect(() => {
     console.log("fabRight = " + fabRight + "typeof(fabRight) = " + typeof fabRight);
@@ -538,6 +544,6 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       )}
     </>
   );
-};
+});
 
 export default DmaxSolver;

@@ -43,6 +43,7 @@ import CloudOffIcon from "@mui/icons-material/CloudOff";
 import DevicesIcon from "@mui/icons-material/Devices";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import HelpIcon from "@mui/icons-material/Help";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import MuiAlert from "@mui/material/Alert";
 
@@ -196,7 +197,7 @@ function App() {
           fabRight
       );
     } else {
-      setFabRight(64);
+      setFabRight(50);
       console.log(
         "windowWidth <= containerWidth. windowWidth = " +
           windowWidth +
@@ -478,6 +479,29 @@ function App() {
     swiper.slideTo(newValue);
   };
 
+  const solverRef = useRef(null);
+  const callChildFunction = () => {
+    solverRef.current.handleToggle();
+  };
+
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
+  // Fab コンポーネントの表示状態を制御するための状態
+  const [showFab, setShowFab] = useState(false);
+
+  // Fab の表示状態を制御
+  useEffect(() => {
+    if (value === 0) {
+      const timer = setTimeout(() => {
+        setShowFab(true);
+      }, 500); // value が 0 の時のみ 500 ミリ秒後に Fab を表示
+
+      return () => clearTimeout(timer);
+    } else {
+      setShowFab(false); // value が 0 以外の場合は直ちに Fab を非表示にする
+    }
+  }, [value]);
+
   return (
     <SnackbarContext.Provider value={{ error, setError, open, setOpen, handleClose }}>
       <CharmAndQuriousArmorContext.Provider
@@ -497,6 +521,9 @@ function App() {
           handleChangeQuriousArmorValue,
           isQuriousArmorDataFetched,
           setIsQuriousArmorDataFetched,
+
+          isOptimizing,
+          setIsOptimizing,
         }}
       >
         <LoginContext.Provider
@@ -718,6 +745,32 @@ function App() {
                 }}
               >
                 {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
+                {showFab && (
+                  <Fab
+                    variant="extended"
+                    sx={{
+                      position: "fixed",
+                      bottom: "48px",
+                      // right: "48px",
+                      right: `${fabRight}px`,
+                      animation: "fadeIn 0.5s ease-in-out",
+                    }}
+                    color="primary"
+                    onClick={callChildFunction}
+                  >
+                    {isOptimizing ? (
+                      <>
+                        <CancelIcon />
+                        {!matches && <Box sx={{ ml: 1 }}>中止</Box>}
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUpIcon />
+                        {!matches && <Box sx={{ ml: 1 }}>最適化</Box>}
+                      </>
+                    )}
+                  </Fab>
+                )}
 
                 <Swiper
                   spaceBetween={50}
@@ -730,7 +783,12 @@ function App() {
                 >
                   <SwiperSlide>
                     <TabPanel value={value} index={0} dir={currentTheme.direction}>
-                      <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
+                      <DmaxMain
+                        ref={solverRef}
+                        fabRight={fabRight}
+                        setFabRight={setFabRight}
+                        setValue={setValue}
+                      />
                     </TabPanel>
                   </SwiperSlide>
                   <SwiperSlide>

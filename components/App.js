@@ -33,7 +33,6 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
-import { theme } from "./ThemeProvider";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -47,7 +46,7 @@ import HelpIcon from "@mui/icons-material/Help";
 
 import MuiAlert from "@mui/material/Alert";
 
-import { LDThemeContext, lightTheme, darkTheme } from "./LDThemeContext";
+import { lightTheme, darkTheme } from "./LDTheme";
 import { SnackbarContext } from "./SnackbarContext";
 import Usage from "./Usage";
 import ServerCharmManager from "./ServerCharmManager";
@@ -128,7 +127,6 @@ const drawerWidth = 240;
 const navItems = ["Home", "About", "Contact"];
 
 function App() {
-  // const theme = useTheme();
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -215,6 +213,15 @@ function App() {
     setMobileOpen((prevState) => !prevState);
   };
 
+  // currentTheme: ダークモードとライトモードのテーマを切り替えるための state
+  // - currentTheme は ThemeProvider に渡す
+  // - ThemeProvider に渡した theme は他のコンポーネントで以下のように利用できる
+  //
+  //   import { useTheme } from "@mui/material/styles";
+  //   ...
+  //   const currentTheme = useTheme();
+  //
+  // - toggleTheme も他のコンポーネントに渡したい場合は ContextAPI 等を利用する
   const [currentTheme, setCurrentTheme] = React.useState(lightTheme);
   const [charmValue, setCharmValue] = useState(0);
   const [quriousArmorValue, setQuriousArmorValue] = useState(0);
@@ -244,8 +251,6 @@ function App() {
     else initQuriousArmorValue = 0;
     setQuriousArmorValue(initQuriousArmorValue);
   }, []);
-
-  //  localStorage.getItem("colorTheme") === "dark" ? darkTheme : lightTheme
 
   const toggleTheme = () => {
     if (currentTheme === lightTheme) {
@@ -454,263 +459,268 @@ function App() {
   //   backgroundColor: theme.palette.background.default,
   // }));
 
-  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   return (
-    <LDThemeContext.Provider value={{ currentTheme, toggleTheme }}>
-      <SnackbarContext.Provider value={{ error, setError, open, setOpen, handleClose }}>
-        <CharmAndQuriousArmorContext.Provider
+    <SnackbarContext.Provider value={{ error, setError, open, setOpen, handleClose }}>
+      <CharmAndQuriousArmorContext.Provider
+        value={{
+          serverCharmData,
+          setServerCharmData,
+          charmValue,
+          handleChangeCharmValue,
+          isCharmDataFetched,
+          setIsCharmDataFetched,
+
+          value,
+
+          serverQuriousArmorData,
+          setServerQuriousArmorData,
+          quriousArmorValue,
+          handleChangeQuriousArmorValue,
+          isQuriousArmorDataFetched,
+          setIsQuriousArmorDataFetched,
+        }}
+      >
+        <LoginContext.Provider
           value={{
-            serverCharmData,
-            setServerCharmData,
-            charmValue,
-            handleChangeCharmValue,
-            isCharmDataFetched,
-            setIsCharmDataFetched,
-
-            value,
-
-            serverQuriousArmorData,
-            setServerQuriousArmorData,
-            quriousArmorValue,
-            handleChangeQuriousArmorValue,
-            isQuriousArmorDataFetched,
-            setIsQuriousArmorDataFetched,
+            isLoggedIn,
+            setIsLoggedIn,
+            fetchLoginStatus,
+            isDialogOpen,
+            setIsDialogOpen,
+            handleCloseDialog,
+            checkLoginStatus,
           }}
         >
-          <LoginContext.Provider
-            value={{
-              isLoggedIn,
-              setIsLoggedIn,
-              fetchLoginStatus,
-              isDialogOpen,
-              setIsDialogOpen,
-              handleCloseDialog,
-              checkLoginStatus,
-            }}
-          >
-            <ThemeProvider theme={currentTheme}>
-              <Snackbar
-                open={open}
-                autoHideDuration={6000}
+          {/* ThemeProvider に渡した theme は以下のように import できる (詳細は上記のコメント参照)
+           *    import { useTheme } from "@mui/material/styles";
+           *      ...
+           *    const currentTheme = useTheme();
+           *
+           * toggleTheme も他のコンポーネントに渡したい場合は ContextAPI 等を利用する
+           */}
+          <ThemeProvider theme={currentTheme}>
+            <Snackbar
+              open={open}
+              autoHideDuration={6000}
+              onClose={handleClose}
+              message={error}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              <Alert
                 onClose={handleClose}
-                message={error}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                severity="error"
+                sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
               >
-                <Alert
-                  onClose={handleClose}
-                  severity="error"
-                  sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
-                >
-                  {error}
-                </Alert>
-              </Snackbar>
+                {error}
+              </Alert>
+            </Snackbar>
 
-              <div
-                className="App"
-                style={{ backgroundColor: currentTheme.palette.background.default }}
-              >
-                {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
-                {/* <AppDiv> */}
-                {/* <AppBar component="nav">
+            <div
+              className="App"
+              style={{ backgroundColor: currentTheme.palette.background.default }}
+            >
+              {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
+              {/* <AppDiv> */}
+              {/* <AppBar component="nav">
                  </AppBar> */}
-                <HideOnScroll>
-                  <AppBar component="nav" position="sticky">
-                    {/* <Toolbar variant="dense" sx={{ backgroundColor: theme.palette.primary.main }}> */}
-                    <Toolbar variant="dense">
-                      <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: "none" } }}
-                      >
-                        <MenuIcon />
-                      </IconButton>
-                      <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-                      >
-                        DMAX
-                      </Typography>
-                      {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
+              <HideOnScroll>
+                <AppBar component="nav" position="sticky">
+                  {/* <Toolbar variant="dense" sx={{ backgroundColor: theme.palette.primary.main }}> */}
+                  <Toolbar variant="dense">
+                    <IconButton
+                      color="inherit"
+                      aria-label="open drawer"
+                      edge="start"
+                      onClick={handleDrawerToggle}
+                      sx={{ mr: 2, display: { sm: "none" } }}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+                    >
+                      DMAX
+                    </Typography>
+                    {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
               {navItems.map((item) => (
                 <Button key={item} sx={{ color: "#fff" }}>
                   {item}
                 </Button>
               ))}
             </Box> */}
-                      <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                        <Button
-                          sx={{ color: currentTheme.palette.primary.contrastText }}
-                          startIcon={<OpenInNewIcon />}
+                    <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                      <Button
+                        sx={{ color: currentTheme.palette.primary.contrastText }}
+                        startIcon={<OpenInNewIcon />}
+                      >
+                        <a
+                          href="https://www.mhrspeedrun.com/cms/quest/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: currentTheme.palette.primary.contrastText,
+                            textDecoration: "none",
+                          }}
                         >
+                          TA集計
+                        </a>
+                      </Button>
+                      <Button
+                        onClick={toggleTheme}
+                        color="inherit"
+                        startIcon={isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
+                        style={{ textTransform: "none" }}
+                      >
+                        {isLoggedIn ? (
                           <a
-                            href="https://www.mhrspeedrun.com/cms/quest/"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/logout/?next=/dmax`}
+                            // target="_blank"
+                            // rel="noopener noreferrer"
                             style={{
                               color: currentTheme.palette.primary.contrastText,
                               textDecoration: "none",
                             }}
                           >
-                            TA集計
+                            ログアウト
                           </a>
-                        </Button>
-                        <Button
-                          onClick={toggleTheme}
-                          color="inherit"
-                          startIcon={isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
-                          style={{ textTransform: "none" }}
-                        >
-                          {isLoggedIn ? (
-                            <a
-                              href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/logout/?next=/dmax`}
-                              // target="_blank"
-                              // rel="noopener noreferrer"
-                              style={{
-                                color: currentTheme.palette.primary.contrastText,
-                                textDecoration: "none",
-                              }}
-                            >
-                              ログアウト
-                            </a>
+                        ) : (
+                          <a
+                            href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/?next=/dmax`}
+                            style={{
+                              color: currentTheme.palette.primary.contrastText,
+                              textDecoration: "none",
+                            }}
+                          >
+                            ログイン
+                          </a>
+                        )}
+                      </Button>
+                      <Button
+                        onClick={toggleTheme}
+                        color="inherit"
+                        startIcon={
+                          currentTheme.palette.mode === "dark" ? (
+                            <Brightness7Icon />
                           ) : (
-                            <a
-                              href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/?next=/dmax`}
-                              style={{
-                                color: currentTheme.palette.primary.contrastText,
-                                textDecoration: "none",
-                              }}
-                            >
-                              ログイン
-                            </a>
-                          )}
-                        </Button>
-                        <Button
-                          onClick={toggleTheme}
-                          color="inherit"
-                          startIcon={
-                            currentTheme.palette.mode === "dark" ? (
-                              <Brightness7Icon />
-                            ) : (
-                              <Brightness4Icon />
-                            )
-                          }
-                          style={{ textTransform: "none" }}
-                        >
-                          {currentTheme.palette.mode === "dark" ? "Light" : "Dark"}
-                        </Button>
-                      </Box>
-                    </Toolbar>
+                            <Brightness4Icon />
+                          )
+                        }
+                        style={{ textTransform: "none" }}
+                      >
+                        {currentTheme.palette.mode === "dark" ? "Light" : "Dark"}
+                      </Button>
+                    </Box>
+                  </Toolbar>
 
-                    <Tabs
-                      value={value}
-                      onChange={handleChange}
-                      indicatorColor="secondary"
-                      textColor="inherit"
-                      variant="fullWidth"
-                      aria-label="tabs example"
-                      sx={{ minHeight: "0px" }}
-                    >
-                      <Tab
-                        label="最適化"
-                        sx={{ minHeight: "0px" }}
-                        {...a11yProps(0)}
-                        icon={<TrendingUpIcon />}
-                        iconPosition={matches ? "top" : "start"}
-                        // iconPosition="start"
-                      />
-                      <Tab
-                        label="護石"
-                        sx={{ minHeight: "0px" }}
-                        {...a11yProps(1)}
-                        icon={
-                          charmValue === 0 ? (
-                            <DevicesIcon />
-                          ) : isCharmDataFetched ? (
-                            <CloudIcon />
-                          ) : (
-                            <CloudOffIcon />
-                          )
-                        }
-                        iconPosition={matches ? "top" : "start"}
-                      />
-                      <Tab
-                        label="傀異錬成"
-                        sx={{ minHeight: "0px" }}
-                        {...a11yProps(2)}
-                        icon={
-                          quriousArmorValue === 0 ? (
-                            <DevicesIcon />
-                          ) : isQuriousArmorDataFetched ? (
-                            <CloudIcon />
-                          ) : (
-                            <CloudOffIcon />
-                          )
-                        }
-                        iconPosition={matches ? "top" : "start"}
-                      />
-                      <Tab
-                        label="使い方"
-                        sx={{ minHeight: "0px" }}
-                        {...a11yProps(3)}
-                        icon={<HelpIcon />}
-                        iconPosition={matches ? "top" : "start"}
-                      />
-                    </Tabs>
-                  </AppBar>
-                </HideOnScroll>
-                <nav>
-                  <Drawer
-                    variant="temporary"
-                    open={mobileOpen}
-                    onClose={handleDrawerToggle}
-                    ModalProps={{
-                      keepMounted: true, // Better open performance on mobile.
-                    }}
-                    sx={{
-                      display: { xs: "block", sm: "none" },
-                      "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-                    }}
+                  <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    indicatorColor="secondary"
+                    textColor="inherit"
+                    variant="fullWidth"
+                    aria-label="tabs example"
+                    sx={{ minHeight: "0px" }}
                   >
-                    {drawer}
-                  </Drawer>
-                </nav>
-
-                <Container
-                  ref={containerRef}
+                    <Tab
+                      label="最適化"
+                      sx={{ minHeight: "0px" }}
+                      {...a11yProps(0)}
+                      icon={<TrendingUpIcon />}
+                      iconPosition={matches ? "top" : "start"}
+                      // iconPosition="start"
+                    />
+                    <Tab
+                      label="護石"
+                      sx={{ minHeight: "0px" }}
+                      {...a11yProps(1)}
+                      icon={
+                        charmValue === 0 ? (
+                          <DevicesIcon />
+                        ) : isCharmDataFetched ? (
+                          <CloudIcon />
+                        ) : (
+                          <CloudOffIcon />
+                        )
+                      }
+                      iconPosition={matches ? "top" : "start"}
+                    />
+                    <Tab
+                      label="傀異錬成"
+                      sx={{ minHeight: "0px" }}
+                      {...a11yProps(2)}
+                      icon={
+                        quriousArmorValue === 0 ? (
+                          <DevicesIcon />
+                        ) : isQuriousArmorDataFetched ? (
+                          <CloudIcon />
+                        ) : (
+                          <CloudOffIcon />
+                        )
+                      }
+                      iconPosition={matches ? "top" : "start"}
+                    />
+                    <Tab
+                      label="使い方"
+                      sx={{ minHeight: "0px" }}
+                      {...a11yProps(3)}
+                      icon={<HelpIcon />}
+                      iconPosition={matches ? "top" : "start"}
+                    />
+                  </Tabs>
+                </AppBar>
+              </HideOnScroll>
+              <nav>
+                <Drawer
+                  variant="temporary"
+                  open={mobileOpen}
+                  onClose={handleDrawerToggle}
+                  ModalProps={{
+                    keepMounted: true, // Better open performance on mobile.
+                  }}
                   sx={{
-                    paddingLeft: "0px !important",
-                    paddingRight: "0px !important",
-                    marginBottom: "0px !important", // 追加
-                    paddingBottom: "0px !important", // 追加
+                    display: { xs: "block", sm: "none" },
+                    "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
                   }}
                 >
-                  {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
+                  {drawer}
+                </Drawer>
+              </nav>
 
-                  <TabPanel value={value} index={0} dir={theme.direction}>
-                    <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
-                  </TabPanel>
-                  <TabPanel value={value} index={1} dir={theme.direction}>
-                    <CharmTab />
-                  </TabPanel>
-                  <TabPanel value={value} index={2} dir={theme.direction}>
-                    <QuriousArmorTab />
-                  </TabPanel>
-                  <TabPanel value={value} index={3} dir={theme.direction}>
-                    <Usage />
-                  </TabPanel>
-                </Container>
-              </div>
-              {/* </AppDiv> */}
-              {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
-            </ThemeProvider>
-          </LoginContext.Provider>
-        </CharmAndQuriousArmorContext.Provider>
-      </SnackbarContext.Provider>
-    </LDThemeContext.Provider>
+              <Container
+                ref={containerRef}
+                sx={{
+                  paddingLeft: "0px !important",
+                  paddingRight: "0px !important",
+                  marginBottom: "0px !important", // 追加
+                  paddingBottom: "0px !important", // 追加
+                }}
+              >
+                {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
+
+                <TabPanel value={value} index={0} dir={currentTheme.direction}>
+                  <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
+                </TabPanel>
+                <TabPanel value={value} index={1} dir={currentTheme.direction}>
+                  <CharmTab />
+                </TabPanel>
+                <TabPanel value={value} index={2} dir={currentTheme.direction}>
+                  <QuriousArmorTab />
+                </TabPanel>
+                <TabPanel value={value} index={3} dir={currentTheme.direction}>
+                  <Usage />
+                </TabPanel>
+              </Container>
+            </div>
+            {/* </AppDiv> */}
+            {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
+          </ThemeProvider>
+        </LoginContext.Provider>
+      </CharmAndQuriousArmorContext.Provider>
+    </SnackbarContext.Provider>
   );
 }
 

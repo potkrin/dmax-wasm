@@ -15,10 +15,9 @@ import { DmaxResult } from "./DmaxResult";
 import { armors, decos } from "../data/EquipData";
 import { staticData } from "../data/StaticData";
 import { DmaxHistory } from "./DmaxHistory";
-// import "../App.css";
-import { theme } from "./ThemeProvider";
 import { applyWaterBlight } from "./HelperFunction";
 import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
+import { useTheme } from "@mui/material/styles";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -199,7 +198,8 @@ const Alert = forwardRef(function Alert(props, ref) {
 });
 
 export const DmaxSolver = ({ userInputData, fabRight }) => {
-  // useTheme() を使用して、テーマのブレークポイントにアクセスできます。
+  // useTheme() を使用して、テーマのブレークポイントにアクセス
+  const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   // dmaxOutput : 最適中の全ての出力

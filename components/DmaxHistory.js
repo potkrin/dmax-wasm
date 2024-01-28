@@ -8,8 +8,7 @@ import { Grid, Paper, Box, Typography, Tab, Tabs, Icon, IconButton, Divider } fr
 import HistoryIcon from "@mui/icons-material/History";
 import PropTypes from "prop-types";
 import CopyToClipboardButton from "./CopyToClipboardButton";
-import { theme } from "./ThemeProvider";
-import { LDThemeContext } from "./LDThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 function NewlineText({ text }) {
   const newText = text
@@ -92,7 +91,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
     setTextToCopy(historyList[value].result);
   }, [value, historyList]);
 
-  const { currentTheme } = React.useContext(LDThemeContext);
+  const currentTheme = useTheme();
 
   return (
     <Grid item xs={12} md={6}>

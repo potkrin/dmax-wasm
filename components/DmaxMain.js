@@ -38,8 +38,7 @@ import HelpIcon from "@mui/icons-material/Help";
 import { staticSkillData } from "../data/StaticData";
 import { userInputData as defaultUserInputData } from "../data/UserInputData";
 import SkillCard from "./SkillCard";
-// import useCustomStyles from "./CustomStyles";
-import { theme } from "./ThemeProvider";
+import { useTheme } from "@mui/material/styles";
 import { SkillAdditionalInput } from "./SkillAdditionalInput";
 
 export const commonStyles = {
@@ -107,15 +106,8 @@ const actions = [
 ];
 
 export function DmaxMain({ fabRight, setFabRight, setValue }) {
-  useEffect(() => {
-    return () => {
-      console.log("ChildComponent: DmaxMain がアンマウントされました");
-    };
-  }, []);
-
-  // const classes = useStyles();
-  // const classes = useCustomStyles();
-  const classes = {};
+  const currentTheme = useTheme();
+  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   const [userInputData, setUserInputData] = useState(defaultUserInputData);
   const [additionalSkills, setAdditionalSkills] = useState([]);
@@ -191,8 +183,6 @@ export function DmaxMain({ fabRight, setFabRight, setValue }) {
 
     setAdditionalSkills((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
-
-  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   return (
     <div className="DmaxMain">

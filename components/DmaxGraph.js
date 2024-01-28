@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Grid, Card } from "@mui/material";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
-import { theme } from "./ThemeProvider";
-import { LDThemeContext } from "./LDThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 export const DmaxGraph = ({ chartData }) => {
   const [chartWidth, setChartWidth] = useState(0);
@@ -26,7 +25,7 @@ export const DmaxGraph = ({ chartData }) => {
     };
   }, []);
 
-  const { currentTheme, toggleTheme } = React.useContext(LDThemeContext);
+  const currentTheme = useTheme();
 
   return (
     <Grid item xs={12} md={6} ref={containerRef}>

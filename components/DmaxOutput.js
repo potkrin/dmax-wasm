@@ -24,8 +24,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { commonStyles, useStyles } from "./DmaxMain";
 import { useLoginContext } from "./LoginContext";
 import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
-import { LDThemeContext } from "./LDThemeContext";
-import { theme } from "./ThemeProvider";
+import { useTheme } from "@mui/material/styles";
 
 const defaultMiddleOutputInfo = {
   "launch": {
@@ -358,7 +357,9 @@ export const DmaxOutput = ({
     isQuriousArmorDataFetched,
     setIsQuriousArmorDataFetched,
   } = useCharmAndQuriousArmorContext();
-  const { currentTheme } = React.useContext(LDThemeContext);
+
+  const currentTheme = useTheme();
+  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   const useServerCharm = () => {
     checkLoginStatus();
@@ -369,8 +370,6 @@ export const DmaxOutput = ({
     checkLoginStatus();
     handleChangeQuriousArmorValue(null, 1);
   };
-
-  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   return (
     <Grid item xs={12} md={6}>

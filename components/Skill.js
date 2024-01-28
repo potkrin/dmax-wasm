@@ -25,8 +25,7 @@ import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { theme } from "./ThemeProvider";
-import { LDThemeContext } from "./LDThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) => {
   const handleChangeSkillInfo = (key, event, value) => {
@@ -63,9 +62,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
   const buttonSize = "24px";
   const buttonSize2 = "24px";
 
-  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
-
-  const { currentTheme } = React.useContext(LDThemeContext);
+  const currentTheme = useTheme();
+  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   return (
     <>

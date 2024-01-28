@@ -5,9 +5,7 @@ import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import ErrorIcon from "@mui/icons-material/Error";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
-
-import { theme } from "./ThemeProvider";
-import { LDThemeContext } from "./LDThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 function NewlineText({ text }) {
   const newText = text
@@ -19,7 +17,7 @@ function NewlineText({ text }) {
 }
 
 export const MiddleOutput = ({ middleOutput }) => {
-  const { currentTheme } = React.useContext(LDThemeContext);
+  const currentTheme = useTheme();
 
   return (
     <>

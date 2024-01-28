@@ -1,13 +1,12 @@
 import React from "react";
 import { Button, Grid, ButtonGroup } from "@mui/material";
 import DiamondIcon from "@mui/icons-material/Diamond";
-import { LDThemeContext } from "./LDThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 export function SlotLevels({ slotLevel, setSlotLevel }) {
   const slotLevels = [0, 1, 2, 3, 4];
 
-  const { currentTheme } = React.useContext(LDThemeContext);
-
+  const currentTheme = useTheme();
   return (
     <>
       <Grid container alignItems="center">

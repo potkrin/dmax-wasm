@@ -8,9 +8,9 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
-import { LDThemeContext } from "./LDThemeContext";
 import ManualSyncButton from "./ManualSyncButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useTheme } from "@mui/material/styles";
 
 export function QuriousArmorTable({
   userQuriousArmorData,
@@ -63,8 +63,7 @@ export function QuriousArmorTable({
     setTableData(newTableData);
   }, [userQuriousArmorData]);
 
-  const { currentTheme, toggleTheme } = React.useContext(LDThemeContext);
-
+  const currentTheme = useTheme();
   const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   // from: https://v1.material-react-table.com/docs/guides/customize-components

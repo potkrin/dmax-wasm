@@ -62,9 +62,7 @@ export default function Home() {
       <Head>
         <title>Dmax</title>
       </Head>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
+      <App />
     </>
   );
 }

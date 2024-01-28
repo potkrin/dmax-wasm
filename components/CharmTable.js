@@ -10,7 +10,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
-import { LDThemeContext } from "./LDThemeContext";
+import { useTheme } from "@mui/material/styles";
 import ManualSyncButton from "./ManualSyncButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -61,7 +61,7 @@ export function CharmTable({
     setTableData(newTableData);
   }, [userCharmData]);
 
-  const { currentTheme, toggleTheme } = React.useContext(LDThemeContext);
+  const currentTheme = useTheme();
 
   const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 

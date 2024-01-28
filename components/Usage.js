@@ -21,8 +21,7 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import { LDThemeContext } from "./LDThemeContext";
-import { theme } from "./ThemeProvider";
+import { useTheme } from "@mui/material/styles";
 
 import Image from "next/image";
 import skillLevelPcDark from "../public/images/dmax-usage-skill-level-pc-dark.png";
@@ -89,9 +88,8 @@ function Usage() {
     setOpen(false);
   };
 
-  const { currentTheme } = React.useContext(LDThemeContext);
-
-  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+  const currentTheme = useTheme();
+  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   return (
     <Paper sx={{ paddingBottom: "10em" }}>
@@ -147,13 +145,13 @@ function Usage() {
         <Typography variant="body1" gutterBottom>
           護石と傀異錬成にはローカルとサーバーの2種類の保存場所があります。
           <br />
-          <span style={{ color: theme.palette.secondary.main }}>
+          <span style={{ color: currentTheme.palette.secondary.main }}>
             確実に保存したい場合はサーバーに保存
           </span>
           してください。
         </Typography>
         <Typography variant="body1" gutterBottom>
-          <span style={{ color: theme.palette.secondary.main }}>
+          <span style={{ color: currentTheme.palette.secondary.main }}>
             Safari や iOS (iPhone, iPad) ではサーバーへの保存を特に推奨します。
           </span>
         </Typography>
@@ -242,7 +240,7 @@ function Usage() {
           2. ブラウザ版DMAXの実行速度
         </CustomH2>
         <Typography variant="body1" gutterBottom>
-          <span style={{ color: theme.palette.secondary.main }}>
+          <span style={{ color: currentTheme.palette.secondary.main }}>
             モバイル端末ではCPUの性能不足により最適化に非常に時間がかかる可能性が高いです。(Android,
             iOS等)
           </span>
@@ -256,7 +254,7 @@ function Usage() {
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           最適化実行中に
-          <span style={{ color: theme.palette.secondary.main }}>
+          <span style={{ color: currentTheme.palette.secondary.main }}>
             メモリ使用量の上限に到達すると最適化が強制終了されてしまいます。
           </span>
         </Typography>
@@ -297,7 +295,7 @@ function Usage() {
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           スキルの項目では各スキルが最低限満たしてほしいレベルを入力します。
-          <span style={{ color: theme.palette.secondary.main }}>
+          <span style={{ color: currentTheme.palette.secondary.main }}>
             どうしても必要なスキル以外は全てLv0を指定してください。
           </span>
         </Typography>
@@ -336,7 +334,7 @@ function Usage() {
         <Typography variant="body1" gutterBottom>
           DMAXのレベル選択は基本的に下限を指定しますが、レベルを固定したくなるスキルもあります。
           <br />
-          <span style={{ color: theme.palette.secondary.main }}>
+          <span style={{ color: currentTheme.palette.secondary.main }}>
             レベルを固定したいスキルはチェックボックスをON
           </span>
           にしてください。
@@ -370,7 +368,7 @@ function Usage() {
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           ダメージ計算式に寄与するスキルのうち、
-          <span style={{ color: theme.palette.secondary.main }}>
+          <span style={{ color: currentTheme.palette.secondary.main }}>
             常時発動でないスキルについてはスキル発動率を設定してください。
           </span>
           スキル発動率は、クエスト中にスキルが発動している割合を想定して入力してください。

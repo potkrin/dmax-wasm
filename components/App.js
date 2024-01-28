@@ -12,6 +12,7 @@ import {
   createTheme,
   ListItemIcon,
   Snackbar,
+  useMediaQuery,
 } from "@mui/material";
 import { DmaxMain } from "./DmaxMain";
 import { CharmManager } from "./CharmManager";
@@ -443,6 +444,8 @@ function App() {
   //   backgroundColor: theme.palette.background.default,
   // }));
 
+  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+
   return (
     <LDThemeContext.Provider value={{ currentTheme, toggleTheme }}>
       <SnackbarContext.Provider value={{ error, setError, open, setOpen, handleClose }}>
@@ -606,7 +609,8 @@ function App() {
                         sx={{ minHeight: "0px" }}
                         {...a11yProps(0)}
                         icon={<TrendingUpIcon />}
-                        iconPosition="start"
+                        iconPosition={matches ? "top" : "start"}
+                        // iconPosition="start"
                       />
                       <Tab
                         label="護石"
@@ -621,7 +625,7 @@ function App() {
                             <CloudOffIcon />
                           )
                         }
-                        iconPosition="start"
+                        iconPosition={matches ? "top" : "start"}
                       />
                       <Tab
                         label="傀異錬成"
@@ -636,14 +640,14 @@ function App() {
                             <CloudOffIcon />
                           )
                         }
-                        iconPosition="start"
+                        iconPosition={matches ? "top" : "start"}
                       />
                       <Tab
                         label="使い方"
                         sx={{ minHeight: "0px" }}
                         {...a11yProps(3)}
                         icon={<HelpIcon />}
-                        iconPosition="start"
+                        iconPosition={matches ? "top" : "start"}
                       />
                     </Tabs>
                   </AppBar>

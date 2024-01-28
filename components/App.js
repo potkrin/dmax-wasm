@@ -219,6 +219,16 @@ function App() {
   const [charmValue, setCharmValue] = useState(0);
   const [quriousArmorValue, setQuriousArmorValue] = useState(0);
 
+  const handleChangeCharmValue = (event, newValue) => {
+    setCharmValue(newValue);
+    localStorage.setItem("charmValue", newValue);
+  };
+
+  const handleChangeQuriousArmorValue = (event, newValue) => {
+    setQuriousArmorValue(newValue);
+    localStorage.setItem("quriousArmorValue", newValue);
+  };
+
   // コンポーネントがマウントされた後にlocalStorageからデータを読み込む
   useEffect(() => {
     const storedTheme = localStorage.getItem("colorTheme") === "dark" ? darkTheme : lightTheme;
@@ -454,7 +464,7 @@ function App() {
             serverCharmData,
             setServerCharmData,
             charmValue,
-            setCharmValue,
+            handleChangeCharmValue,
             isCharmDataFetched,
             setIsCharmDataFetched,
 
@@ -463,7 +473,7 @@ function App() {
             serverQuriousArmorData,
             setServerQuriousArmorData,
             quriousArmorValue,
-            setQuriousArmorValue,
+            handleChangeQuriousArmorValue,
             isQuriousArmorDataFetched,
             setIsQuriousArmorDataFetched,
           }}

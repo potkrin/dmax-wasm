@@ -9,19 +9,14 @@ import CloudOffIcon from "@mui/icons-material/CloudOff";
 import DevicesIcon from "@mui/icons-material/Devices";
 
 function CharmTab(props) {
-  // const [value, setValue] = useState(0);
-  const { charmValue, setCharmValue, isCharmDataFetched } = useCharmAndQuriousArmorContext();
-
-  const handleChange = (event, newValue) => {
-    setCharmValue(newValue);
-    localStorage.setItem("charmValue", newValue);
-  };
+  const { charmValue, handleChangeCharmValue, isCharmDataFetched } =
+    useCharmAndQuriousArmorContext();
 
   return (
     <>
       <Tabs
         value={charmValue}
-        onChange={handleChange}
+        onChange={handleChangeCharmValue}
         indicatorColor="primary"
         // textColor="inherit"
         // variant="fullWidth"

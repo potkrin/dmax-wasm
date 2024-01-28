@@ -9,20 +9,14 @@ import CloudOffIcon from "@mui/icons-material/CloudOff";
 import DevicesIcon from "@mui/icons-material/Devices";
 
 function QuriousArmorTab(props) {
-  // const [value, setValue] = useState(0);
-  const { quriousArmorValue, setQuriousArmorValue, isQuriousArmorDataFetched } =
+  const { quriousArmorValue, handleChangeQuriousArmorValue, isQuriousArmorDataFetched } =
     useCharmAndQuriousArmorContext();
-
-  const handleChange = (event, newValue) => {
-    setQuriousArmorValue(newValue);
-    localStorage.setItem("quriousArmorValue", newValue);
-  };
 
   return (
     <>
       <Tabs
         value={quriousArmorValue}
-        onChange={handleChange}
+        onChange={handleChangeQuriousArmorValue}
         indicatorColor="primary"
         // textColor="inherit"
         // variant="fullWidth"

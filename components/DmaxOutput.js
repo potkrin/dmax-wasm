@@ -347,14 +347,14 @@ export const DmaxOutput = ({
 
   const {
     charmValue,
-    setCharmValue,
+    handleChangeCharmValue,
     isCharmDataFetched,
     setIsCharmDataFetched,
     value,
     serverQuriousArmorData,
     setServerQuriousArmorData,
     quriousArmorValue,
-    setQuriousArmorValue,
+    handleChangeQuriousArmorValue,
     isQuriousArmorDataFetched,
     setIsQuriousArmorDataFetched,
   } = useCharmAndQuriousArmorContext();
@@ -362,12 +362,12 @@ export const DmaxOutput = ({
 
   const useServerCharm = () => {
     checkLoginStatus();
-    setCharmValue(1);
+    handleChangeCharmValue(null, 1);
   };
 
   const useServerQuriousArmor = () => {
     checkLoginStatus();
-    setQuriousArmorValue(1);
+    handleChangeQuriousArmorValue(null, 1);
   };
 
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
@@ -452,7 +452,7 @@ export const DmaxOutput = ({
               {!matches ? (
                 <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
                   <Button
-                    onClick={() => setCharmValue(0)}
+                    onClick={() => handleChangeCharmValue(null, 0)}
                     sx={{
                       backgroundColor: charmValue === 0 ? currentTheme.palette.primary.main : "",
                       color: charmValue === 0 ? currentTheme.palette.primary.contrastText : "",
@@ -492,7 +492,7 @@ export const DmaxOutput = ({
                     color="inherit"
                     aria-label="open drawer"
                     edge="start"
-                    onClick={() => setCharmValue(0)}
+                    onClick={() => handleChangeCharmValue(null, 0)}
                     sx={{
                       mr: 2,
                       display: { sm: "none" },
@@ -567,7 +567,7 @@ export const DmaxOutput = ({
               {!matches ? (
                 <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
                   <Button
-                    onClick={() => setQuriousArmorValue(0)}
+                    onClick={() => handleChangeQuriousArmorValue(null, 0)}
                     sx={{
                       backgroundColor:
                         quriousArmorValue === 0 ? currentTheme.palette.primary.main : "",
@@ -612,7 +612,7 @@ export const DmaxOutput = ({
                       color="inherit"
                       aria-label="open drawer"
                       edge="start"
-                      onClick={() => setQuriousArmorValue(0)}
+                      onClick={() => handleChangeQuriousArmorValue(null, 0)}
                       sx={{
                         mr: 2,
                         display: { sm: "none" },

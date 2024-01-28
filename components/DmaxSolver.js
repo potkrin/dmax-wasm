@@ -278,9 +278,17 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
   const { serverCharmData, charmValue } = useCharmAndQuriousArmorContext();
 
+  // DmaxSolverコンポーネントへの参照を作成 (自動スクロールに利用)
+  const dmaxSolverRef = useRef(null);
+
   // 最適化の開始
   const startOptimization = () => {
     setResetMiddleOutputInfo(true);
+
+    // 最適化中間結果表示のコンポーネントまで自動でスクロールする
+    if (dmaxSolverRef.current) {
+      dmaxSolverRef.current.scrollIntoView({ behavior: "smooth" });
+    }
 
     // ローカルサーバーの endpoint (dmax-core)
     const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/dmax-api/v1/dmax-problem/`;
@@ -452,7 +460,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
   return (
     <>
-      <Grid container spacing={1} marginY={1}>
+      <Grid ref={dmaxSolverRef} container spacing={1} marginY={1}>
         <DmaxOutput
           dmaxOutput={dmaxOutput}
           resetMiddleOutputInfo={resetMiddleOutputInfo}

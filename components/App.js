@@ -59,6 +59,12 @@ import { LoginContext } from "./LoginContext";
 import { fetchWithRetry } from "../lib/utils";
 import QuriousArmorTab from "./QuriousArmorTab";
 
+// Import Swiper React components
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+
 /**
  * TODO:
  *   - スキルの検索ボックス。文字列がヒットしたもののみ残る
@@ -461,6 +467,17 @@ function App() {
 
   const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
+  const [swiper, setSwiper] = useState(null);
+
+  const slideChange = (index) => {
+    setValue(index);
+  };
+
+  const tabChange = (event, newValue) => {
+    setValue(newValue);
+    swiper.slideTo(newValue);
+  };
+
   return (
     <SnackbarContext.Provider value={{ error, setError, open, setOpen, handleClose }}>
       <CharmAndQuriousArmorContext.Provider
@@ -618,7 +635,8 @@ function App() {
 
                   <Tabs
                     value={value}
-                    onChange={handleChange}
+                    // onChange={handleChange}
+                    onChange={tabChange}
                     indicatorColor="secondary"
                     textColor="inherit"
                     variant="fullWidth"
@@ -701,18 +719,36 @@ function App() {
               >
                 {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
 
-                <TabPanel value={value} index={0} dir={currentTheme.direction}>
-                  <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
-                </TabPanel>
-                <TabPanel value={value} index={1} dir={currentTheme.direction}>
-                  <CharmTab />
-                </TabPanel>
-                <TabPanel value={value} index={2} dir={currentTheme.direction}>
-                  <QuriousArmorTab />
-                </TabPanel>
-                <TabPanel value={value} index={3} dir={currentTheme.direction}>
-                  <Usage />
-                </TabPanel>
+                <Swiper
+                  spaceBetween={50}
+                  slidesPerView={1}
+                  onSlideChange={(index) => slideChange(index.activeIndex)}
+                  onSwiper={(swiper) => {
+                    const swiperInstance = swiper;
+                    setSwiper(swiperInstance);
+                  }}
+                >
+                  <SwiperSlide>
+                    <TabPanel value={value} index={0} dir={currentTheme.direction}>
+                      <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
+                    </TabPanel>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <TabPanel value={value} index={1} dir={currentTheme.direction}>
+                      <CharmTab />
+                    </TabPanel>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <TabPanel value={value} index={2} dir={currentTheme.direction}>
+                      <QuriousArmorTab />
+                    </TabPanel>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <TabPanel value={value} index={3} dir={currentTheme.direction}>
+                      <Usage />
+                    </TabPanel>
+                  </SwiperSlide>
+                </Swiper>
               </Container>
             </div>
             {/* </AppDiv> */}

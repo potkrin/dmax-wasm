@@ -49,7 +49,8 @@ const CustomH2 = styled(Typography)(({ theme }) => ({
   // 他のスタイル規則もここに追加できます
 }));
 
-function UsageImage({ srcDark, srcLight, alt, currentTheme, matches }) {
+// height: 画像の高さを指定するとアスペクト比に合わせて調整してくれる
+function UsageImage({ srcDark, srcLight, alt, currentTheme, matches, height }) {
   return (
     <Box
       sx={{
@@ -58,21 +59,20 @@ function UsageImage({ srcDark, srcLight, alt, currentTheme, matches }) {
           (currentTheme.palette.mode === "dark"
             ? currentTheme.palette.background.default
             : currentTheme.palette.text.hint), // ここで影のスタイルを指定
+        backgroundColor: currentTheme.palette.background.paper,
         borderRadius: 2, // 角丸の指定
         overflow: "hidden", // Box内のコンテンツが角丸に合わせて切り取られるように設定
         maxWidth: "600px",
         margin: matches ? "1em 0em" : "1em",
+        height: height + "px",
+        position: "relative",
       }}
     >
       <Image
         src={currentTheme.palette.mode === "dark" ? srcDark : srcLight}
         alt={alt}
-        // layout="fill"
-        // objectFit="cover" // または他の object-fit の値
-        width={600}
-        // height={300}
-        // layout="responsive"
-        // style={{ width: "auto", height: "auto" }}
+        fill={true}
+        objectFit="contain" // または他の object-fit の値
       />
     </Box>
   );
@@ -164,6 +164,7 @@ function Usage() {
           alt="ローカル護石とサーバー護石の画像"
           currentTheme={currentTheme}
           matches={matches}
+          height={matches ? 124 : 218}
         />
         <Accordion
           sx={{
@@ -309,6 +310,7 @@ function Usage() {
           alt="スキル下限レベルの設定の画像"
           currentTheme={currentTheme}
           matches={matches}
+          height={matches ? 122 : 212}
         />
         <Typography
           variant="body1"
@@ -345,6 +347,7 @@ function Usage() {
           alt="スキルレベルを固定をする設定の画像"
           currentTheme={currentTheme}
           matches={matches}
+          height={matches ? 118 : 207}
         />
         <Typography
           variant="body1"
@@ -378,6 +381,7 @@ function Usage() {
           alt="スキル発動率を設定する画像"
           currentTheme={currentTheme}
           matches={matches}
+          height={matches ? 118 : 206}
         />
 
         <Typography
@@ -408,6 +412,7 @@ function Usage() {
           alt="グラフの画像"
           currentTheme={currentTheme}
           matches={matches}
+          height={matches ? 300 : 520}
         />
 
         {/* 

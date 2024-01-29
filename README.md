@@ -16,6 +16,8 @@
   - [x] ローカル/サーバーの選択肢が localstorage に保存されていないように見える
   - [x] 最適化ボタン押下時に自動スクロール
   - [ ] fab 修正分のリファクタリング
+  - [ ] 大半のドロップダウンメニューが動作しなくなった問題
+    - swiper を消したら直った...
   - [ ] fab の位置を css で決めたらjsによる移動を抑えられないか？
   - [ ] fab をもっとでかい丸いアイコンにしたい 参考: Twitter 
   - [ ] swipable 再検討
@@ -538,6 +540,23 @@ npm start
 
 参考:[React、Reduxのレンダリングとメモ化のタイミングまとめ](https://qiita.com/obake_fe/items/252b48b61df435e68fc2)
 
+# スマホ向けスワイプ機能について
+タブ切り替えをスワイプで実現するためのライブラリを試してみましたが、いずれもうまく動作しなかったのでやめます
+
+以下試したもの
+- [react-swipeable-views](https://github.com/oliviertassinari/react-swipeable-views)
+  - Fab の位置がおかしくなる (viewport に対して固定できない)
+  - 開発停止 & react18 非対応
+    ```sh
+    $ npm install react-swipeable-views --dry-run
+    npm ERR! Could not resolve dependency:
+    npm ERR! peer react@"^15.3.0 || ^16.0.0 || ^17.0.0" from react-swipeable-views@0.14.0
+    ```
+- [swiper](https://github.com/nolimits4web/swiper)
+  - mui の Select コンポーネントによるドロップダウンが機能しなくなった
+  - Fab の位置がおかしくなる (viewport に対して固定できない)
+
+代わりにスマホ表示ではタブボタンを画面下部に表示します(MUI の BottomNavigation のようなもの)
 
 # [DUPLICATED] Django デプロイ用ビルド手順 (古い手順)
 Django において cms/static/cms 以下にファイルを配置することを想定

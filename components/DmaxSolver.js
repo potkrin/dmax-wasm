@@ -1,6 +1,6 @@
 /* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/
 
-import { React, useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
+import { React, useState, useRef, useEffect, forwardRef } from "react";
 import { Grid, Button, Fab, Box } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -18,6 +18,7 @@ import { DmaxHistory } from "./DmaxHistory";
 import { applyWaterBlight } from "./HelperFunction";
 import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
 import { useTheme } from "@mui/material/styles";
+import { HideOnScroll } from "./App";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -197,8 +198,7 @@ const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const DmaxSolver = forwardRef((props, ref) => {
-  const { userInputData, fabRight } = props;
+export const DmaxSolver = ({ userInputData, fabRight }) => {
   // useTheme() を使用して、テーマのブレークポイントにアクセス
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
@@ -277,8 +277,7 @@ export const DmaxSolver = forwardRef((props, ref) => {
   // DmaxOutput のリアルタイム中間出力をリセットする state
   const [resetMiddleOutputInfo, setResetMiddleOutputInfo] = useState(false);
 
-  const { serverCharmData, charmValue, isOptimizing, setIsOptimizing } =
-    useCharmAndQuriousArmorContext();
+  const { serverCharmData, charmValue } = useCharmAndQuriousArmorContext();
 
   // DmaxSolverコンポーネントへの参照を作成 (自動スクロールに利用)
   const dmaxSolverRef = useRef(null);
@@ -388,8 +387,8 @@ export const DmaxSolver = forwardRef((props, ref) => {
     }
   };
 
-  // // 最適化ボタンをトグルする
-  // const [isOptimizing, setIsOptimizing] = useState(false);
+  // 最適化ボタンをトグルする
+  const [isOptimizing, setIsOptimizing] = useState(false);
 
   const handleToggle = () => {
     // ユーザ入力による中断の場合メッセージを追加(表示への反映に利用)
@@ -404,10 +403,6 @@ export const DmaxSolver = forwardRef((props, ref) => {
     // state の更新は非同期に行われる点に注意 (setIsOptimizing 直後に if (isOptimizing) 等としても反映されない)
     setIsOptimizing(!isOptimizing);
   };
-
-  useImperativeHandle(ref, () => ({
-    handleToggle,
-  }));
 
   useEffect(() => {
     console.log("fabRight = " + fabRight + "typeof(fabRight) = " + typeof fabRight);
@@ -517,33 +512,35 @@ export const DmaxSolver = forwardRef((props, ref) => {
       </Snackbar>
 
       {showFab && (
-        <Fab
-          variant="extended"
-          sx={{
-            position: "fixed",
-            bottom: "48px",
-            // right: "48px",
-            right: `${fabRight}px`,
-            animation: "fadeIn 0.5s ease-in-out",
-          }}
-          color="primary"
-          onClick={handleToggle}
-        >
-          {isOptimizing ? (
-            <>
-              <CancelIcon />
-              {!matches && <Box sx={{ ml: 1 }}>中止</Box>}
-            </>
-          ) : (
-            <>
-              <TrendingUpIcon />
-              {!matches && <Box sx={{ ml: 1 }}>最適化</Box>}
-            </>
-          )}
-        </Fab>
+        <HideOnScroll direction="up">
+          <Fab
+            variant="extended"
+            sx={{
+              position: "fixed",
+              bottom: matches ? "64px" : "48px",
+              // right: "48px",
+              right: matches ? "24px" : `${fabRight}px`,
+              animation: "fadeIn 0.5s ease-in-out",
+            }}
+            color="primary"
+            onClick={handleToggle}
+          >
+            {isOptimizing ? (
+              <>
+                <CancelIcon />
+                {!matches && <Box sx={{ ml: 1 }}>中止</Box>}
+              </>
+            ) : (
+              <>
+                <TrendingUpIcon />
+                {!matches && <Box sx={{ ml: 1 }}>最適化</Box>}
+              </>
+            )}
+          </Fab>
+        </HideOnScroll>
       )}
     </>
   );
-});
+};
 
 export default DmaxSolver;

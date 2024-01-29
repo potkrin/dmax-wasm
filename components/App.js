@@ -13,6 +13,7 @@ import {
   ListItemIcon,
   Snackbar,
   useMediaQuery,
+  Paper,
 } from "@mui/material";
 import { DmaxMain } from "./DmaxMain";
 import { CharmManager } from "./CharmManager";
@@ -103,15 +104,15 @@ function a11yProps(index) {
 }
 
 // スクロール時に AppBar を隠す
-function HideOnScroll(props) {
-  const { children, window } = props;
+export function HideOnScroll(props) {
+  const { children, window, direction = "down" } = props;
   // Note that you normally won't need to set the window ref as useScrollTrigger
   // will default to window.
   // This is only being set here because the demo is in an iframe.
   const trigger = useScrollTrigger();
 
   return (
-    <Slide appear={false} direction="down" in={!trigger}>
+    <Slide appear={false} direction={direction} in={!trigger}>
       {children}
     </Slide>
   );
@@ -132,6 +133,61 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 const drawerWidth = 240;
 const navItems = ["Home", "About", "Contact"];
+
+const MainTabs = ({ value, handleChange, matches, charmValue, quriousArmorValue }) => {
+  return (
+    <Tabs
+      value={value}
+      onChange={handleChange}
+      indicatorColor="secondary"
+      textColor="inherit"
+      variant="fullWidth"
+      aria-label="tabs example"
+      sx={{
+        minHeight: "0px",
+      }}
+    >
+      <Tab
+        label={matches ? "" : "最適化"}
+        sx={{ minHeight: "0px" }}
+        {...a11yProps(0)}
+        icon={<TrendingUpIcon />}
+        iconPosition={matches ? "top" : "start"}
+      />
+      <Tab
+        label={matches ? "" : "護石"}
+        sx={{ minHeight: "0px" }}
+        {...a11yProps(1)}
+        icon={
+          charmValue === 0 ? <DevicesIcon /> : isCharmDataFetched ? <CloudIcon /> : <CloudOffIcon />
+        }
+        iconPosition={matches ? "top" : "start"}
+      />
+      <Tab
+        label={matches ? "" : "傀異錬成"}
+        sx={{ minHeight: "0px" }}
+        {...a11yProps(2)}
+        icon={
+          quriousArmorValue === 0 ? (
+            <DevicesIcon />
+          ) : isQuriousArmorDataFetched ? (
+            <CloudIcon />
+          ) : (
+            <CloudOffIcon />
+          )
+        }
+        iconPosition={matches ? "top" : "start"}
+      />
+      <Tab
+        label={matches ? "" : "使い方"}
+        sx={{ minHeight: "0px" }}
+        {...a11yProps(3)}
+        icon={<HelpIcon />}
+        iconPosition={matches ? "top" : "start"}
+      />
+    </Tabs>
+  );
+};
 
 function App() {
   const [value, setValue] = useState(0);
@@ -468,40 +524,6 @@ function App() {
 
   const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
-  const [swiper, setSwiper] = useState(null);
-
-  const slideChange = (index) => {
-    setValue(index);
-  };
-
-  const tabChange = (event, newValue) => {
-    setValue(newValue);
-    swiper.slideTo(newValue);
-  };
-
-  const solverRef = useRef(null);
-  const callChildFunction = () => {
-    solverRef.current.handleToggle();
-  };
-
-  const [isOptimizing, setIsOptimizing] = useState(false);
-
-  // Fab コンポーネントの表示状態を制御するための状態
-  const [showFab, setShowFab] = useState(false);
-
-  // Fab の表示状態を制御
-  useEffect(() => {
-    if (value === 0) {
-      const timer = setTimeout(() => {
-        setShowFab(true);
-      }, 500); // value が 0 の時のみ 500 ミリ秒後に Fab を表示
-
-      return () => clearTimeout(timer);
-    } else {
-      setShowFab(false); // value が 0 以外の場合は直ちに Fab を非表示にする
-    }
-  }, [value]);
-
   return (
     <SnackbarContext.Provider value={{ error, setError, open, setOpen, handleClose }}>
       <CharmAndQuriousArmorContext.Provider
@@ -521,9 +543,6 @@ function App() {
           handleChangeQuriousArmorValue,
           isQuriousArmorDataFetched,
           setIsQuriousArmorDataFetched,
-
-          isOptimizing,
-          setIsOptimizing,
         }}
       >
         <LoginContext.Provider
@@ -569,7 +588,7 @@ function App() {
               {/* <AppDiv> */}
               {/* <AppBar component="nav">
                  </AppBar> */}
-              <HideOnScroll>
+              <HideOnScroll direction="down">
                 <AppBar component="nav" position="sticky">
                   {/* <Toolbar variant="dense" sx={{ backgroundColor: theme.palette.primary.main }}> */}
                   <Toolbar variant="dense">
@@ -659,65 +678,85 @@ function App() {
                       </Button>
                     </Box>
                   </Toolbar>
-
-                  <Tabs
-                    value={value}
-                    // onChange={handleChange}
-                    onChange={tabChange}
-                    indicatorColor="secondary"
-                    textColor="inherit"
-                    variant="fullWidth"
-                    aria-label="tabs example"
-                    sx={{ minHeight: "0px" }}
-                  >
-                    <Tab
-                      label="最適化"
-                      sx={{ minHeight: "0px" }}
-                      {...a11yProps(0)}
-                      icon={<TrendingUpIcon />}
-                      iconPosition={matches ? "top" : "start"}
-                      // iconPosition="start"
+                  {!matches && (
+                    <MainTabs
+                      matches={matches}
+                      charmValue={charmValue}
+                      quriousArmorValue={quriousArmorValue}
+                      value={value}
+                      handleChange={handleChange}
                     />
-                    <Tab
-                      label="護石"
-                      sx={{ minHeight: "0px" }}
-                      {...a11yProps(1)}
-                      icon={
-                        charmValue === 0 ? (
-                          <DevicesIcon />
-                        ) : isCharmDataFetched ? (
-                          <CloudIcon />
-                        ) : (
-                          <CloudOffIcon />
-                        )
-                      }
-                      iconPosition={matches ? "top" : "start"}
-                    />
-                    <Tab
-                      label="傀異錬成"
-                      sx={{ minHeight: "0px" }}
-                      {...a11yProps(2)}
-                      icon={
-                        quriousArmorValue === 0 ? (
-                          <DevicesIcon />
-                        ) : isQuriousArmorDataFetched ? (
-                          <CloudIcon />
-                        ) : (
-                          <CloudOffIcon />
-                        )
-                      }
-                      iconPosition={matches ? "top" : "start"}
-                    />
-                    <Tab
-                      label="使い方"
-                      sx={{ minHeight: "0px" }}
-                      {...a11yProps(3)}
-                      icon={<HelpIcon />}
-                      iconPosition={matches ? "top" : "start"}
-                    />
-                  </Tabs>
+                  )}
                 </AppBar>
               </HideOnScroll>
+              {matches && (
+                <HideOnScroll direction="up">
+                  <Paper sx={{ position: "fixed", bottom: 0, width: "100%", zIndex: 1000 }}>
+                    <MainTabs
+                      matches={matches}
+                      charmValue={charmValue}
+                      quriousArmorValue={quriousArmorValue}
+                      value={value}
+                      handleChange={handleChange}
+                    />
+                    {/* <Tabs
+                      value={value}
+                      onChange={handleChange}
+                      indicatorColor="secondary"
+                      textColor="inherit"
+                      variant="fullWidth"
+                      aria-label="tabs example"
+                      sx={{
+                        minHeight: "0px",
+                      }}
+                    >
+                      <Tab
+                        // label="最適化"
+                        sx={{ minHeight: "0px" }}
+                        {...a11yProps(0)}
+                        icon={<TrendingUpIcon />}
+                        iconPosition={matches ? "top" : "start"}
+                      />
+                      <Tab
+                        // label="護石"
+                        sx={{ minHeight: "0px" }}
+                        {...a11yProps(1)}
+                        icon={
+                          charmValue === 0 ? (
+                            <DevicesIcon />
+                          ) : isCharmDataFetched ? (
+                            <CloudIcon />
+                          ) : (
+                            <CloudOffIcon />
+                          )
+                        }
+                        iconPosition={matches ? "top" : "start"}
+                      />
+                      <Tab
+                        sx={{ minHeight: "0px" }}
+                        {...a11yProps(2)}
+                        icon={
+                          quriousArmorValue === 0 ? (
+                            <DevicesIcon />
+                          ) : isQuriousArmorDataFetched ? (
+                            <CloudIcon />
+                          ) : (
+                            <CloudOffIcon />
+                          )
+                        }
+                        iconPosition={matches ? "top" : "start"}
+                      />
+                      <Tab
+                        // label="使い方"
+                        sx={{ minHeight: "0px" }}
+                        {...a11yProps(3)}
+                        icon={<HelpIcon />}
+                        iconPosition={matches ? "top" : "start"}
+                      />
+                    </Tabs> */}
+                  </Paper>
+                </HideOnScroll>
+              )}
               <nav>
                 <Drawer
                   variant="temporary"
@@ -744,69 +783,18 @@ function App() {
                   paddingBottom: "0px !important", // 追加
                 }}
               >
-                {/* Note: SwipeableViews 内にいれると Fab の position: fixed が効かなくなるので無効化 */}
-                {showFab && (
-                  <Fab
-                    variant="extended"
-                    sx={{
-                      position: "fixed",
-                      bottom: "48px",
-                      // right: "48px",
-                      right: `${fabRight}px`,
-                      animation: "fadeIn 0.5s ease-in-out",
-                    }}
-                    color="primary"
-                    onClick={callChildFunction}
-                  >
-                    {isOptimizing ? (
-                      <>
-                        <CancelIcon />
-                        {!matches && <Box sx={{ ml: 1 }}>中止</Box>}
-                      </>
-                    ) : (
-                      <>
-                        <TrendingUpIcon />
-                        {!matches && <Box sx={{ ml: 1 }}>最適化</Box>}
-                      </>
-                    )}
-                  </Fab>
-                )}
-
-                <Swiper
-                  spaceBetween={50}
-                  slidesPerView={1}
-                  onSlideChange={(index) => slideChange(index.activeIndex)}
-                  onSwiper={(swiper) => {
-                    const swiperInstance = swiper;
-                    setSwiper(swiperInstance);
-                  }}
-                >
-                  <SwiperSlide>
-                    <TabPanel value={value} index={0} dir={currentTheme.direction}>
-                      <DmaxMain
-                        ref={solverRef}
-                        fabRight={fabRight}
-                        setFabRight={setFabRight}
-                        setValue={setValue}
-                      />
-                    </TabPanel>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <TabPanel value={value} index={1} dir={currentTheme.direction}>
-                      <CharmTab />
-                    </TabPanel>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <TabPanel value={value} index={2} dir={currentTheme.direction}>
-                      <QuriousArmorTab />
-                    </TabPanel>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <TabPanel value={value} index={3} dir={currentTheme.direction}>
-                      <Usage />
-                    </TabPanel>
-                  </SwiperSlide>
-                </Swiper>
+                <TabPanel value={value} index={0} dir={currentTheme.direction}>
+                  <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
+                </TabPanel>
+                <TabPanel value={value} index={1} dir={currentTheme.direction}>
+                  <CharmTab />
+                </TabPanel>
+                <TabPanel value={value} index={2} dir={currentTheme.direction}>
+                  <QuriousArmorTab />
+                </TabPanel>
+                <TabPanel value={value} index={3} dir={currentTheme.direction}>
+                  <Usage />
+                </TabPanel>
               </Container>
             </div>
             {/* </AppDiv> */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -105,8 +105,7 @@ const actions = [
   { icon: <ShareIcon />, name: "Share" },
 ];
 
-export const DmaxMain = forwardRef((props, ref) => {
-  const { fabRight, setFabRight, setValue } = props;
+export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
   const currentTheme = useTheme();
   const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
@@ -437,7 +436,7 @@ export const DmaxMain = forwardRef((props, ref) => {
       </Box>
 
       {/* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/}
-      <DmaxSolver ref={ref} userInputData={userInputData} fabRight={fabRight} />
+      <DmaxSolver userInputData={userInputData} fabRight={fabRight} />
 
       {/* <Backdrop open={open} /> */}
       {/* <SpeedDial
@@ -464,6 +463,6 @@ export const DmaxMain = forwardRef((props, ref) => {
       </SpeedDial> */}
     </div>
   );
-});
+};
 
 export default DmaxMain;

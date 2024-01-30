@@ -100,8 +100,8 @@ export const WeaponSetting = ({
             >
               {Object.keys(staticData["武器"][key])
                 .sort((a, b) => {
-                  if (a === "なし") return -1; // "なし"は常に先頭に
-                  if (a === "なし") return -1; // "なし"以外は常に"なし"の後ろ
+                  if (a === "なし" || a === "無属性") return -1; // "なし"は常に先頭に
+                  if (b === "なし" || b === "無属性") return 1; // "なし"以外は常に"なし"の後ろ
                   return a.localeCompare(b); // それ以外はアルファベット順
                 })
                 .map((key) => (

@@ -134,7 +134,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const drawerWidth = 240;
 const navItems = ["Home", "About", "Contact"];
 
-const MainTabs = ({ value, handleChange, matches, charmValue, quriousArmorValue }) => {
+const MainTabs = ({ sx, value, handleChange, matches, charmValue, quriousArmorValue }) => {
   return (
     <Tabs
       value={value}
@@ -144,6 +144,7 @@ const MainTabs = ({ value, handleChange, matches, charmValue, quriousArmorValue 
       variant="fullWidth"
       aria-label="tabs example"
       sx={{
+        ...sx,
         minHeight: "0px",
       }}
     >
@@ -678,28 +679,34 @@ function App() {
                       </Button>
                     </Box>
                   </Toolbar>
-                  {!matches && (
-                    <MainTabs
-                      matches={matches}
-                      charmValue={charmValue}
-                      quriousArmorValue={quriousArmorValue}
-                      value={value}
-                      handleChange={handleChange}
-                    />
-                  )}
+                  <MainTabs
+                    sx={{ display: { xs: "none", sm: "flex" } }}
+                    matches={matches}
+                    charmValue={charmValue}
+                    quriousArmorValue={quriousArmorValue}
+                    value={value}
+                    handleChange={handleChange}
+                  />
                 </AppBar>
               </HideOnScroll>
-              {matches && (
-                <HideOnScroll direction="up">
-                  <Paper sx={{ position: "fixed", bottom: 0, width: "100%", zIndex: 1000 }}>
-                    <MainTabs
-                      matches={matches}
-                      charmValue={charmValue}
-                      quriousArmorValue={quriousArmorValue}
-                      value={value}
-                      handleChange={handleChange}
-                    />
-                    {/* <Tabs
+              <HideOnScroll direction="up">
+                <Paper
+                  sx={{
+                    position: "fixed",
+                    bottom: 0,
+                    width: "100%",
+                    zIndex: 1000,
+                  }}
+                >
+                  <MainTabs
+                    sx={{ display: { xs: "flex", sm: "none" } }}
+                    matches={matches}
+                    charmValue={charmValue}
+                    quriousArmorValue={quriousArmorValue}
+                    value={value}
+                    handleChange={handleChange}
+                  />
+                  {/* <Tabs
                       value={value}
                       onChange={handleChange}
                       indicatorColor="secondary"
@@ -754,9 +761,8 @@ function App() {
                         iconPosition={matches ? "top" : "start"}
                       />
                     </Tabs> */}
-                  </Paper>
-                </HideOnScroll>
-              )}
+                </Paper>
+              </HideOnScroll>
               <nav>
                 <Drawer
                   variant="temporary"

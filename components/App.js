@@ -14,6 +14,7 @@ import {
   Snackbar,
   useMediaQuery,
   Paper,
+  CssBaseline,
 } from "@mui/material";
 import { DmaxMain } from "./DmaxMain";
 import { CharmManager } from "./CharmManager";
@@ -574,6 +575,7 @@ function App() {
            * toggleTheme も他のコンポーネントに渡したい場合は ContextAPI 等を利用する
            */}
           <ThemeProvider theme={currentTheme}>
+            <CssBaseline />
             <Snackbar
               open={open}
               autoHideDuration={6000}

@@ -1,5 +1,16 @@
 import React, { useEffect } from "react";
-import { Grid, Paper, Box, Typography, Tab, Tabs, Icon, IconButton, Divider } from "@mui/material";
+import {
+  Grid,
+  Paper,
+  Box,
+  Typography,
+  Tab,
+  Tabs,
+  Icon,
+  IconButton,
+  Divider,
+  useMediaQuery,
+} from "@mui/material";
 
 // import { armors, decos } from "../data/EquipData";
 // import { staticSkillData } from "../data/StaticData";
@@ -92,10 +103,11 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
   }, [value, historyList]);
 
   const currentTheme = useTheme();
+  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   return (
     <Grid item xs={12} md={6}>
-      <Paper elevation={2}>
+      <Paper elevation={2} sx={{ height: "100%" }}>
         <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
           <Grid item>
             <HistoryIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
@@ -114,7 +126,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
         </Box>
         <Box
           style={{
-            height: "900px",
+            ...(matches ? { minHeight: "200px" } : { height: "100%" }),
             overflowY: "auto",
             paddingLeft: "8px",
             textAlign: "left",
@@ -137,13 +149,15 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
               variant="scrollable"
               value={value}
               onChange={handleChange}
-              // scrollButtons="hidden"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
               aria-label="Vertical tabs example"
               sx={{
                 borderRight: 1,
                 borderColor: "divider",
                 width: "80px",
-                height: "900px",
+                ...(matches ? { minHeight: "200px" } : { height: "100%" }),
+                maxHeight: "600px",
                 // インジケータのスタイルをオーバーライドする
                 "& .MuiTabs-indicator": {
                   left: 0, // インジケータを左側に配置
@@ -195,7 +209,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
             sx={{
               flexGrow: 1, // コンテナの残りのスペースを埋める
               overflowY: "auto", // 縦方向のスクロールを許可
-              p: 2,
+              padding: "16px",
 
               "&::-webkit-scrollbar": {
                 display: "none", // Webkitブラウザ用のスクロールバーを非表示にする

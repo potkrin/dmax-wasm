@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import { Grid, Paper, Box, Typography, Divider } from "@mui/material";
+import { Grid, Paper, Box, Typography, Divider, useMediaQuery } from "@mui/material";
 
 import { armors, decos } from "../data/EquipData";
 import { staticSkillData } from "../data/StaticData";
 import CopyToClipboardButton from "./CopyToClipboardButton";
 import InsightsIcon from "@mui/icons-material/Insights";
+import { useTheme } from "@emotion/react";
 
 // 秒を読みやすい形式に変換
 function secondsToHumanReadable(seconds) {
@@ -302,9 +303,12 @@ export const DmaxResult = ({
     setTextToCopy(dmaxResult);
   }, [dmaxResult]);
 
+  const currentTheme = useTheme();
+  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+
   return (
     <Grid item xs={12} md={6}>
-      <Paper elevation={2}>
+      <Paper elevation={2} sx={{ height: "100%" }}>
         <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
           <Grid item>
             <InsightsIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
@@ -324,15 +328,17 @@ export const DmaxResult = ({
         </Box>
         <Box
           style={{
-            height: "900px",
+            // height: "900px",
+            ...(matches ? { minHeight: "200px" } : { height: "100%" }),
             overflowY: "auto",
-            paddingLeft: "16px",
+            paddingLeft: "24px",
             textAlign: "left",
             fontSize: "14px",
           }}
           sx={{
             flexGrow: 1, // コンテナの残りのスペースを埋める
             overflowY: "auto", // 縦方向のスクロールを許可
+            padding: "16px",
 
             "&::-webkit-scrollbar": {
               display: "none", // Webkitブラウザ用のスクロールバーを非表示にする

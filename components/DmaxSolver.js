@@ -477,7 +477,20 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         />
         <DmaxGraph chartData={chartData} />
       </Grid>
-      <Grid container spacing={1} marginY={1}>
+      {/* 
+          PC表示 では DmaxResult と DmaxHistory のうちより高い方に高さを合わせる (スマホは縦列なので関係なし)
+          <Grid minHeight: "800px">
+              <DmaxResult height: "100%" >
+                <Paper height: "100%">
+                  <Box height: "100%">
+                    <高さが変わるコンテンツ>
+              
+              <DmaxHistory height: "100%">
+                <Paper height: "100%">
+                  <Box height: "100%">
+                    <高さが変わるコンテンツ>
+      */}
+      <Grid container spacing={1} marginY={1} sx={{ minHeight: "600px" }}>
         <DmaxResult
           allDmaxOutput={allDmaxOutput}
           processingUserInputData={processingUserInputData}

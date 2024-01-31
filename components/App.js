@@ -134,7 +134,16 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const drawerWidth = 240;
 const navItems = ["Home", "About", "Contact"];
 
-const MainTabs = ({ sx, value, handleChange, matches, charmValue, quriousArmorValue }) => {
+const MainTabs = ({
+  sx,
+  value,
+  handleChange,
+  matches,
+  charmValue,
+  quriousArmorValue,
+  isCharmDataFetched,
+  isQuriousArmorDataFetched,
+}) => {
   return (
     <Tabs
       value={value}
@@ -684,6 +693,8 @@ function App() {
                     matches={matches}
                     charmValue={charmValue}
                     quriousArmorValue={quriousArmorValue}
+                    isCharmDataFetched={isCharmDataFetched}
+                    isQuriousArmorDataFetched={isQuriousArmorDataFetched}
                     value={value}
                     handleChange={handleChange}
                   />
@@ -703,6 +714,8 @@ function App() {
                     matches={matches}
                     charmValue={charmValue}
                     quriousArmorValue={quriousArmorValue}
+                    isCharmDataFetched={isCharmDataFetched}
+                    isQuriousArmorDataFetched={isQuriousArmorDataFetched}
                     value={value}
                     handleChange={handleChange}
                   />

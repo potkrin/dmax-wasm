@@ -82,6 +82,7 @@ function call_worker_wasm_main(
     if (limit_memory) {
       workerPath = "/dmax-core/worker1GB.js";
       setMemoryLimit("1GB");
+      localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
     } else {
       // 過去1週間以内に oom 発生記録があれば 1GB 制限の wasm バイナリを起動する
       const data = localStorage.getItem("OutOfMemoryOn4GB");
@@ -95,6 +96,7 @@ function call_worker_wasm_main(
           if (oneWeekAgo < oomTime) {
             workerPath = "/dmax-core/worker1GB.js";
             setMemoryLimit("1GB");
+            localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
           }
         }
       }
@@ -500,12 +502,12 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     }, 500); // 500ミリ秒後に実行
 
     const wasmWorkerStatus = localStorage.getItem("wasmWorkerStatus");
-    if (!wasmWorkerStatus || wasmWorkerStatus === "unexpected error") {
-      setMemoryLimit("?GB");
+    if (wasmWorkerStatus === "memory limit 4GB") {
+      setMemoryLimit("4GB");
     } else if (wasmWorkerStatus === "memory limit 1GB") {
       setMemoryLimit("1GB");
     } else {
-      setMemoryLimit("4GB");
+      setMemoryLimit("?GB");
     }
 
     // コンポーネントのアンマウント時にタイマーをクリアする
@@ -556,7 +558,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
       <Snackbar
         open={openStart}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
+        transitionDuration={{ enter: 1000, exit: 1000 }}
         onClose={handleCloseStart}
         message={snackbarMessage}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}

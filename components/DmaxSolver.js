@@ -167,10 +167,18 @@ function call_worker_wasm_main(
 }
 
 // リトライ処理付き wasm-worker 呼び出し: Out of Memory が発生した場合、1GBメモリ制限ありで再び wasm-worker を呼び出す
-function wasm_worker_with_retry(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing) {
+function wasm_worker_with_retry(
+  problem_data,
+  updateDmaxOutput,
+  updateChartData,
+  setIsOptimizing,
+  setMemoryLimit
+) {
   console.log("wasm_worker_with_retry: test with 1GB memory limit wasm-worker");
   try {
     // メモリ制限なしで wasm-worker を呼び出す
+    localStorage.setItem("wasmWorkerStatus", "memory limit 4GB");
+    setMemoryLimit("4GB");
     call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, false);
   } catch (e) {
     console.log("catched error: " + e);
@@ -179,8 +187,12 @@ function wasm_worker_with_retry(problem_data, updateDmaxOutput, updateChartData,
       console.log(
         "RangeError: Out of memory occured on webworker - commonly occurs on iOS occured. try 1GB limited memory wasm-worker"
       );
+      localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
+      setMemoryLimit("1GB");
       call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, true);
     } else {
+      localStorage.setItem("wasmWorkerStatus", "unexpected error");
+      setMemoryLimit("unexpected error");
       console.error("An unexpected error occured: " + e);
     }
   }
@@ -283,6 +295,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   // DmaxSolverコンポーネントへの参照を作成 (自動スクロールに利用)
   const dmaxSolverRef = useRef(null);
 
+  const [memoryLimit, setMemoryLimit] = useState("?GB");
+
   // 最適化の開始
   const startOptimization = () => {
     setResetMiddleOutputInfo(true);
@@ -371,7 +385,13 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         eraseDmaxOutput();
         eraseChartData();
         // call_worker_wasm_main(data, updateDmaxOutput, updateChartData, setIsOptimizing);
-        wasm_worker_with_retry(data, updateDmaxOutput, updateChartData, setIsOptimizing);
+        wasm_worker_with_retry(
+          data,
+          updateDmaxOutput,
+          updateChartData,
+          setIsOptimizing,
+          setMemoryLimit
+        );
       })
       .catch((error) => {
         setOpenStart(false);
@@ -463,6 +483,15 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       setShowFab(true);
     }, 500); // 500ミリ秒後に実行
 
+    const wasmWorkerStatus = localStorage.getItem("wasmWorkerStatus");
+    if (!wasmWorkerStatus || wasmWorkerStatus === "unexpected error") {
+      setMemoryLimit("?GB");
+    } else if (wasmWorkerStatus === "memory limit 1GB") {
+      setMemoryLimit("1GB");
+    } else {
+      setMemoryLimit("4GB");
+    }
+
     // コンポーネントのアンマウント時にタイマーをクリアする
     return () => clearTimeout(timer);
   }, []); // 空の依存配列でマウント時のみ実行
@@ -482,6 +511,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
           handleExcludeQuriousArmor={handleExcludeQuriousArmor}
           excludeCharm={excludeCharm}
           handleExcludeCharm={handleExcludeCharm}
+          memoryLimit={memoryLimit}
         />
         <DmaxGraph chartData={chartData} />
       </Grid>

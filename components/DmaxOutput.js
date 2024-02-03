@@ -21,6 +21,7 @@ import CloudIcon from "@mui/icons-material/Cloud";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
 import DevicesIcon from "@mui/icons-material/Devices";
 import CancelIcon from "@mui/icons-material/Cancel";
+import MemoryIcon from "@mui/icons-material/Memory";
 import { commonStyles, useStyles } from "./DmaxMain";
 import { useLoginContext } from "./LoginContext";
 import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
@@ -316,6 +317,7 @@ export const DmaxOutput = ({
   handleExcludeQuriousArmor,
   excludeCharm,
   handleExcludeCharm,
+  memoryLimit,
 }) => {
   // const classes = useStyles();
   const classes = {};
@@ -392,31 +394,16 @@ export const DmaxOutput = ({
               </Typography>
             </Grid>
             <Grid item xs container justifyContent="flex-end" sx={{ marginRight: 1 }}>
-              {isOptimizing ? (
-                <>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleToggle}
-                    startIcon={<CancelIcon />}
-                    size="small"
-                  >
-                    中止
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleToggle}
-                    startIcon={<TrendingUpIcon />}
-                    size="small"
-                  >
-                    実行
-                  </Button>
-                </>
-              )}
+              <Typography
+                sx={{
+                  color: theme.vars.palette.text.hint,
+                  paddingRight: "0.5rem",
+                  alignItems: "center",
+                }}
+              >
+                メモリ上限 {memoryLimit}
+              </Typography>
+              <MemoryIcon sx={{ color: theme.vars.palette.text.hint }} />
             </Grid>
           </Grid>
 

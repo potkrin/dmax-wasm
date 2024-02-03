@@ -5,7 +5,7 @@ import { armors, decos } from "../data/EquipData";
 import { staticSkillData } from "../data/StaticData";
 import CopyToClipboardButton from "./CopyToClipboardButton";
 import InsightsIcon from "@mui/icons-material/Insights";
-import { useTheme } from "@emotion/react";
+import theme from "../src/theme";
 
 // 秒を読みやすい形式に変換
 function secondsToHumanReadable(seconds) {
@@ -303,8 +303,7 @@ export const DmaxResult = ({
     setTextToCopy(dmaxResult);
   }, [dmaxResult]);
 
-  const currentTheme = useTheme();
-  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+  const matches = useMediaQuery(theme.breakpoints.down("md")); // 'sm' は600pxに設定されていることが多い
 
   return (
     <Grid item xs={12} md={6}>

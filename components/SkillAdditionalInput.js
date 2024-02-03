@@ -39,11 +39,6 @@ export const SkillAdditionalInput = ({ userInputData, updateUserInputData }) => 
     updateUserInputData("その他", { ...userInputData["その他"], [key]: value });
   };
 
-  // const skillInput = userInputData["スキル"][staticSkillData.name];
-
-  const currentTheme = useTheme();
-  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
-
   return (
     <>
       {/* 追加で入力項目が必要なスキルの処理 */}
@@ -82,7 +77,6 @@ export const SkillAdditionalInput = ({ userInputData, updateUserInputData }) => 
               value={userInputData["その他"]["キュリア"]}
               label={"キュリア"}
               onChange={(e) => handleChangeOther("キュリア", e)}
-              // sx={{ ...(matches && { maxHeight: "30px" }) }}
             >
               {Object.entries(staticData["その他"]["キュリア"]).map(([_, value]) => (
                 <MenuItem value={value}>{value}匹</MenuItem>

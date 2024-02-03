@@ -10,9 +10,14 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { MaterialReactTable } from "material-react-table";
-import { useTheme } from "@mui/material/styles";
 import ManualSyncButton from "./ManualSyncButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+
+import { theme, lightTheme, darkTheme, breakpoints } from "../src/theme";
+import {
+  Experimental_CssVarsProvider as CssVarsProvider,
+  useColorScheme,
+} from "@mui/material/styles";
 
 export function CharmTable({
   userCharmData,
@@ -61,23 +66,31 @@ export function CharmTable({
     setTableData(newTableData);
   }, [userCharmData]);
 
-  const currentTheme = useTheme();
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
-  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+  const { mode, setMode } = useColorScheme();
+  const [mounted, setMounted] = React.useState(false);
 
   // from: https://v1.material-react-table.com/docs/guides/customize-components
   const tableTheme = useMemo(
     () =>
       createTheme({
         palette: {
-          mode: currentTheme.palette.mode, //let's use the same dark/light mode as the current theme
-          primary: currentTheme.palette.primary, //swap in the secondary color as the primary for the table
-          secondary: currentTheme.palette.secondary, //swap in the primary color as the secondary for the table
-          info: {
-            main: currentTheme.palette.info.main,
-          },
+          // mode: mode === "light" ? "light" : "dark", //let's use the same dark/light mode as the current theme
+          // // primary: currentTheme.vars.palette.primary, //swap in the secondary color as the primary for the table
+          // primary: mode === "light" ? lightTheme.palette.primary : darkTheme.palette.primary,
+          // // secondary: currentTheme.palette.secondary, //swap in the primary color as the secondary for the table
+          // secondary: mode === "light" ? lightTheme.palette.secondary : darkTheme.palette.secondary,
+          // info: {
+          //   main: currentTheme.palette.info.main,
+          //   // main: mode === "light" ? lightTheme.palette.info.main : darkTheme.palette.info.main,
+          // },
           background: {
-            default: currentTheme.palette.background.paper,
+            // // default: currentTheme.palette.background.paper,
+            // default:
+            //   mode === "light"
+            //     ? lightTheme.palette.background.paper
+            //     : darkTheme.palette.background.paper,
           },
         },
         typography: {
@@ -96,88 +109,98 @@ export function CharmTable({
           },
         },
       }),
-    [currentTheme]
+    [mode]
   );
 
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // for server-side rendering
+    // learn more at https://github.com/pacocoursey/next-themes#avoid-hydration-mismatch
+    return null;
+  }
+
   return (
-    <ThemeProvider theme={tableTheme}>
-      <MaterialReactTable
-        columns={columns}
-        data={tableData}
-        enablePagination={false}
-        enableRowSelection
-        enableDensityToggle={false}
-        enableFullScreenToggle={false}
-        enableHiding={false}
-        enableColumnFilters={false}
-        enableMultiRowSelection
-        enableSelectAll
-        muiSearchTextFieldProps={{
-          // placeholder: "Search all users",
-          sx: { maxWidth: "180px" },
-          variant: "outlined",
-        }}
-        renderTopToolbarCustomActions={({ table }) => {
-          const handleDelete = () => {
-            // 削除対象のインデックスを作成
-            const deleteTargetRows = [];
-            const charmTotal = Object.keys(userCharmData).length;
-            table.getSelectedRowModel().flatRows.map((row) => {
-              deleteTargetRows.push(charmTotal - parseInt(row.id) - 1);
-            });
+    // <ThemeProvider theme={tableTheme}>
+    <MaterialReactTable
+      columns={columns}
+      data={tableData}
+      enablePagination={false}
+      enableRowSelection
+      enableDensityToggle={false}
+      enableFullScreenToggle={false}
+      enableHiding={false}
+      enableColumnFilters={false}
+      enableMultiRowSelection
+      enableSelectAll
+      muiSearchTextFieldProps={{
+        // placeholder: "Search all users",
+        sx: { maxWidth: "180px" },
+        variant: "outlined",
+      }}
+      renderTopToolbarCustomActions={({ table }) => {
+        const handleDelete = () => {
+          // 削除対象のインデックスを作成
+          const deleteTargetRows = [];
+          const charmTotal = Object.keys(userCharmData).length;
+          table.getSelectedRowModel().flatRows.map((row) => {
+            deleteTargetRows.push(charmTotal - parseInt(row.id) - 1);
+          });
 
-            // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
-            handleOpenDeleteConfirmDialog(deleteTargetRows);
-            table.resetRowSelection();
-          };
+          // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
+          handleOpenDeleteConfirmDialog(deleteTargetRows);
+          table.resetRowSelection();
+        };
 
-          return (
-            <>
-              <div
-                style={{
-                  gap: "0.5rem",
-                  display: "flex",
-                  flexDirection: matches ? "column" : "row",
-                }}
+        return (
+          <>
+            <div
+              style={{
+                gap: "0.5rem",
+                display: "flex",
+                flexDirection: matches ? "column" : "row",
+              }}
+            >
+              <Button
+                color="secondary"
+                disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
+                onClick={handleDelete}
+                variant="contained"
+                startIcon={<DeleteIcon />}
               >
-                <Button
-                  color="secondary"
-                  disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-                  onClick={handleDelete}
-                  variant="contained"
-                  startIcon={<DeleteIcon />}
-                >
-                  削除
-                </Button>
-                {fetchUserCharmData && <ManualSyncButton fetchUserEquipData={fetchUserCharmData} />}
-                {userCharmMetaData && (
-                  <div>
-                    <Tooltip title="最終更新日時とデータの更新回数" placement="top">
-                      <Typography
-                        variant="body1"
-                        component="div"
-                        sx={{ flexGrow: 1, fontSize: "0.7rem" }}
-                        color="text.secondary"
-                      >
-                        {new Date(userCharmMetaData.updated_at).toLocaleString()}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        component="div"
-                        sx={{ flexGrow: 1, fontSize: "0.7rem" }}
-                        color="text.secondary"
-                      >
-                        ver.{userCharmMetaData.revision_number}
-                      </Typography>
-                    </Tooltip>
-                  </div>
-                )}
-              </div>
-            </>
-          );
-        }}
-      />
-    </ThemeProvider>
+                削除
+              </Button>
+              {fetchUserCharmData && <ManualSyncButton fetchUserEquipData={fetchUserCharmData} />}
+              {userCharmMetaData && (
+                <div>
+                  <Tooltip title="最終更新日時とデータの更新回数" placement="top">
+                    <Typography
+                      variant="body1"
+                      component="div"
+                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                      color="text.secondary"
+                    >
+                      {new Date(userCharmMetaData.updated_at).toLocaleString()}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      component="div"
+                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                      color="text.secondary"
+                    >
+                      ver.{userCharmMetaData.revision_number}
+                    </Typography>
+                  </Tooltip>
+                </div>
+              )}
+            </div>
+          </>
+        );
+      }}
+    />
+    // </ThemeProvider>
   );
 }
 

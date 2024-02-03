@@ -29,6 +29,7 @@ export function QuriousArmorManager() {
   }, []);
 
   useEffect(() => {
+    if (userQuriousArmorData.length === 0) return;
     localStorage.setItem("userQuriousArmorData", JSON.stringify(userQuriousArmorData));
   }, [userQuriousArmorData]);
 

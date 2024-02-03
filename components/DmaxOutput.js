@@ -25,6 +25,7 @@ import { commonStyles, useStyles } from "./DmaxMain";
 import { useLoginContext } from "./LoginContext";
 import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
 import { useTheme } from "@mui/material/styles";
+import { theme, breakpoints } from "../src/theme";
 
 const defaultMiddleOutputInfo = {
   "launch": {
@@ -358,8 +359,7 @@ export const DmaxOutput = ({
     setIsQuriousArmorDataFetched,
   } = useCharmAndQuriousArmorContext();
 
-  const currentTheme = useTheme();
-  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
   const useServerCharm = () => {
     checkLoginStatus();
@@ -453,8 +453,8 @@ export const DmaxOutput = ({
                   <Button
                     onClick={() => handleChangeCharmValue(null, 0)}
                     sx={{
-                      backgroundColor: charmValue === 0 ? currentTheme.palette.primary.main : "",
-                      color: charmValue === 0 ? currentTheme.palette.primary.contrastText : "",
+                      backgroundColor: charmValue === 0 ? theme.vars.palette.primary.main : "",
+                      color: charmValue === 0 ? theme.vars.palette.primary.contrastText : "",
                     }}
                     startIcon={<DevicesIcon />}
                     size="small"
@@ -472,11 +472,11 @@ export const DmaxOutput = ({
                       sx={{
                         backgroundColor:
                           charmValue === 1 && isCharmDataFetched
-                            ? currentTheme.palette.primary.main
+                            ? theme.vars.palette.primary.main
                             : charmValue === 1 && !isCharmDataFetched
-                            ? currentTheme.palette.text.disabled
+                            ? theme.vars.palette.text.disabled
                             : "",
-                        color: charmValue === 1 ? currentTheme.palette.primary.contrastText : "",
+                        color: charmValue === 1 ? theme.vars.palette.primary.contrastText : "",
                       }}
                       startIcon={isCharmDataFetched ? <CloudIcon /> : <CloudOffIcon />}
                       size="small"
@@ -497,8 +497,8 @@ export const DmaxOutput = ({
                       display: { sm: "none" },
                       color:
                         charmValue === 0
-                          ? currentTheme.palette.primary.main
-                          : currentTheme.palette.text.hint,
+                          ? theme.vars.palette.primary.main
+                          : theme.vars.palette.text.hint,
                     }}
                   >
                     {<DevicesIcon />}
@@ -520,8 +520,8 @@ export const DmaxOutput = ({
                           display: { sm: "none" },
                           color:
                             charmValue === 1
-                              ? currentTheme.palette.primary.main
-                              : currentTheme.palette.text.hint,
+                              ? theme.vars.palette.primary.main
+                              : theme.vars.palette.text.hint,
                         }}
                       >
                         {isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}
@@ -569,9 +569,8 @@ export const DmaxOutput = ({
                     onClick={() => handleChangeQuriousArmorValue(null, 0)}
                     sx={{
                       backgroundColor:
-                        quriousArmorValue === 0 ? currentTheme.palette.primary.main : "",
-                      color:
-                        quriousArmorValue === 0 ? currentTheme.palette.primary.contrastText : "",
+                        quriousArmorValue === 0 ? theme.vars.palette.primary.main : "",
+                      color: quriousArmorValue === 0 ? theme.vars.palette.primary.contrastText : "",
                     }}
                     startIcon={<DevicesIcon />}
                     size="small"
@@ -590,12 +589,12 @@ export const DmaxOutput = ({
                       sx={{
                         backgroundColor:
                           quriousArmorValue === 1 && isQuriousArmorDataFetched
-                            ? currentTheme.palette.primary.main
+                            ? theme.vars.palette.primary.main
                             : quriousArmorValue === 1 && !isQuriousArmorDataFetched
-                            ? currentTheme.palette.text.disabled
+                            ? theme.vars.palette.text.disabled
                             : "",
                         color:
-                          quriousArmorValue === 1 ? currentTheme.palette.primary.contrastText : "",
+                          quriousArmorValue === 1 ? theme.vars.palette.primary.contrastText : "",
                       }}
                       startIcon={isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}
                       size="small"
@@ -617,8 +616,8 @@ export const DmaxOutput = ({
                         display: { sm: "none" },
                         color:
                           quriousArmorValue === 0
-                            ? currentTheme.palette.primary.main
-                            : currentTheme.palette.text.hint,
+                            ? theme.vars.palette.primary.main
+                            : theme.vars.palette.text.hint,
                       }}
                     >
                       {<DevicesIcon />}
@@ -642,8 +641,8 @@ export const DmaxOutput = ({
                           display: { sm: "none" },
                           color:
                             quriousArmorValue === 1
-                              ? currentTheme.palette.primary.main
-                              : currentTheme.palette.text.hint,
+                              ? theme.vars.palette.primary.main
+                              : theme.vars.palette.text.hint,
                         }}
                       >
                         {isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}

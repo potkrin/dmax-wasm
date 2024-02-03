@@ -23,31 +23,45 @@
   - [x] 属性の並び順がおかしい
   - [x] 背景の下部分がなぜか白になる
   - [x] 結果と履歴の高さがあっていない問題
-  - [ ] 結果表示ウィンドウのスクロール廃止 (リファクタリング)
+  - [x] 結果表示ウィンドウのスクロール廃止 (リファクタリング)
+  - [x] localstorage のデータがリロードでリセットされるようになった(userInputData、護石、傀異錬成)
+    - デフォルト値と比較して同じ場合は localStorage.set をしないようにして対応
+  - [ ] 傀異錬成削除などの確認ダイアログが未実装
+  - [ ] oom で落ちた場合のエラー表示 (4GB/1GBともに)
+  - [ ] 巨大state分割&usememo検討
+  - [ ] webworker で発生した全ての例外をUI上に表示する
+  - [ ] 小さい文字をスマホ向け MainTab に追加
   - [ ] ローカル/サーバーのタブボタン判定がおかしい
   - [ ] 履歴表示遷移がおかしい
     - [ ] データ0件→一回目最適化完了→2回目最適化実行→履歴に表示されない
     - [ ] データ1件以上→最適化完了→正常に表示→リロード→最後の結果が見えなくないか...？ (1件ずらして表示すべき？)
-
-
   - [ ] SSG 対応で白黒点滅するようになった問題
     - next-themes + mui + カスタムテーマの使い方を単体で試してみないとわからないかも
     - パッと解決できないので後回し
+    - [MUI SSR ちらつき issue](https://github.com/mui/material-ui/issues/15588#issuecomment-1280626188)
+    - [MUI ダークモードSSRちらつきを防ぐ](https://mui.com/material-ui/experimental-api/css-theme-variables/overview/)
+    - [MUI + SSR: CSS変数](https://blog.arlenx.io/posts/use-mui-css-theme-variables-to-prevent-dark-mode-ssr-flickering-in-nextjs-app) 
+    - [MUI + Nextjs 公式ガイド](https://mui.com/material-ui/guides/nextjs/#pages-router)
+    - [MUI + Nextjs example github](https://github.com/mui/material-ui/tree/master/examples/material-ui-nextjs-pages-router)
+    - [MUI Theming](https://mui.com/material-ui/customization/theming/)
+    - [MUI useMediaQuery](https://mui.com/material-ui/react-use-media-query/#usemediaquery-query-options-matches)
+    - [[RFC] CSS theme variables support #27651](https://github.com/mui/material-ui/issues/27651)
+    - [ ] [かっこいい切り替わりアニメーション](https://blog.arlenx.io/posts/use-mui-css-theme-variables-to-prevent-dark-mode-ssr-flickering-in-nextjs-app)
+    - [ ] [CPUスロットル6xを設定しても全く白が見えない謎技術](https://mui.com/)
   - [ ] fab の位置を css で決めたらjsによる移動を抑えられないか？
   - [ ] fab をもっとでかい丸いアイコンにしたい 参考: Twitter 
   - [ ] 現在のメモリ上限の表示
-  - [ ] 巨大state分割&usememo検討
-  - [ ] oom で落ちた場合のエラー表示 (4GB/1GBともに)
   - [ ] モバイルで長時間動作させたときの挙動の把握、できればユーザーにレスポンス
   - [ ] 弾矢強化のUIを変更不可に変更
   - [ ] button group のマウスオーバー時の色がおかしい
   - [ ] スクロールバー表示と見た目の変更
   - [ ] スレッド数変更機能
   - [ ] ローカルストレージを利用する場合に警告
-  - [ ] webworker で発生した全ての例外をUI上に表示する
   - [ ] fabicon 作成&設定
   - [ ] 初期表示のとき表示されないタブの描画やjs実行を遅らせる事はできないか？
   - [ ] スマホ向けUIが壊れている等 UI微調整
+    - [ ] 発動率のバーの太さが違う
+    - [ ] 護石錬成テーブルの背景色がPaperでない問題
     - [ ] 「対応武器種」などの表示が折り返している (スマホサイズ)
     - [ ] スマホUIでは結果表示ウィンドウ内のスクロールを無しにしたい
     - [ ] Responsive: 803x723 でキュリアや狂竜症などのボックスが崩れている
@@ -61,6 +75,8 @@
     - [ ] button group で押下後に色が戻らない
     - [ ] 数字入力がバグっている
     - [ ] スクロールバー
+  - [ ] 動作テスト
+    - [ ] ローカル/サーバーのデータ有り無しでの最適化確認
   - [x] Next.js 移行対応
     - [x] images ファイルの修正 (なにか変わってるか確認?)
     - [x] SSG/SSR対応 window, localstorage など
@@ -143,6 +159,8 @@
   - [x] ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
 
 - **Midle 実装予定:**
+  - [ ] [CPUスロットル6xを設定しても全く白が見えない謎技術](https://mui.com/)
+  - [ ] [使い方にこういう目次を加えたい](https://blog.arlenx.io/posts/use-mui-css-theme-variables-to-prevent-dark-mode-ssr-flickering-in-nextjs-app)
   - [ ] 何分前、昨日、1-31... のような日時表示
   - [ ] デバッグビルドにのみ print する設定?(いるか？)
   - [ ] [PageSpeed Insights](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
@@ -569,6 +587,12 @@ npm start
   - Fab の位置がおかしくなる (viewport に対して固定できない)
 
 代わりにスマホ表示ではタブボタンを画面下部に表示します(MUI の BottomNavigation のようなもの)
+
+# dark-mode SSR/SSG flickering 対策
+追加インストールメモ _φ(･\_･)
+```js
+npm install  @emotion/cache @emotion/server @mui/material-nextjs prop-types
+```
 
 # [DUPLICATED] Django デプロイ用ビルド手順 (古い手順)
 Django において cms/static/cms 以下にファイルを配置することを想定

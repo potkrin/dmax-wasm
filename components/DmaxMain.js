@@ -41,6 +41,9 @@ import SkillCard from "./SkillCard";
 import { useTheme } from "@mui/material/styles";
 import { SkillAdditionalInput } from "./SkillAdditionalInput";
 
+import { breakpoints } from "@/src/theme";
+import isEqual from "lodash/isEqual";
+
 export const commonStyles = {
   customHeader: {
     padding: "0.25em 0.5em", // 上下 左右の余白
@@ -106,8 +109,7 @@ const actions = [
 ];
 
 export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
-  const currentTheme = useTheme();
-  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
   const [userInputData, setUserInputData] = useState(defaultUserInputData);
   const [additionalSkills, setAdditionalSkills] = useState([]);
@@ -133,6 +135,7 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
 
   // ユーザが入力するたびに入力データを localstorage に書き込み
   useEffect(() => {
+    if (isEqual(userInputData, defaultUserInputData)) return;
     localStorage.setItem("userInputData", JSON.stringify(userInputData));
   }, [userInputData]);
 

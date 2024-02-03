@@ -12,6 +12,8 @@ import {
   useMediaQuery,
 } from "@mui/material";
 
+import { theme, breakpoints } from "../src/theme";
+
 // import { armors, decos } from "../data/EquipData";
 // import { staticSkillData } from "../data/StaticData";
 // import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -102,8 +104,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
     setTextToCopy(historyList[value].result);
   }, [value, historyList]);
 
-  const currentTheme = useTheme();
-  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
   return (
     <Grid item xs={12} md={6}>
@@ -171,20 +172,20 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
                   label={
                     <>
                       <Typography
-                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.light }}
+                        sx={{ fontSize: "14px", color: theme.vars.palette.primary.light }}
                         align="left"
                       >
                         {option.physicalHitzone} / {option.elementalHitzone}
                       </Typography>
                       <Typography
-                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.light }}
+                        sx={{ fontSize: "14px", color: theme.vars.palette.primary.light }}
                         align="left"
                       >
                         {option.element} {option.maxDamage.split(".")[0]}
                       </Typography>
 
                       <Typography
-                        sx={{ fontSize: "10px", color: currentTheme.palette.text.primary }}
+                        sx={{ fontSize: "10px", color: theme.vars.palette.text.primary }}
                         align="left"
                       >
                         {new Date(option.timeStamp).toLocaleDateString(undefined, {

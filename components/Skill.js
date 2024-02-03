@@ -26,6 +26,7 @@ import AddIcon from "@mui/icons-material/Add";
 import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useTheme } from "@mui/material/styles";
+import { theme, breakpoints } from "../src/theme";
 
 export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) => {
   const handleChangeSkillInfo = (key, event, value) => {
@@ -60,10 +61,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
   const skillInput = userInputData["スキル"][staticSkillData.name];
 
   const buttonSize = "24px";
-  const buttonSize2 = "24px";
 
-  const currentTheme = useTheme();
-  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
   return (
     <>
@@ -113,7 +112,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
               <Typography
                 variant="body1"
                 sx={{
-                  color: currentTheme.palette.secondary.main,
+                  color: theme.vars.palette.secondary.main,
                   textAlign: "left",
                   display: "flex",
                   alignItems: "flex-start",
@@ -145,8 +144,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     width: "6px",
                     color:
                       skillInput.minLevel > 0
-                        ? currentTheme.palette.primary.main
-                        : currentTheme.palette.text.hint,
+                        ? theme.vars.palette.primary.main
+                        : theme.vars.palette.text.hint,
                     "&.MuiSlider-markActive": {
                       opacity: 1,
                       backgroundColor: "currentColor",
@@ -157,8 +156,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     height: "3px",
                     color:
                       skillInput.minLevel > 0
-                        ? currentTheme.palette.primary.main
-                        : currentTheme.palette.text.hint,
+                        ? theme.vars.palette.primary.main
+                        : theme.vars.palette.text.hint,
                   },
                   "& .MuiSlider-thumb": {
                     borderRadius: "2px",
@@ -166,8 +165,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     height: "12px",
                     color:
                       skillInput.minLevel > 0
-                        ? currentTheme.palette.primary.main
-                        : currentTheme.palette.text.hint,
+                        ? theme.vars.palette.primary.main
+                        : theme.vars.palette.text.hint,
                   },
                 }}
               />
@@ -190,7 +189,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                   sx={{
                     width: buttonSize,
                     height: buttonSize,
-                    color: currentTheme.palette.text.secondary,
+                    color: theme.vars.palette.text.secondary,
                   }}
                 />
               </IconButton>
@@ -210,7 +209,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                   sx={{
                     width: buttonSize,
                     height: buttonSize,
-                    color: currentTheme.palette.text.secondary,
+                    color: theme.vars.palette.text.secondary,
                   }}
                 />
               </IconButton>
@@ -272,16 +271,16 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                     "& .MuiSlider-rail": {
                       color:
                         skillInput.activeRate > 0
-                          ? currentTheme.palette.primary.main
-                          : currentTheme.palette.text.disabled,
+                          ? theme.vars.palette.primary.main
+                          : theme.vars.palette.text.disabled,
                     },
                     "& .MuiSlider-thumb": {
                       width: "8px",
                       height: "8px",
                       color:
                         skillInput.activeRate > 0
-                          ? currentTheme.palette.primary.main
-                          : currentTheme.palette.text.disabled,
+                          ? theme.vars.palette.primary.main
+                          : theme.vars.palette.text.disabled,
                     },
                   }}
                   onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
@@ -319,14 +318,14 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                   sx={{
                     width: buttonSize,
                     height: buttonSize,
-                    color: currentTheme.palette.text.secondary,
+                    color: theme.vars.palette.text.secondary,
                   }}
                 />
                 {/* <IndeterminateCheckBoxOutlinedIcon
                   sx={{
                     width: buttonSize,
                     height: buttonSize,
-                    color: currentTheme.palette.text.secondary,
+                    color: theme.vars.palette.text.secondary,
                   }}
                 /> */}
               </IconButton>
@@ -335,7 +334,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
               <Typography
                 variant="body1"
                 sx={{
-                  color: currentTheme.palette.secondary.light,
+                  color: theme.vars.palette.secondary.light,
                   textAlign: "left",
                   display: "flex",
                   alignItems: "flex-start",
@@ -365,14 +364,14 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                   sx={{
                     width: buttonSize,
                     height: buttonSize,
-                    color: currentTheme.palette.text.secondary,
+                    color: theme.vars.palette.text.secondary,
                   }}
                 />
                 {/* <AddBoxOutlinedIcon
                   sx={{
                     width: buttonSize,
                     height: buttonSize,
-                    color: currentTheme.palette.text.secondary,
+                    color: theme.vars.palette.text.secondary,
                   }}
                 /> */}
               </IconButton>
@@ -429,16 +428,16 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                       "& .MuiSlider-rail": {
                         color:
                           skillInput.activeRate > 0
-                            ? currentTheme.palette.primary.main
-                            : currentTheme.palette.text.disabled,
+                            ? theme.vars.palette.primary.main
+                            : theme.vars.palette.text.disabled,
                       },
                       "& .MuiSlider-thumb": {
                         width: "8px",
                         height: "8px",
                         color:
                           skillInput.activeRate > 0
-                            ? currentTheme.palette.primary.main
-                            : currentTheme.palette.text.disabled,
+                            ? theme.vars.palette.primary.main
+                            : theme.vars.palette.text.disabled,
                       },
                     }}
                     onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}

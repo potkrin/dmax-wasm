@@ -29,6 +29,7 @@ export function CharmManager() {
 
   // useEffectを使用して、コンポーネントがマウントされた後にlocalStorageからデータを読み込む
   useEffect(() => {
+    console.log("useEffect called on CharmManager mount.");
     const localStorageUserInputData = localStorage.getItem("userCharmData");
     if (localStorageUserInputData !== null) {
       setUserCharmData(JSON.parse(localStorageUserInputData));
@@ -37,6 +38,7 @@ export function CharmManager() {
 
   // userCharmData が変更されたら localstorage に保存する
   useEffect(() => {
+    if (userCharmData.length === 0) return;
     localStorage.setItem("userCharmData", JSON.stringify(userCharmData));
     console.log("userCharmData has been changed, and saved to localstorage");
   }, [userCharmData]);

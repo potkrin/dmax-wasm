@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Grid, Card } from "@mui/material";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { useTheme } from "@mui/material/styles";
+import theme from "../src/theme";
 
 export const DmaxGraph = ({ chartData }) => {
   const [chartWidth, setChartWidth] = useState(0);
@@ -26,6 +27,19 @@ export const DmaxGraph = ({ chartData }) => {
   }, []);
 
   const currentTheme = useTheme();
+
+  // // const { mode, setMode } = useColorScheme();
+  // const [mounted, setMounted] = React.useState(false);
+
+  // React.useEffect(() => {
+  //   setMounted(true);
+  // }, []);
+
+  // if (!mounted) {
+  //   // for server-side rendering
+  //   // learn more at https://github.com/pacocoursey/next-themes#avoid-hydration-mismatch
+  //   return null;
+  // }
 
   return (
     <Grid item xs={12} md={6} ref={containerRef}>

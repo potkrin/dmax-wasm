@@ -277,7 +277,8 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   // DmaxOutput のリアルタイム中間出力をリセットする state
   const [resetMiddleOutputInfo, setResetMiddleOutputInfo] = useState(false);
 
-  const { serverCharmData, charmValue } = useCharmAndQuriousArmorContext();
+  const { serverCharmData, charmValue, serverQuriousArmorData, quriousArmorValue } =
+    useCharmAndQuriousArmorContext();
 
   // DmaxSolverコンポーネントへの参照を作成 (自動スクロールに利用)
   const dmaxSolverRef = useRef(null);
@@ -313,13 +314,20 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         // サーバー上の護石データを取得
         userCharmData = JSON.parse(JSON.stringify(serverCharmData));
       }
-      userArmors.push(...userCharmData);
+      if (userCharmData !== null) userArmors.push(...userCharmData);
     }
 
     if (!excludeQuriousArmor) {
       // ユーザの傀異錬成防具を全防具データに追加
-      const userQuriousArmorData = JSON.parse(localStorage.getItem("userQuriousArmorData"));
-      userArmors.push(...userQuriousArmorData);
+      let userQuriousArmorData = null;
+      if (quriousArmorValue === 0) {
+        // localsotrage から傀異錬成防具データを取得
+        userQuriousArmorData = JSON.parse(localStorage.getItem("userQuriousArmorData"));
+      } else {
+        // サーバー上の傀異錬成防具データを取得
+        userQuriousArmorData = JSON.parse(JSON.stringify(serverQuriousArmorData));
+      }
+      if (userQuriousArmorData !== null) userArmors.push(...userQuriousArmorData);
     }
 
     // 肉質を水やられ状態に変換したデータを送信

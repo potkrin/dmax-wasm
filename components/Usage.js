@@ -35,30 +35,47 @@ import localServerPcLight from "../public/images/dmax-usage-local-server-pc-ligh
 import graphPcDark from "../public/images/dmax-usage-graph-pc-dark.png";
 import graphPcLight from "../public/images/dmax-usage-graph-pc-light.png";
 
+import { theme, breakpoints } from "../src/theme";
+import { useColorScheme } from "@mui/material/styles";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+
 const CustomH1 = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
   paddingTop: "2.0em",
   fontWeight: "bold",
+  fontSize: "1.6em",
 }));
 
 const CustomH2 = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
   paddingTop: "2.5em",
   fontWeight: "bold",
+  fontSize: "1.3em",
   // 他のスタイル規則もここに追加できます
 }));
 
 // height: 画像の高さを指定するとアスペクト比に合わせて調整してくれる
-function UsageImage({ srcDark, srcLight, alt, currentTheme, matches, height }) {
+function UsageImage({ srcDark, srcLight, alt, matches, height }) {
+  const { mode, setMode } = useColorScheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // for server-side rendering
+    // learn more at https://github.com/pacocoursey/next-themes#avoid-hydration-mismatch
+    return null;
+  }
+
   return (
     <Box
       sx={{
         boxShadow:
           "0 4px 8px 0 " +
-          (currentTheme.palette.mode === "dark"
-            ? currentTheme.palette.background.default
-            : currentTheme.palette.text.hint), // ここで影のスタイルを指定
-        backgroundColor: currentTheme.palette.background.paper,
+          (mode === "dark" ? theme.vars.palette.background.default : theme.vars.palette.text.hint), // ここで影のスタイルを指定
+        backgroundColor: theme.vars.palette.background.paper,
         borderRadius: 2, // 角丸の指定
         overflow: "hidden", // Box内のコンテンツが角丸に合わせて切り取られるように設定
         maxWidth: "600px",
@@ -68,7 +85,7 @@ function UsageImage({ srcDark, srcLight, alt, currentTheme, matches, height }) {
       }}
     >
       <Image
-        src={currentTheme.palette.mode === "dark" ? srcDark : srcLight}
+        src={mode === "dark" ? srcDark : srcLight}
         alt={alt}
         fill={true}
         objectFit="contain" // または他の object-fit の値
@@ -88,13 +105,12 @@ function Usage() {
     setOpen(false);
   };
 
-  const currentTheme = useTheme();
-  const matches = useMediaQuery(currentTheme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
   return (
     <Paper sx={{ paddingBottom: "10em" }}>
       <Box sx={{ maxWidth: "800px", padding: 3 }}>
-        <CustomH1 variant="h1" gutterBottom sx={{ paddingTop: "0em" }} theme={currentTheme}>
+        <CustomH1 variant="h1" gutterBottom sx={{ paddingTop: "0em" }} theme={theme.vars}>
           DMAX
         </CustomH1>
         <Typography variant="body1" gutterBottom>
@@ -108,7 +124,7 @@ function Usage() {
             maxWidth: 500, // 最大幅
             boxShadow: 0, // シャドウの強度（0から24までの値）
             borderRadius: 2, // ボーダーの角丸み
-            backgroundColor: currentTheme.palette.background.default,
+            backgroundColor: theme.vars.palette.background.default,
             marginY: 2,
           }}
         >
@@ -130,7 +146,7 @@ function Usage() {
           </Table>
         </Card>
 
-        <CustomH1 variant="h1" gutterBottom>
+        <CustomH1 variant="h1" gutterBottom theme={theme.vars}>
           注意点
         </CustomH1>
         <CustomH2
@@ -139,19 +155,20 @@ function Usage() {
           sx={{
             paddingTop: "0em",
           }}
+          theme={theme.vars}
         >
           1. 護石と傀異錬成データの保存場所
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           護石と傀異錬成にはローカルとサーバーの2種類の保存場所があります。
           <br />
-          <span style={{ color: currentTheme.palette.secondary.main }}>
+          <span style={{ color: theme.vars.palette.secondary.main }}>
             確実に保存したい場合はサーバーに保存
           </span>
           してください。
         </Typography>
         <Typography variant="body1" gutterBottom>
-          <span style={{ color: currentTheme.palette.secondary.main }}>
+          <span style={{ color: theme.vars.palette.secondary.main }}>
             Safari や iOS (iPhone, iPad) ではサーバーへの保存を特に推奨します。
           </span>
         </Typography>
@@ -160,7 +177,6 @@ function Usage() {
           srcDark={localServerPcDark}
           srcLight={localServerPcLight}
           alt="ローカル護石とサーバー護石の画像"
-          currentTheme={currentTheme}
           matches={matches}
           height={matches ? 124 : 218}
         />
@@ -188,7 +204,7 @@ function Usage() {
               padding: 0,
             }}
           >
-            <Typography sx={{ color: currentTheme.palette.text.secondary }}>
+            <Typography sx={{ color: theme.vars.palette.text.secondary }}>
               ローカルとサーバーの違い
             </Typography>
           </AccordionSummary>
@@ -196,7 +212,7 @@ function Usage() {
             <Typography
               variant="body1"
               gutterBottom
-              sx={{ color: currentTheme.palette.text.secondary }}
+              sx={{ color: theme.vars.palette.text.secondary }}
             >
               ローカルに保存する場合は簡単に利用できますが、Safari や iOS
               上の全てのブラウザではブラウザにより自動的にデータが削除される可能性があります。
@@ -208,7 +224,7 @@ function Usage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  color: currentTheme.palette.text.hint,
+                  color: theme.vars.palette.text.hint,
                 }}
               >
                 WebKit: 7-Day Cap on All Script-Writeable Storage
@@ -218,7 +234,7 @@ function Usage() {
             <Typography
               variant="body1"
               gutterBottom
-              sx={{ color: currentTheme.palette.text.secondary }}
+              sx={{ color: theme.vars.palette.text.secondary }}
             >
               「ローカル」ではブラウザの Local storage にデータが保存されます。Local storage
               に保存されたデータは基本的に無期限に保存されますが、WebKit を利用したブラウザ (Safari,
@@ -228,7 +244,7 @@ function Usage() {
             <Typography
               variant="body1"
               gutterBottom
-              sx={{ color: currentTheme.palette.text.secondary }}
+              sx={{ color: theme.vars.palette.text.secondary }}
             >
               「サーバー」では当サイトを提供しているサーバー上にデータが保存されます。
               そのため、ブラウザによりデータが自動的に削除されることはありません。
@@ -236,11 +252,11 @@ function Usage() {
             </Typography>
           </AccordionDetails>
         </Accordion>
-        <CustomH2 variant="h2" gutterBottom>
+        <CustomH2 variant="h2" gutterBottom theme={theme.vars}>
           2. ブラウザ版DMAXの実行速度
         </CustomH2>
         <Typography variant="body1" gutterBottom>
-          <span style={{ color: currentTheme.palette.secondary.main }}>
+          <span style={{ color: theme.vars.palette.secondary.main }}>
             モバイル端末ではCPUの性能不足により最適化に非常に時間がかかる可能性が高いです。(Android,
             iOS等)
           </span>
@@ -249,12 +265,12 @@ function Usage() {
           Windows, macOS
           等のデスクトップ・ラップトップ端末ではネイティブアプリ版DMAXに匹敵する速度で実行できます。
         </Typography>
-        <CustomH2 variant="h2" gutterBottom>
+        <CustomH2 variant="h2" gutterBottom theme={theme.vars}>
           3. ブラウザ版DMAXのメモリ制限
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           最適化実行中に
-          <span style={{ color: currentTheme.palette.secondary.main }}>
+          <span style={{ color: theme.vars.palette.secondary.main }}>
             メモリ使用量の上限に到達すると最適化が強制終了されてしまいます。
           </span>
         </Typography>
@@ -263,7 +279,7 @@ function Usage() {
           では約4GBがメモリ上限です。
         </Typography>
 
-        <CustomH1 variant="h1" gutterBottom>
+        <CustomH1 variant="h1" gutterBottom theme={theme.vars}>
           使い方
         </CustomH1>
 
@@ -273,6 +289,7 @@ function Usage() {
           sx={{
             paddingTop: "0em",
           }}
+          theme={theme.vars}
         >
           1. 前提条件を入力
         </CustomH2>
@@ -290,12 +307,12 @@ function Usage() {
           <li>旋律</li>
           <li>百竜装飾品</li>
         </ul>
-        <CustomH2 variant="h2" gutterBottom>
+        <CustomH2 variant="h2" gutterBottom theme={theme.vars}>
           2. スキルの下限レベルを入力
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           スキルの項目では各スキルが最低限満たしてほしいレベルを入力します。
-          <span style={{ color: currentTheme.palette.secondary.main }}>
+          <span style={{ color: theme.vars.palette.secondary.main }}>
             どうしても必要なスキル以外は全てLv0を指定してください。
           </span>
         </Typography>
@@ -306,35 +323,26 @@ function Usage() {
           srcDark={skillLevelPcDark}
           srcLight={skillLevelPcLight}
           alt="スキル下限レベルの設定の画像"
-          currentTheme={currentTheme}
           matches={matches}
           height={matches ? 122 : 212}
         />
-        <Typography
-          variant="body1"
-          gutterBottom
-          sx={{ color: currentTheme.palette.text.secondary }}
-        >
+        <Typography variant="body1" gutterBottom sx={{ color: theme.vars.palette.text.secondary }}>
           例えば、「火事場運用のために『伏魔響命』が最低Lv1は欲しいが、ほかのスキル構成は何でも良い」という場合、伏魔響命のみLv1を入力し、その他のスキルはすべてLv0を入力します。
           すると最適化結果は「伏魔響命Lv1」を満たす構成のなかで最大ダメージとなる構成になります。
         </Typography>
-        <Typography
-          variant="body1"
-          gutterBottom
-          sx={{ color: currentTheme.palette.text.secondary }}
-        >
+        <Typography variant="body1" gutterBottom sx={{ color: theme.vars.palette.text.secondary }}>
           例外として、スキル「闇討ち」と「弾・矢強化」は固定レベルしか選択できません。Lv2を指定した場合は必ずLv2となり、Lv3やLv1になることはありません。
           こちらは、最適化処理をできるだけ軽くするために固定レベルしか選択できないようにしています。
           (これらのスキルは "Lv3がほぼ必須" または "特殊な運用が必要"
           のため問題になることは少ないと思います)
         </Typography>
-        <CustomH2 variant="h2" gutterBottom>
+        <CustomH2 variant="h2" gutterBottom theme={theme.vars}>
           3. レベルを固定したいスキルを入力
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           DMAXのレベル選択は基本的に下限を指定しますが、レベルを固定したくなるスキルもあります。
           <br />
-          <span style={{ color: currentTheme.palette.secondary.main }}>
+          <span style={{ color: theme.vars.palette.secondary.main }}>
             レベルを固定したいスキルはチェックボックスをON
           </span>
           にしてください。
@@ -343,32 +351,23 @@ function Usage() {
           srcDark={fixLevelPcDark}
           srcLight={fixLevelPcLight}
           alt="スキルレベルを固定をする設定の画像"
-          currentTheme={currentTheme}
           matches={matches}
           height={matches ? 118 : 207}
         />
-        <Typography
-          variant="body1"
-          gutterBottom
-          sx={{ color: currentTheme.palette.text.secondary }}
-        >
+        <Typography variant="body1" gutterBottom sx={{ color: theme.vars.palette.text.secondary }}>
           例えば、火事場を運用を想定して最適化した結果「狂竜症【蝕】」がLv1以上になってしまった場合、スキル効果によって回復されてしまい火事場運用ができません。
         </Typography>
-        <Typography
-          variant="body1"
-          gutterBottom
-          sx={{ color: currentTheme.palette.text.secondary }}
-        >
+        <Typography variant="body1" gutterBottom sx={{ color: theme.vars.palette.text.secondary }}>
           このような場合は、「狂竜症【蝕】」のレベル固定チェックボックスをONにした上でLv0を選択してください。
           すると「狂竜症【蝕】Lv0」のなかで最大ダメージとなる構成を探してくれるので、火事場運用可能な構成が出力されます。
         </Typography>
 
-        <CustomH2 variant="h2" gutterBottom>
+        <CustomH2 variant="h2" gutterBottom theme={theme.vars}>
           4. ダメージ寄与スキルのスキル発動率を入力
         </CustomH2>
         <Typography variant="body1" gutterBottom>
           ダメージ計算式に寄与するスキルのうち、
-          <span style={{ color: currentTheme.palette.secondary.main }}>
+          <span style={{ color: theme.vars.palette.secondary.main }}>
             常時発動でないスキルについてはスキル発動率を設定してください。
           </span>
           スキル発動率は、クエスト中にスキルが発動している割合を想定して入力してください。
@@ -377,21 +376,16 @@ function Usage() {
           srcDark={activeRatePcDark}
           srcLight={activeRatePcLight}
           alt="スキル発動率を設定する画像"
-          currentTheme={currentTheme}
           matches={matches}
           height={matches ? 118 : 206}
         />
 
-        <Typography
-          variant="body1"
-          gutterBottom
-          sx={{ color: currentTheme.palette.text.secondary }}
-        >
+        <Typography variant="body1" gutterBottom sx={{ color: theme.vars.palette.text.secondary }}>
           例えば、モンスターの怒り時のみ効果が発動する「挑戦者」の場合、攻撃時間に占める怒り状態の割合を想定してスキル発動率を入力します。
           するとダメージ計算式における「挑戦者」の効果を発動率をもとに期待値として計算してくれます。
         </Typography>
 
-        <CustomH2 variant="h2" gutterBottom>
+        <CustomH2 variant="h2" gutterBottom theme={theme.vars}>
           5. 最適化実行とグラフ
         </CustomH2>
         <Typography variant="body1" gutterBottom>
@@ -408,7 +402,6 @@ function Usage() {
           srcDark={graphPcDark}
           srcLight={graphPcLight}
           alt="グラフの画像"
-          currentTheme={currentTheme}
           matches={matches}
           height={matches ? 300 : 520}
         />

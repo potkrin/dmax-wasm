@@ -455,6 +455,14 @@ export const DmaxOutput = ({
                     sx={{
                       backgroundColor: charmValue === 0 ? theme.vars.palette.primary.main : "",
                       color: charmValue === 0 ? theme.vars.palette.primary.contrastText : "",
+                      borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
+                      "&:hover": {
+                        backgroundColor:
+                          charmValue === 0
+                            ? theme.vars.palette.primary.dark
+                            : theme.vars.palette.action.hover,
+                        borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
+                      },
                     }}
                     startIcon={<DevicesIcon />}
                     size="small"
@@ -477,6 +485,15 @@ export const DmaxOutput = ({
                             ? theme.vars.palette.text.disabled
                             : "",
                         color: charmValue === 1 ? theme.vars.palette.primary.contrastText : "",
+                        borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
+                        "&:hover": {
+                          backgroundColor:
+                            charmValue === 1
+                              ? theme.vars.palette.primary.dark
+                              : theme.vars.palette.action.hover,
+                          borderRight:
+                            "1px solid " + theme.vars.palette.primary.main + "!important",
+                        },
                       }}
                       startIcon={isCharmDataFetched ? <CloudIcon /> : <CloudOffIcon />}
                       size="small"
@@ -571,6 +588,15 @@ export const DmaxOutput = ({
                       backgroundColor:
                         quriousArmorValue === 0 ? theme.vars.palette.primary.main : "",
                       color: quriousArmorValue === 0 ? theme.vars.palette.primary.contrastText : "",
+
+                      borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
+                      "&:hover": {
+                        backgroundColor:
+                          quriousArmorValue === 0
+                            ? theme.vars.palette.primary.dark
+                            : theme.vars.palette.action.hover,
+                        borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
+                      },
                     }}
                     startIcon={<DevicesIcon />}
                     size="small"
@@ -595,6 +621,15 @@ export const DmaxOutput = ({
                             : "",
                         color:
                           quriousArmorValue === 1 ? theme.vars.palette.primary.contrastText : "",
+                        borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
+                        "&:hover": {
+                          backgroundColor:
+                            quriousArmorValue === 1
+                              ? theme.vars.palette.primary.dark
+                              : theme.vars.palette.action.hover,
+                          borderRight:
+                            "1px solid " + theme.vars.palette.primary.main + "!important",
+                        },
                       }}
                       startIcon={isQuriousArmorDataFetched ? <CloudIcon /> : <CloudOffIcon />}
                       size="small"

@@ -21,7 +21,16 @@ export function SlotLevels({ slotLevel, setSlotLevel }) {
                 onClick={() => setSlotLevel(level)}
                 sx={{
                   backgroundColor: slotLevel === level ? theme.vars.palette.primary.main : "",
+                  borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
                   color: slotLevel === level ? theme.vars.palette.primary.contrastText : "",
+
+                  "&:hover": {
+                    backgroundColor:
+                      slotLevel === level
+                        ? theme.vars.palette.primary.dark
+                        : theme.vars.palette.action.hover,
+                    borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
+                  },
                 }}
               >
                 {level}

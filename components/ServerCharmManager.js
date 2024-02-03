@@ -443,7 +443,7 @@ export function ServerCharmManager() {
 
       <Grid
         container
-        spacing={3}
+        columnSpacing={3}
         onClick={checkLoginStatus}
         sx={{
           opacity: isLoggedIn ? 1 : 0.5,
@@ -453,7 +453,11 @@ export function ServerCharmManager() {
         {/* データ表示 */}
         {/* データ入力欄 */}
         <Grid item xs={12} md={6}>
-          <CharmInput userCharmData={userCharmData} setUserCharmData={setNextUserCharmData} />
+          <CharmInput
+            userCharmData={userCharmData}
+            setUserCharmData={setNextUserCharmData}
+            onClick={checkLoginStatus}
+          />
         </Grid>
         <Grid item xs={12} md={6}>
           <Card
@@ -558,7 +562,7 @@ export function ServerCharmManager() {
           </Card>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} marginTop={3} onClick={checkLoginStatus}>
           <CharmTable
             userCharmData={userCharmData}
             deleteUserCharms={deleteUserCharms}

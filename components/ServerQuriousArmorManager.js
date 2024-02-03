@@ -476,7 +476,7 @@ export function QuriousArmorManager() {
 
       <Grid
         container
-        spacing={3}
+        columnSpacing={3}
         onClick={checkLoginStatus}
         sx={{
           opacity: isLoggedIn ? 1 : 0.5,
@@ -585,7 +585,7 @@ export function QuriousArmorManager() {
           </Card>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} marginTop={3} onClick={checkLoginStatus}>
           <QuriousArmorTable
             userQuriousArmorData={userQuriousArmorData}
             deleteUserQuriousArmors={deleteUserQuriousArmors}

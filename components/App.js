@@ -158,18 +158,19 @@ const MainTabs = ({
       sx={{
         ...sx,
         minHeight: "0px",
+        boxShadow: "0px -1px 16px -3px rgba(0,0,0,0.2)",
       }}
     >
       <Tab
-        label={matches ? "" : "最適化"}
-        sx={{ minHeight: "0px" }}
+        label="最適化"
+        sx={{ minHeight: "0px", fontSize: "0.7rem" }}
         {...a11yProps(0)}
         icon={<TrendingUpIcon />}
         iconPosition={matches ? "top" : "start"}
       />
       <Tab
-        label={matches ? "" : "護石"}
-        sx={{ minHeight: "0px" }}
+        label="護石"
+        sx={{ minHeight: "0px", fontSize: "0.7rem" }}
         {...a11yProps(1)}
         icon={
           charmValue === 0 ? <DevicesIcon /> : isCharmDataFetched ? <CloudIcon /> : <CloudOffIcon />
@@ -177,8 +178,8 @@ const MainTabs = ({
         iconPosition={matches ? "top" : "start"}
       />
       <Tab
-        label={matches ? "" : "傀異錬成"}
-        sx={{ minHeight: "0px" }}
+        label="傀異錬成"
+        sx={{ minHeight: "0px", fontSize: "0.7rem" }}
         {...a11yProps(2)}
         icon={
           quriousArmorValue === 0 ? (
@@ -192,8 +193,8 @@ const MainTabs = ({
         iconPosition={matches ? "top" : "start"}
       />
       <Tab
-        label={matches ? "" : "使い方"}
-        sx={{ minHeight: "0px" }}
+        label="使い方"
+        sx={{ minHeight: "0px", fontSize: "0.7rem" }}
         {...a11yProps(3)}
         icon={<HelpIcon />}
         iconPosition={matches ? "top" : "start"}

@@ -63,7 +63,8 @@ function call_worker_wasm_main(
   updateDmaxOutput,
   updateChartData,
   setIsOptimizing,
-  limit_memory
+  limit_memory,
+  setMemoryLimit
 ) {
   supportsNestedWebWorkers(updateDmaxOutput);
 
@@ -77,8 +78,10 @@ function call_worker_wasm_main(
 
     // メモリ制限を行うかどうか切り替える
     let workerPath = "/dmax-core/worker3.js";
+    setMemoryLimit("4GB");
     if (limit_memory) {
       workerPath = "/dmax-core/worker1GB.js";
+      setMemoryLimit("1GB");
     } else {
       // 過去1週間以内に oom 発生記録があれば 1GB 制限の wasm バイナリを起動する
       const data = localStorage.getItem("OutOfMemoryOn4GB");
@@ -91,6 +94,7 @@ function call_worker_wasm_main(
 
           if (oneWeekAgo < oomTime) {
             workerPath = "/dmax-core/worker1GB.js";
+            setMemoryLimit("1GB");
           }
         }
       }
@@ -178,8 +182,14 @@ function wasm_worker_with_retry(
   try {
     // メモリ制限なしで wasm-worker を呼び出す
     localStorage.setItem("wasmWorkerStatus", "memory limit 4GB");
-    setMemoryLimit("4GB");
-    call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, false);
+    call_worker_wasm_main(
+      problem_data,
+      updateDmaxOutput,
+      updateChartData,
+      setIsOptimizing,
+      false,
+      setMemoryLimit
+    );
   } catch (e) {
     console.log("catched error: " + e);
     if (e.message === "RangeError: Out of memory occured on webworker - commonly occurs on iOS") {
@@ -188,8 +198,14 @@ function wasm_worker_with_retry(
         "RangeError: Out of memory occured on webworker - commonly occurs on iOS occured. try 1GB limited memory wasm-worker"
       );
       localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
-      setMemoryLimit("1GB");
-      call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing, true);
+      call_worker_wasm_main(
+        problem_data,
+        updateDmaxOutput,
+        updateChartData,
+        setIsOptimizing,
+        true,
+        setMemoryLimit
+      );
     } else {
       localStorage.setItem("wasmWorkerStatus", "unexpected error");
       setMemoryLimit("unexpected error");

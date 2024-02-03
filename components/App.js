@@ -158,7 +158,7 @@ const MainTabs = ({
       sx={{
         ...sx,
         minHeight: "0px",
-        boxShadow: "0px -1px 16px -3px rgba(0,0,0,0.2)",
+        boxShadow: matches ? "0px -1px 16px -3px rgba(0,0,0,0.2)" : "none",
       }}
     >
       <Tab

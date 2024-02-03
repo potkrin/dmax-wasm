@@ -12,6 +12,7 @@ import { armorDict } from "../data/EquipData";
 import { staticSkillData } from "../data/StaticData";
 import { QuriousArmorTable } from "./QuriousArmorTable";
 import QuriousArmorInput from "./QuriousArmorInput";
+import ConfirmDialog from "./ConfirmDialog";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -146,6 +147,16 @@ export function QuriousArmorManager() {
     }
   };
 
+  const handleOpenOverwriteConfirmDialog = () => {
+    setDialogMode("overwrite");
+    setOpenConfirmDialog(true);
+  };
+
+  const handleConfirmOverwrite = () => {
+    readFromCsvData("overwrite");
+    setOpenConfirmDialog(false);
+  };
+
   const writeToCsvData = () => {
     let csv = "";
     for (const quriousArmor of userQuriousArmorData) {
@@ -234,6 +245,26 @@ export function QuriousArmorManager() {
     setOpen(false);
   };
 
+  // 削除時に確認ダイアログを表示する
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [dialogMode, setDialogMode] = useState("delete");
+  const [deleteIndexes, setDeleteIndexes] = useState([]);
+
+  const handleOpenDeleteConfirmDialog = (indexes) => {
+    setDeleteIndexes(indexes);
+    setDialogMode("delete");
+    setOpenConfirmDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteUserQuriousArmors(deleteIndexes);
+    setOpenConfirmDialog(false);
+  };
+
+  const handleCloseConfirmDialog = () => {
+    setOpenConfirmDialog(false);
+  };
+
   return (
     <>
       {/* エラー出力 */}
@@ -252,6 +283,15 @@ export function QuriousArmorManager() {
           {error}
         </Alert>
       </Snackbar>
+
+      {/* 削除・上書き確認ダイアログ */}
+      <ConfirmDialog
+        openConfirmDialog={openConfirmDialog}
+        handleCloseConfirmDialog={handleCloseConfirmDialog}
+        handleConfirmDelete={handleConfirmDelete}
+        handleConfirmOverwrite={handleConfirmOverwrite}
+        dialogMode={dialogMode}
+      />
 
       <Grid container spacing={3}>
         {/* データ入力欄 */}
@@ -319,7 +359,7 @@ export function QuriousArmorManager() {
                         variant="contained"
                         color="primary"
                         disabled={csvData === ""}
-                        onClick={() => readFromCsvData("overwrite")}
+                        onClick={handleOpenOverwriteConfirmDialog}
                         sx={{ mr: 1 }}
                         startIcon={<KeyboardDoubleArrowDownIcon />}
                       >
@@ -346,6 +386,7 @@ export function QuriousArmorManager() {
           <QuriousArmorTable
             userQuriousArmorData={userQuriousArmorData}
             deleteUserQuriousArmors={deleteUserQuriousArmors}
+            handleOpenDeleteConfirmDialog={handleOpenDeleteConfirmDialog}
           />
         </Grid>
       </Grid>

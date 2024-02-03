@@ -225,6 +225,7 @@ export function CharmManager() {
         handleConfirmDelete={handleConfirmDelete}
         handleConfirmOverwrite={handleConfirmOverwrite}
         dialogMode={dialogMode}
+        dataType={"護石"}
       />
 
       <Grid container spacing={3}>

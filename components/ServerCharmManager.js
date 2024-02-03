@@ -439,6 +439,7 @@ export function ServerCharmManager() {
         handleConfirmDelete={handleConfirmDelete}
         handleConfirmOverwrite={handleConfirmOverwrite}
         dialogMode={dialogMode}
+        dataType={"護石"}
       />
 
       <Grid

@@ -14,6 +14,7 @@ function ConfirmDialog({
   handleConfirmDelete,
   handleConfirmOverwrite,
   dialogMode,
+  dataType,
 }) {
   return (
     <Dialog
@@ -22,12 +23,12 @@ function ConfirmDialog({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">{"護石データの削除"}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">{dataType + "データの削除"}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           {dialogMode === "delete"
-            ? "選択された護石データを削除してもよろしいですか？"
-            : "既存の護石データを上書きしてよろしいですか？"}
+            ? "選択された" + dataType + "データを削除してもよろしいですか？"
+            : "既存の" + dataType + "データを上書きしてよろしいですか？"}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

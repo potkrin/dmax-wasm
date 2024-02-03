@@ -472,6 +472,7 @@ export function QuriousArmorManager() {
         handleConfirmDelete={handleConfirmDelete}
         handleConfirmOverwrite={handleConfirmOverwrite}
         dialogMode={dialogMode}
+        dataType="傀異錬成"
       />
 
       <Grid

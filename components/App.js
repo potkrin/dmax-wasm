@@ -303,21 +303,18 @@ function App() {
     localStorage.setItem("quriousArmorValue", newValue);
   };
 
-  // // コンポーネントがマウントされた後にlocalStorageからデータを読み込む
-  // useEffect(() => {
-  //   const storedTheme = localStorage.getItem("colorTheme") === "dark" ? darkTheme : lightTheme;
-  //   setCurrentTheme(storedTheme);
+  // コンポーネントがマウントされた後にlocalStorageからデータを読み込む
+  useEffect(() => {
+    let initCharmValue = localStorage.getItem("charmValue");
+    if (initCharmValue === "1") initCharmValue = 1;
+    else initCharmValue = 0;
+    setCharmValue(initCharmValue);
 
-  //   let initCharmValue = localStorage.getItem("charmValue");
-  //   if (initCharmValue === "1") initCharmValue = 1;
-  //   else initCharmValue = 0;
-  //   setCharmValue(initCharmValue);
-
-  //   let initQuriousArmorValue = localStorage.getItem("quriousArmorValue");
-  //   if (initQuriousArmorValue === "1") initQuriousArmorValue = 1;
-  //   else initQuriousArmorValue = 0;
-  //   setQuriousArmorValue(initQuriousArmorValue);
-  // }, []);
+    let initQuriousArmorValue = localStorage.getItem("quriousArmorValue");
+    if (initQuriousArmorValue === "1") initQuriousArmorValue = 1;
+    else initQuriousArmorValue = 0;
+    setQuriousArmorValue(initQuriousArmorValue);
+  }, []);
 
   // エラー出力用 Snackbar 管理
   const [error, setError] = useState(null);

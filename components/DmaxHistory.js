@@ -65,6 +65,7 @@ function a11yProps(index) {
   };
 }
 
+// allDmaxOutput : 最適化が完了したときのすべての中間出力 (DmaxResult と DmaxHistory で使用)
 export const DmaxHistory = ({ allDmaxOutput }) => {
   // const dmaxResult = outputToResult(
   //   middleOutput,
@@ -82,7 +83,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
     if (resultHistory) {
       console.log("resultHistory is found");
       let resultHistoryArray = JSON.parse(resultHistory);
-      if (resultHistoryArray.length > 1) {
+      if (resultHistoryArray.length > 0) {
         if (allDmaxOutput !== "") {
           resultHistoryArray = resultHistoryArray.slice(1);
         }

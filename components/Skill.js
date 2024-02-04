@@ -220,7 +220,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
 
         {/* ダメージ発動率 (ダメージ寄与スキルのみ) */}
         {matches &&
-          (staticSkillData.type === "Damage" ? (
+          (staticSkillData.type === "Damage" || staticSkillData.type === "FixedLevelDamage" ? (
             <>
               <Grid
                 item
@@ -232,33 +232,31 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                   alignItems: "center",
                 }}
               >
-                <NumberTextField
-                  value={skillInput.activeRate}
-                  size="small"
-                  id="outlined-basic"
-                  variant="standard"
-                  onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
-                  min={0}
-                  max={100}
-                  inputProps={{
-                    style: {
-                      textAlign: "center",
-                      maxWidth: "45px",
-                    },
-                  }}
-                  sx={{
-                    marginBottom: -0.5,
-                    "& .MuiInput-underline:hover:before": {
-                      borderBottom: "none", // ホバー時の下線を非表示
-                    },
-                    "& .MuiInput-underline:after": {
-                      borderBottom: "none", // フォーカス時の下線を非表示
-                    },
-                    "& .MuiInput-underline:before": {
-                      borderBottom: "none", // デフォルトの下線を非表示
-                    },
-                  }}
-                />
+                <Tooltip
+                  title={"このスキルの発動率は固定です"}
+                  disableTouchListener={staticSkillData.type !== "FixedLevelDamage"}
+                  placement="top"
+                >
+                  <span>
+                    <NumberTextField
+                      disabled={staticSkillData.type === "FixedLevelDamage"}
+                      value={skillInput.activeRate}
+                      size="small"
+                      id="outlined-basic"
+                      variant="standard"
+                      onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
+                      min={0}
+                      max={100}
+                      inputProps={{
+                        style: {
+                          textAlign: "center",
+                          maxWidth: "45px",
+                        },
+                      }}
+                      matches={matches}
+                    />
+                  </span>
+                </Tooltip>
                 {/* <Slider
                   value={skillInput.activeRate}
                   size="small"
@@ -381,7 +379,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
 
         {/* md以上の画面のダメージ発動率 (ダメージ寄与スキルのみ) */}
         {!matches &&
-          (staticSkillData.type === "Damage" ? (
+          (staticSkillData.type === "Damage" || staticSkillData.type === "FixedLevelDamage" ? (
             <>
               <Grid
                 item
@@ -389,60 +387,54 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                 md={1}
                 sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}
               >
-                <Box>
+                <Tooltip
+                  title={"このスキルの発動率は固定です"}
+                  disableHoverListener={staticSkillData.type !== "FixedLevelDamage"}
+                  disableFocusListener={staticSkillData.type !== "FixedLevelDamage"}
+                  placement="top"
+                >
                   <Box>
-                    <NumberTextField
+                    <Box>
+                      <NumberTextField
+                        disabled={staticSkillData.type === "FixedLevelDamage"}
+                        value={skillInput.activeRate}
+                        size="small"
+                        id="outlined-basic"
+                        variant="standard"
+                        onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
+                        min={0}
+                        max={100}
+                        inputProps={{
+                          style: { textAlign: "center", paddingLeft: "16px" },
+                        }}
+                        sx={{ marginBottom: -0.5 }}
+                      />
+                    </Box>
+                    <Slider
+                      disabled={staticSkillData.type === "FixedLevelDamage"}
                       value={skillInput.activeRate}
                       size="small"
-                      id="outlined-basic"
-                      variant="standard"
-                      onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
+                      aria-label="Temperature"
+                      valueLabelDisplay="auto"
                       min={0}
                       max={100}
-                      inputProps={{
-                        style: { textAlign: "center", paddingLeft: "16px" },
-                      }}
                       sx={{
-                        marginBottom: -0.5,
-                        "& .MuiInput-underline:hover:before": {
-                          borderBottom: "none", // ホバー時の下線を非表示
+                        marginTop: "-8px",
+                        "& .MuiSlider-rail": {
+                          color:
+                            skillInput.activeRate > 0
+                              ? theme.vars.palette.primary.main
+                              : theme.vars.palette.text.disabled,
                         },
-                        "& .MuiInput-underline:after": {
-                          borderBottom: "none", // フォーカス時の下線を非表示
-                        },
-                        "& .MuiInput-underline:before": {
-                          borderBottom: "none", // デフォルトの下線を非表示
+                        "& .MuiSlider-thumb": {
+                          width: "8px",
+                          height: "8px",
                         },
                       }}
+                      onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
                     />
                   </Box>
-                  <Slider
-                    value={skillInput.activeRate}
-                    size="small"
-                    aria-label="Temperature"
-                    valueLabelDisplay="auto"
-                    min={0}
-                    max={100}
-                    sx={{
-                      marginTop: "-8px",
-                      "& .MuiSlider-rail": {
-                        color:
-                          skillInput.activeRate > 0
-                            ? theme.vars.palette.primary.main
-                            : theme.vars.palette.text.disabled,
-                      },
-                      "& .MuiSlider-thumb": {
-                        width: "8px",
-                        height: "8px",
-                        color:
-                          skillInput.activeRate > 0
-                            ? theme.vars.palette.primary.main
-                            : theme.vars.palette.text.disabled,
-                      },
-                    }}
-                    onChange={(e, v) => handleChangeSkillInfo("activeRate", e, v)}
-                  />
-                </Box>
+                </Tooltip>
               </Grid>
             </>
           ) : (

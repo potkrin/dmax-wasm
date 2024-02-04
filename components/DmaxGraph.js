@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Grid, Card } from "@mui/material";
+import { Grid, Card, useMediaQuery } from "@mui/material";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { useTheme } from "@mui/material/styles";
-import theme from "../src/theme";
+import { theme, breakpoints } from "../src/theme";
 
 export const DmaxGraph = ({ chartData }) => {
   const [chartWidth, setChartWidth] = useState(0);
@@ -41,14 +41,16 @@ export const DmaxGraph = ({ chartData }) => {
   //   return null;
   // }
 
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
+
   return (
     <Grid item xs={12} md={6} ref={containerRef}>
       <Card
         variant="outlined"
         sx={{
           borderRadius: 1,
-          padding: "8px",
-          minHeight: "610px",
+          padding: "16px 8px",
+          minHeight: "450px",
           height: "100%",
           display: "flex",
           justifyContent: "center",
@@ -56,7 +58,13 @@ export const DmaxGraph = ({ chartData }) => {
         }}
         height={610}
       >
-        <LineChart width={chartWidth} height={450} data={chartData} margin="auto" display="block">
+        <LineChart
+          width={chartWidth}
+          height={matches ? chartWidth - 40 : 500}
+          data={chartData}
+          margin="auto"
+          display="block"
+        >
           <XAxis
             dataKey="time"
             unit="s"
@@ -85,7 +93,7 @@ export const DmaxGraph = ({ chartData }) => {
             }}
             contentStyle={{ backgroundColor: currentTheme.palette.background.default }}
           />
-          <Legend />
+          <Legend wrapperStyle={{ fontSize: "0.9rem" }} />
           <CartesianGrid stroke="#f5f5f5" />
           <Line
             type="linear"

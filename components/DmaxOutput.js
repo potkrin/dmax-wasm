@@ -493,7 +493,7 @@ export const DmaxOutput = ({
                     title={isCharmDataFetched ? "" : "護石データが同期されていません"}
                     open={!isCharmDataFetched && charmValue === 1 && value === 0}
                     sx={{ zIndex: 1000 }}
-                    placement="bottom"
+                    placement="top"
                   >
                     <Button
                       onClick={useServerCharm}
@@ -628,7 +628,7 @@ export const DmaxOutput = ({
                     title={isQuriousArmorDataFetched ? "" : "傀異錬成データが同期されていません"}
                     open={!isQuriousArmorDataFetched && quriousArmorValue === 1 && value === 0}
                     sx={{ zIndex: 1000 }}
-                    placement="top"
+                    placement="bottom"
                   >
                     <Button
                       onClick={useServerQuriousArmor}

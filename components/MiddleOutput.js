@@ -21,7 +21,7 @@ export const MiddleOutput = ({ middleOutput }) => {
   return (
     <>
       <Grid container alignItems={"center"} spacing={0} marginBottom={0.8}>
-        <Grid item xs={0.5}>
+        <Grid item xs={0.8} sm={0.5}>
           {middleOutput.status === "running" && (
             <CircularProgress size={10} sx={{ color: theme.vars.palette.primary.main }} />
           )}
@@ -40,21 +40,21 @@ export const MiddleOutput = ({ middleOutput }) => {
             <PanoramaFishEyeIcon sx={{ fontSize: 12, color: theme.vars.palette.text.disabled }} />
           )}
         </Grid>
-        <Grid item xs={11.5}>
+        <Grid item xs={11.2} sm={11.5}>
           <Typography variant="body1" sx={{}}>
             {middleOutput.title}
           </Typography>
         </Grid>
-        <Grid item xs={0.5}></Grid>
-        <Grid item xs={3}>
+        <Grid item xs={0.8} sm={0.5}></Grid>
+        <Grid item xs={2.7} sm={3}>
           <Divider />
         </Grid>
-        <Grid item xs={8.5}></Grid>
+        <Grid item xs={8.5} sm={8.5}></Grid>
 
         {middleOutput.message !== "" ? (
           <>
-            <Grid item xs={0.5}></Grid>
-            <Grid item xs={11.5}>
+            <Grid item xs={0.8} sm={0.5}></Grid>
+            <Grid item xs={11.2} sm={11.5}>
               <Typography
                 variant="body1"
                 sx={{

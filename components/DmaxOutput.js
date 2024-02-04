@@ -729,7 +729,7 @@ export const DmaxOutput = ({
             </Grid>
           </Grid>
 
-          <Box sx={{ margin: 1.5, marginLeft: 2.0 }}>
+          <Box sx={{ margin: 1.5, marginLeft: 2.0, marginBottom: 4 }}>
             <MiddleOutput middleOutput={middleOutputInfo.launch} />
             <MiddleOutput middleOutput={middleOutputInfo.load} />
             <MiddleOutput middleOutput={middleOutputInfo.preprocess} />

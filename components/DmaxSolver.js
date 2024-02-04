@@ -548,7 +548,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
   return (
     <>
-      <Grid ref={dmaxSolverRef} container spacing={1} marginY={1}>
+      <Grid ref={dmaxSolverRef} container spacing={1} marginY={1} sx={{ minHeight: "600px" }}>
         <DmaxOutput
           dmaxOutput={dmaxOutput}
           resetMiddleOutputInfo={resetMiddleOutputInfo}

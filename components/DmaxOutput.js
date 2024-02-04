@@ -262,6 +262,26 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
     if (line.includes("[Unexpected Error]")) {
       solverEndMessage = "予期せぬエラーが発生しました\n" + line;
       solverEndStatus = "unexpected error";
+
+      // running 状態の status があれば error に更新
+      // ステータスを格納するオブジェクト
+      let statuses = {
+        launchStatus,
+        loadStatus,
+        presolveStatus,
+        solverStartStatus,
+        solveStatus,
+      };
+
+      // 各ステータスをチェックし、"running" 状態のものがあれば "error" に更新
+      Object.keys(statuses).forEach((key) => {
+        if (statuses[key] === "running") {
+          statuses[key] = "error";
+        }
+      });
+
+      // 更新された値を元の変数に反映
+      ({ launchStatus, loadStatus, presolveStatus, solverStartStatus, solveStatus } = statuses);
     }
   }
 
@@ -387,10 +407,11 @@ export const DmaxOutput = ({
 
   return (
     <Grid item xs={12} md={6}>
-      <Card variant="outlined" sx={{ borderRadius: 1 }}>
+      <Card variant="outlined" sx={{ borderRadius: 1, height: "100%" }}>
         <Box
           style={{
-            height: "610px",
+            minHeight: "610px",
+            height: "100%",
             overflowY: "auto",
             padding: "8px",
             textAlign: "left",

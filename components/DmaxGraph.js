@@ -48,7 +48,8 @@ export const DmaxGraph = ({ chartData }) => {
         sx={{
           borderRadius: 1,
           padding: "8px",
-          height: "610px",
+          minHeight: "610px",
+          height: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

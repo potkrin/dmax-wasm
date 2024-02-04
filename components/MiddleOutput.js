@@ -29,6 +29,9 @@ export const MiddleOutput = ({ middleOutput }) => {
             <CheckIcon color="success" sx={{ fontSize: 16 }} />
           )}
           {middleOutput.status === "error" && <ErrorIcon color="error" sx={{ fontSize: 16 }} />}
+          {middleOutput.status === "unexpected error" && (
+            <ErrorIcon color="error" sx={{ fontSize: 16 }} />
+          )}
           {middleOutput.status === "interrupted" && (
             <CancelIcon color="error" sx={{ fontSize: 16 }} />
           )}

@@ -57,13 +57,13 @@ function supportsNestedWebWorkers(updateDmaxOutput) {
   }
 }
 
-// limit_memory: true ならメモリ 1GB 制限の wasm バイナリを起動する worker を呼び出す
+// limitMemory: true ならメモリ 1GB 制限の wasm バイナリを起動する worker を呼び出す
 function call_worker_wasm_main(
   problem_data,
   updateDmaxOutput,
   updateChartData,
   setIsOptimizing,
-  limit_memory,
+  limitMemory,
   setMemoryLimit
 ) {
   supportsNestedWebWorkers(updateDmaxOutput);
@@ -78,12 +78,14 @@ function call_worker_wasm_main(
 
     // メモリ制限を行うかどうか切り替える
     let workerPath = "/dmax-core/worker3.js";
-    setMemoryLimit("4GB");
-    if (limit_memory) {
+    if (limitMemory) {
       workerPath = "/dmax-core/worker1GB.js";
       setMemoryLimit("1GB");
       localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
     } else {
+      setMemoryLimit("4GB");
+      localStorage.setItem("wasmWorkerStatus", "memory limit 4GB");
+
       // 過去1週間以内に oom 発生記録があれば 1GB 制限の wasm バイナリを起動する
       const data = localStorage.getItem("OutOfMemoryOn4GB");
       if (data) {
@@ -107,11 +109,6 @@ function call_worker_wasm_main(
     startWasmWorker = new Worker(workerPath, {
       name: "startWasmWorker",
     });
-
-    updateDmaxOutput("webworker launched");
-
-    startWasmWorker.postMessage(["file.nl", 4, 3072, problem_data]);
-    console.log("Message posted to worker");
 
     startWasmWorker.onmessage = function (e) {
       const worker_response = e.data;
@@ -156,15 +153,40 @@ function call_worker_wasm_main(
         // Out of Memory が発生した際の処理
         console.error("RangeError: Out of memory occured on webworker - commonly occurs on iOS");
         console.error("RangeError: Out of memory occured on webworker - throw new Error");
-        const oomInfo = { "oom": true, "time": new Date().toISOString() };
-        localStorage.setItem("OutOfMemoryOn4GB", JSON.stringify(oomInfo));
 
-        // 新しい例外を投げる
-        throw new Error("RangeError: Out of memory occured on webworker - commonly occurs on iOS");
+        if (!limitMemory) {
+          const oomInfo = { "oom": true, "time": new Date().toISOString() };
+          localStorage.setItem("OutOfMemoryOn4GB", JSON.stringify(oomInfo));
+          setMemoryLimit("1GB");
+          localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
+
+          startWasmWorker.terminate();
+          // limitMemory が false の場合、limitMemory を true にして再度 wasm-worker を呼び出す
+          call_worker_wasm_main(
+            problem_data,
+            updateDmaxOutput,
+            updateChartData,
+            setIsOptimizing,
+            true,
+            setMemoryLimit
+          );
+        } else {
+          // 1GB 制限で Out of Memory が発生した場合、現状はエラーを表示するのみ
+          setMemoryLimit("?GB");
+          localStorage.setItem("wasmWorkerStatus", "Out of Memory on 1GB wasm-worker");
+          updateDmaxOutput("[oom1GB] Out of Memory on 1GB wasm-worker");
+        }
       } else {
+        setMemoryLimit("?GB");
+        localStorage.setItem("wasmWorkerStatus", "unexpected error: " + workerError);
         console.error("Not an 'RangeError: Out of memory'. the error was: " + workerError);
+        updateDmaxOutput("[Unexpected Error] " + workerError);
       }
     };
+
+    // onmessage と onerror のセットが完了したので worker でメインジョブを開始するメッセージを送信
+    updateDmaxOutput("webworker launched");
+    startWasmWorker.postMessage(["file.nl", 4, 3072, problem_data]);
   } else {
     console.log("Your browser doesn't support web workers.");
     updateDmaxOutput("Your browser doesn't support web workers.");
@@ -172,49 +194,51 @@ function call_worker_wasm_main(
   }
 }
 
-// リトライ処理付き wasm-worker 呼び出し: Out of Memory が発生した場合、1GBメモリ制限ありで再び wasm-worker を呼び出す
-function wasm_worker_with_retry(
-  problem_data,
-  updateDmaxOutput,
-  updateChartData,
-  setIsOptimizing,
-  setMemoryLimit
-) {
-  console.log("wasm_worker_with_retry: test with 1GB memory limit wasm-worker");
-  try {
-    // メモリ制限なしで wasm-worker を呼び出す
-    localStorage.setItem("wasmWorkerStatus", "memory limit 4GB");
-    call_worker_wasm_main(
-      problem_data,
-      updateDmaxOutput,
-      updateChartData,
-      setIsOptimizing,
-      false,
-      setMemoryLimit
-    );
-  } catch (e) {
-    console.log("catched error: " + e);
-    if (e.message === "RangeError: Out of memory occured on webworker - commonly occurs on iOS") {
-      // Out of Memory が発生した場合、メモリ制限ありで再び wasm-worker を呼び出す
-      console.log(
-        "RangeError: Out of memory occured on webworker - commonly occurs on iOS occured. try 1GB limited memory wasm-worker"
-      );
-      localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
-      call_worker_wasm_main(
-        problem_data,
-        updateDmaxOutput,
-        updateChartData,
-        setIsOptimizing,
-        true,
-        setMemoryLimit
-      );
-    } else {
-      localStorage.setItem("wasmWorkerStatus", "unexpected error");
-      setMemoryLimit("unexpected error");
-      console.error("An unexpected error occured: " + e);
-    }
-  }
-}
+// worker の非同期処理ではコンテキストが違うためエラーを投げても catch できないので廃止予定
+
+// // リトライ処理付き wasm-worker 呼び出し: Out of Memory が発生した場合、1GBメモリ制限ありで再び wasm-worker を呼び出す
+// function wasm_worker_with_retry(
+//   problem_data,
+//   updateDmaxOutput,
+//   updateChartData,
+//   setIsOptimizing,
+//   setMemoryLimit
+// ) {
+//   console.log("wasm_worker_with_retry: test with 1GB memory limit wasm-worker");
+//   try {
+//     // メモリ制限なしで wasm-worker を呼び出す
+//     localStorage.setItem("wasmWorkerStatus", "memory limit 4GB");
+//     call_worker_wasm_main(
+//       problem_data,
+//       updateDmaxOutput,
+//       updateChartData,
+//       setIsOptimizing,
+//       false,
+//       setMemoryLimit
+//     );
+//   } catch (e) {
+//     console.log("catched error: " + e);
+//     if (e.message === "RangeError: Out of memory occured on webworker - commonly occurs on iOS") {
+//       // Out of Memory が発生した場合、メモリ制限ありで再び wasm-worker を呼び出す
+//       console.log(
+//         "RangeError: Out of memory occured on webworker - commonly occurs on iOS occured. try 1GB limited memory wasm-worker"
+//       );
+//       localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
+//       call_worker_wasm_main(
+//         problem_data,
+//         updateDmaxOutput,
+//         updateChartData,
+//         setIsOptimizing,
+//         true,
+//         setMemoryLimit
+//       );
+//     } else {
+//       localStorage.setItem("wasmWorkerStatus", "unexpected error");
+//       setMemoryLimit("unexpected error");
+//       console.error("An unexpected error occured: " + e);
+//     }
+//   }
+// }
 
 // CSRFトークンを取得するためのヘルパー関数
 // Django 本番環境で必要
@@ -402,14 +426,22 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         // 前回の中間出力データを消去
         eraseDmaxOutput();
         eraseChartData();
-        // call_worker_wasm_main(data, updateDmaxOutput, updateChartData, setIsOptimizing);
-        wasm_worker_with_retry(
+
+        call_worker_wasm_main(
           data,
           updateDmaxOutput,
           updateChartData,
           setIsOptimizing,
+          false,
           setMemoryLimit
         );
+        // wasm_worker_with_retry(
+        //   data,
+        //   updateDmaxOutput,
+        //   updateChartData,
+        //   setIsOptimizing,
+        //   setMemoryLimit
+        // );
       })
       .catch((error) => {
         setOpenStart(false);

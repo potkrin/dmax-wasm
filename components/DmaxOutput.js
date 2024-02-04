@@ -108,6 +108,13 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
       loadStatus = "waiting";
     }
 
+    // oom on 1GB webworker
+    if (line.startsWith("[oom1GB]")) {
+      launchMessage += "予期せぬエラーが発生しました\n" + line;
+      launchStatus = "error";
+      loadStatus = "waiting";
+    }
+
     if (line.startsWith("original problem has ")) {
       // 正規表現を使って、数字以外の全ての文字を削除
       const variablesCount = line.slice(0, line.indexOf("variables")).replace(/\D/g, "");
@@ -208,7 +215,7 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
         scipStatus = "最適化完了";
       } else {
         scipStatus = "未定義";
-        solverEndStatus = "interrupted";
+        solverEndStatus = "error";
       }
 
       if (line.includes("user interrupt")) {
@@ -239,8 +246,6 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
         solverEndStatus = "interrupted";
       }
 
-      solverStartStatus = "complete";
-
       solverEndMessage = `${scipStatus}: ${statusReason}\n`;
       if (scipStatus === "最適化完了") solveStatus = "complete";
     }
@@ -252,6 +257,12 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
     }
 
     if (line.startsWith("[User Interrupt] optimization stopped")) isInterrupted = true;
+
+    // 予期せぬエラーが発生した場合
+    if (line.includes("[Unexpected Error]")) {
+      solverEndMessage = "予期せぬエラーが発生しました\n" + line;
+      solverEndStatus = "unexpected error";
+    }
   }
 
   const nextMiddleOutputInfo = {
@@ -283,6 +294,7 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
     },
     "solverEnd": {
       ...middleOutputInfo["solverEnd"],
+      "title": solverEndStatus === "unexpected error" ? "予期せぬエラーが発生" : "終了処理",
       "status": solverEndStatus,
       "message": solverEndMessage,
     },

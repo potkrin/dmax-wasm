@@ -176,10 +176,12 @@ function call_worker_wasm_main(
           localStorage.setItem("wasmWorkerStatus", "Out of Memory on 1GB wasm-worker");
           updateDmaxOutput("[oom1GB] Out of Memory on 1GB wasm-worker");
         }
+      } else if (workerError.includes("Uncaught RuntimeError: Aborted(OOM)")) {
+        // worker の起動には成功したが、最適化処理中にメモリが枯渇して処理が中断された場合
+        console.log("[Aborted(OOM)]" + workerError);
+        updateDmaxOutput("[Aborted(OOM)]" + workerError);
       } else {
-        setMemoryLimit("?GB");
-        localStorage.setItem("wasmWorkerStatus", "unexpected error: " + workerError);
-        console.error("Not an 'RangeError: Out of memory'. the error was: " + workerError);
+        console.error("Unexpected Error Occured: " + workerError);
         updateDmaxOutput("[Unexpected Error] " + workerError);
       }
     };

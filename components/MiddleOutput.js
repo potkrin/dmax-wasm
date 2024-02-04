@@ -60,7 +60,9 @@ export const MiddleOutput = ({ middleOutput }) => {
                 sx={{
                   fontSize: "12px",
                   color:
-                    (middleOutput.status === "error") | (middleOutput.status === "interrupted")
+                    (middleOutput.status === "error") |
+                    (middleOutput.status === "interrupted") |
+                    (middleOutput.status === "unexpected error")
                       ? theme.vars.palette.error.main
                       : theme.vars.palette.text.secondary,
                 }}

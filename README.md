@@ -45,45 +45,54 @@
   - [x] ローカル/サーバーのタブボタン判定がおかしい
   - [x] 錬成の確認ダイアログが護石になってる
   - [x] 中間出力とグラフの高さを適切に (スマホでのスクロール防止)
-  - [ ] ローカル/サーバーの設定がページリロードで消える
-  - [ ] 最適化の特性を書く (物理だけなら速い、属性も入ると重い、防具数が増えてもそこまで？)
-  - [ ] OOMリトライ処理がおかしい
+  - [x] ローカル/サーバーの設定がページリロードで消える
+  - [x] OOMリトライ処理がおかしい
     - 4GB→throw error→なぜかcatch されていない
     - onmessage で例外投げてキャッチできるかテストする
     - できないなら localstorage に書き込んで if 判定→1GBでリトライ
-  - [ ] 現在のメモリ上限の表示
-  - [ ] oom で落ちた場合のエラー表示 (4GB/1GBともに)
-  - [ ] webworker で発生した全ての例外をUI上に表示する
+  - [x] 現在のメモリ上限の表示
+  - [x] webworker で発生した全ての例外をUI上に表示する
+  - [x] oom で落ちた場合のエラー表示 (4GB/1GBともに)
+  - [x] モバイルで長時間動作させたときの挙動の把握、できればユーザーにレスポンス
+    - iPhone はエラー時に勝手にリロードされるので難しい (OOMのエラーは録画しても目視できなかった)
+  - [x] スクロールバー表示と見た目の変更
   - [ ] 巨大state分割&usememo検討
   - [ ] 履歴表示遷移がおかしい
     - [ ] データ0件→一回目最適化完了→2回目最適化実行→履歴に表示されない
     - [ ] データ1件以上→最適化完了→正常に表示→リロード→最後の結果が見えなくないか...？ (1件ずらして表示すべき？)
   - [ ] fab の位置を css で決めたらjsによる移動を抑えられないか？
-  - [ ] モバイルで長時間動作させたときの挙動の把握、できればユーザーにレスポンス
   - [ ] 弾矢強化のUIを変更不可に変更
-  - [x] スクロールバー表示と見た目の変更
   - [ ] fabicon 作成&設定
   - [ ] スレッド数変更機能
   - [ ] ローカルストレージを利用する場合に警告
   - [ ] 初期表示のとき表示されないタブの描画やjs実行を遅らせる事はできないか？
   - [ ] スマホ向けUIが壊れている等 UI微調整
+    - [ ] グラフ縦長すぎないか
+    - [ ] 実行途中結果画面のチェックなどのアイコンのマージン
+    - [ ] Responsive: 803x723 でキュリアや狂竜症などのボックスが崩れている
+    - [ ] Responsive: 910x723 で攻撃と見切り(Lv7)のスキルレベルバーと発動率バーが被っている
+    - [ ] iPhone で閲覧すると発動率100が見切れる
     - [ ] 発動率のバーの太さが違う
     - [ ] 護石錬成テーブルの背景色がPaperでない問題
     - [ ] 「対応武器種」などの表示が折り返している (スマホサイズ)
-    - [x] スマホUIでは結果表示ウィンドウ内のスクロールを無しにしたい
-    - [ ] Responsive: 803x723 でキュリアや狂竜症などのボックスが崩れている
-    - [ ] Responsive: 910x723 で攻撃と見切り(Lv7)のスキルレベルバーと発動率バーが被っている
-    - [ ] グラフ縦長すぎないか
-    - [ ] 実行途中結果画面のチェックなどのアイコンのマージン
     - [ ] iPhone:Safari で閲覧するとなぜか画面を左右に引っ張れる (Chromeは問題なし)
-    - [ ] iPhone で閲覧すると発動率100が見切れる
+    - [x] スマホUIでは結果表示ウィンドウ内のスクロールを無しにしたい
     - [x] スマホ画面ではタブのアイコンを上下に
     - [x] 護石・傀異錬成テーブルのスマホ向け修正
-    - [ ] button group で押下後に色が戻らない
     - [x] 数字入力がバグっている
-    - [ ] スクロールバー
+    - [x] button group で押下後に色が戻らない
+    - [x] スクロールバー
+
+  - [ ] SNSやDiscord等に貼り付けたときのサムネ概要表示 (embed?)
+  - [ ] 最適化の特性を書く (物理だけなら速い、属性も入ると重い、防具数が増えてもそこまで？)
+  - [ ] グラフとか実行画面が上で設定入力は下のほうがイイかもしれない
+    - [ ] スマのホ場合、計算機だけ内部にタブ [参考](https://damage.paimon.app/calculator/)
   - [ ] 動作テスト
     - [ ] ローカル/サーバーのデータ有り無しでの最適化確認
+    - [ ] 複数デバイスで使ったときにサーバーデータが消えた気がする(iphone safari と windows chrome)
+  - [ ] 警告系
+    - [ ] unique key エラーを消す
+    - [ ] Image has legacy prop "objectFit". Did you forget to run the codemod?
   - [x] Next.js 移行対応
     - [x] images ファイルの修正 (なにか変わってるか確認?)
     - [x] SSG/SSR対応 window, localstorage など
@@ -166,6 +175,8 @@
   - [x] ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
 
 - **Midle 実装予定:**
+  - [ ] 英語対応
+  - [ ] 最適化中の中間出力の頻度を上げられないか？(変化してなくてもいいので)
   - [ ] fab をもっとでかい丸いアイコンにしたい 参考: Twitter 
   - [ ] 履歴が見れても最適化の条件がわからない
   - [ ] 結果・履歴の表示を見やすくする
@@ -182,14 +193,13 @@
       - [2024/01/22 17:56:21 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/bfmu5ix4zl?form_factor=mobile)
       - [2024/01/22 17:59:50 に作成したレポート](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/d1syh34che?form_factor=mobile)
   - [ ] [更新履歴ページ](https://damage.paimon.app/)
-  - [ ] SNSやDiscord等に貼り付けたときのサムネ概要表示 (embed?)
   - [ ] 追加スキルの追加方法 ポップアップ&複数選択可能 [参考](https://mhrise-simulator.vercel.app/)
   - [ ] 弾強化・闇討ちの発動率設定
   - [ ] 状態管理ライブラリ Recoil 検討
   - [ ] WebSockets などによるリアルタイム同期
   - [ ] cloudflare + nextjs の設定
   - [ ] 狂竜症感染率ツールチップ
-  - [ ] コンテンツの高さが足りないときに body の白色が見えてしまう (再現方法: めいっぱい縮小表示するなどしてウィンドウの高さを埋められないようにする)
+  - [x] コンテンツの高さが足りないときに body の白色が見えてしまう (再現方法: めいっぱい縮小表示するなどしてウィンドウの高さを埋められないようにする)
   - [ ] サーバにユーザデータ保存
   - [ ] ひらがなカタカナ検索
   - [ ] 結果の欄を読みやすいUIにする
@@ -602,6 +612,18 @@ npm start
 追加インストールメモ _φ(･\_･)
 ```js
 npm install  @emotion/cache @emotion/server @mui/material-nextjs prop-types
+```
+
+
+# wasm コピースクリプト メモ
+```sh
+cd /home/hoge/work/scipoptsuite-8.0.3/build_webdemo/bin/examples/
+mv brachistochrone.html brachistochrone1GB.html
+mv brachistochrone.js brachistochrone1GB.js
+mv brachistochrone.worker.js brachistochrone1GB.worker.js
+mv brachistochrone.wasm brachistochrone1GB.wasm
+mv brachistochrone.data brachistochron1GB.data
+cp brachistochrone1GB.* ~/work/react-tutorial/dmax-wasm/public/dmax-core/
 ```
 
 # [DUPLICATED] Django デプロイ用ビルド手順 (古い手順)

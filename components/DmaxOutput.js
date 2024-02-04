@@ -256,11 +256,16 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
       solverEndMessage += `合計処理時間 ${solvingTime}秒`;
     }
 
+    if (line.startsWith("[Aborted(OOM)]")) {
+      solveStatus = "error";
+      solveMessage += "\nメモリ不足のため最適化が中断されました";
+    }
+
     if (line.startsWith("[User Interrupt] optimization stopped")) isInterrupted = true;
 
     // 予期せぬエラーが発生した場合
     if (line.includes("[Unexpected Error]")) {
-      solverEndMessage = "予期せぬエラーが発生しました\n" + line;
+      solverEndMessage = line;
       solverEndStatus = "unexpected error";
 
       // running 状態の status があれば error に更新
@@ -314,7 +319,7 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
     },
     "solverEnd": {
       ...middleOutputInfo["solverEnd"],
-      "title": solverEndStatus === "unexpected error" ? "予期せぬエラーが発生" : "終了処理",
+      "title": solverEndStatus === "unexpected error" ? "予期しないエラーが発生" : "終了処理",
       "status": solverEndStatus,
       "message": solverEndMessage,
     },

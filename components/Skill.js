@@ -96,7 +96,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
         </Grid>
 
         {/* スキル名, スキルレベル, スライダー(md以上の画面のみ)*/}
-        <Grid item xs={5} md={2.8}>
+        <Grid item xs={5} md={3.5} lg={3}>
           <Box display="flex" alignItems="center">
             <Typography
               variant="body1"
@@ -384,7 +384,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
               <Grid
                 item
                 xs={4}
-                md={1}
+                sm={3}
+                md={2}
                 sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}
               >
                 <Tooltip
@@ -393,7 +394,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                   disableFocusListener={staticSkillData.type !== "FixedLevelDamage"}
                   placement="top"
                 >
-                  <Box>
+                  <Box sx={{ maxWidth: "80px" }}>
                     <Box>
                       <NumberTextField
                         disabled={staticSkillData.type === "FixedLevelDamage"}
@@ -445,7 +446,13 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
 
         {/* 追加で入力項目が必要なスキルの処理 */}
         {!matches && (
-          <Grid item xs={3} md={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Grid
+            item
+            xs={3}
+            sm={3}
+            md={2}
+            sx={{ display: "flex", justifyContent: "center", padding: "0 0.5rem" }}
+          >
             {staticSkillData.name === "龍気変換" ? (
               <NumberTextField
                 label="全属性耐性合計"
@@ -455,6 +462,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                 min={0}
                 max={250}
                 sx={{ minWidth: "100px" }}
+                fullWidth
               />
             ) : staticSkillData.name === "狂竜症【蝕】" ? (
               <NumberTextField
@@ -465,9 +473,10 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                 min={0}
                 max={100}
                 sx={{ minWidth: "100px" }}
+                fullWidth
               />
             ) : staticSkillData.name === "伏魔響命" ? (
-              <FormControl sx={{ minWidth: "100px" }}>
+              <FormControl sx={{ minWidth: "100px" }} fullWidth>
                 <InputLabel id="demo-simple-select-label">キュリア</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -486,7 +495,7 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                 </Select>
               </FormControl>
             ) : staticSkillData.name === "血氣覚醒" ? (
-              <FormControl sx={{ minWidth: "100px" }}>
+              <FormControl sx={{ minWidth: "100px" }} fullWidth>
                 <InputLabel id="demo-simple-select-label">血氣覚醒</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"

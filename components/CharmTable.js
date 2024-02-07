@@ -86,11 +86,11 @@ export function CharmTable({
           //   // main: mode === "light" ? lightTheme.palette.info.main : darkTheme.palette.info.main,
           // },
           background: {
-            // // default: currentTheme.palette.background.paper,
-            // default:
-            //   mode === "light"
-            //     ? lightTheme.palette.background.paper
-            //     : darkTheme.palette.background.paper,
+            // default: currentTheme.palette.background.paper,
+            default:
+              mode === "light"
+                ? lightTheme.palette.background.paper
+                : darkTheme.palette.background.paper,
           },
         },
         typography: {
@@ -123,84 +123,84 @@ export function CharmTable({
   }
 
   return (
-    // <ThemeProvider theme={tableTheme}>
-    <MaterialReactTable
-      columns={columns}
-      data={tableData}
-      enablePagination={false}
-      enableRowSelection
-      enableDensityToggle={false}
-      enableFullScreenToggle={false}
-      enableHiding={false}
-      enableColumnFilters={false}
-      enableMultiRowSelection
-      enableSelectAll
-      muiSearchTextFieldProps={{
-        // placeholder: "Search all users",
-        sx: { maxWidth: "180px" },
-        variant: "outlined",
-      }}
-      renderTopToolbarCustomActions={({ table }) => {
-        const handleDelete = () => {
-          // 削除対象のインデックスを作成
-          const deleteTargetRows = [];
-          const charmTotal = Object.keys(userCharmData).length;
-          table.getSelectedRowModel().flatRows.map((row) => {
-            deleteTargetRows.push(charmTotal - parseInt(row.id) - 1);
-          });
+    <ThemeProvider theme={tableTheme}>
+      <MaterialReactTable
+        columns={columns}
+        data={tableData}
+        enablePagination={false}
+        enableRowSelection
+        enableDensityToggle={false}
+        enableFullScreenToggle={false}
+        enableHiding={false}
+        enableColumnFilters={false}
+        enableMultiRowSelection
+        enableSelectAll
+        muiSearchTextFieldProps={{
+          // placeholder: "Search all users",
+          sx: { maxWidth: "180px" },
+          variant: "outlined",
+        }}
+        renderTopToolbarCustomActions={({ table }) => {
+          const handleDelete = () => {
+            // 削除対象のインデックスを作成
+            const deleteTargetRows = [];
+            const charmTotal = Object.keys(userCharmData).length;
+            table.getSelectedRowModel().flatRows.map((row) => {
+              deleteTargetRows.push(charmTotal - parseInt(row.id) - 1);
+            });
 
-          // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
-          handleOpenDeleteConfirmDialog(deleteTargetRows);
-          table.resetRowSelection();
-        };
+            // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
+            handleOpenDeleteConfirmDialog(deleteTargetRows);
+            table.resetRowSelection();
+          };
 
-        return (
-          <>
-            <div
-              style={{
-                gap: "0.5rem",
-                display: "flex",
-                flexDirection: matches ? "column" : "row",
-              }}
-            >
-              <Button
-                color="secondary"
-                disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-                onClick={handleDelete}
-                variant="contained"
-                startIcon={<DeleteIcon />}
+          return (
+            <>
+              <div
+                style={{
+                  gap: "0.5rem",
+                  display: "flex",
+                  flexDirection: matches ? "column" : "row",
+                }}
               >
-                削除
-              </Button>
-              {fetchUserCharmData && <ManualSyncButton fetchUserEquipData={fetchUserCharmData} />}
-              {userCharmMetaData && (
-                <div>
-                  <Tooltip title="最終更新日時とデータの更新回数" placement="top">
-                    <Typography
-                      variant="body1"
-                      component="div"
-                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
-                      color="text.secondary"
-                    >
-                      {new Date(userCharmMetaData.updated_at).toLocaleString()}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      component="div"
-                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
-                      color="text.secondary"
-                    >
-                      ver.{userCharmMetaData.revision_number}
-                    </Typography>
-                  </Tooltip>
-                </div>
-              )}
-            </div>
-          </>
-        );
-      }}
-    />
-    // </ThemeProvider>
+                <Button
+                  color="secondary"
+                  disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
+                  onClick={handleDelete}
+                  variant="contained"
+                  startIcon={<DeleteIcon />}
+                >
+                  削除
+                </Button>
+                {fetchUserCharmData && <ManualSyncButton fetchUserEquipData={fetchUserCharmData} />}
+                {userCharmMetaData && (
+                  <div>
+                    <Tooltip title="最終更新日時とデータの更新回数" placement="top">
+                      <Typography
+                        variant="body1"
+                        component="div"
+                        sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                        color="text.secondary"
+                      >
+                        {new Date(userCharmMetaData.updated_at).toLocaleString()}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        component="div"
+                        sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                        color="text.secondary"
+                      >
+                        ver.{userCharmMetaData.revision_number}
+                      </Typography>
+                    </Tooltip>
+                  </div>
+                )}
+              </div>
+            </>
+          );
+        }}
+      />
+    </ThemeProvider>
   );
 }
 

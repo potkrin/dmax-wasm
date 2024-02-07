@@ -87,10 +87,10 @@ export function QuriousArmorTable({
           //   main: "rgb(255,122,0)", //add in a custom color for the toolbar alert background stuff
           // },
           background: {
-            // default:
-            //   mode === "light"
-            //     ? lightTheme.palette.background.paper
-            //     : darkTheme.palette.background.paper,
+            default:
+              mode === "light"
+                ? lightTheme.palette.background.paper
+                : darkTheme.palette.background.paper,
           },
         },
         typography: {
@@ -125,84 +125,84 @@ export function QuriousArmorTable({
   }
 
   return (
-    // <ThemeProvider theme={tableTheme}>
-    <MaterialReactTable
-      columns={columns}
-      data={tableData}
-      enablePagination={false}
-      enableRowSelection
-      enableDensityToggle={false}
-      enableFullScreenToggle={false}
-      enableHiding={false}
-      enableColumnFilters={false}
-      enableMultiRowSelection
-      enableSelectAll
-      muiSearchTextFieldProps={{
-        // placeholder: "Search all users",
-        sx: { maxWidth: "180px" },
-        variant: "outlined",
-      }}
-      renderTopToolbarCustomActions={({ table }) => {
-        const handleDelete = () => {
-          // 削除対象のインデックスを作成
-          const deleteTargetRows = [];
-          const quriousArmorTotal = Object.keys(userQuriousArmorData).length;
-          table.getSelectedRowModel().flatRows.map((row) => {
-            deleteTargetRows.push(quriousArmorTotal - parseInt(row.id) - 1);
-          });
+    <ThemeProvider theme={tableTheme}>
+      <MaterialReactTable
+        columns={columns}
+        data={tableData}
+        enablePagination={false}
+        enableRowSelection
+        enableDensityToggle={false}
+        enableFullScreenToggle={false}
+        enableHiding={false}
+        enableColumnFilters={false}
+        enableMultiRowSelection
+        enableSelectAll
+        muiSearchTextFieldProps={{
+          // placeholder: "Search all users",
+          sx: { maxWidth: "180px" },
+          variant: "outlined",
+        }}
+        renderTopToolbarCustomActions={({ table }) => {
+          const handleDelete = () => {
+            // 削除対象のインデックスを作成
+            const deleteTargetRows = [];
+            const quriousArmorTotal = Object.keys(userQuriousArmorData).length;
+            table.getSelectedRowModel().flatRows.map((row) => {
+              deleteTargetRows.push(quriousArmorTotal - parseInt(row.id) - 1);
+            });
 
-          // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
-          handleOpenDeleteConfirmDialog(deleteTargetRows);
-          table.resetRowSelection();
-        };
+            // 管理データから削除 (useEffect によりテーブルや localstorage にも反映される)
+            handleOpenDeleteConfirmDialog(deleteTargetRows);
+            table.resetRowSelection();
+          };
 
-        return (
-          <div
-            style={{
-              gap: "0.5rem",
-              display: "flex",
-              flexDirection: matches ? "column" : "row",
-            }}
-          >
-            <Button
-              color="secondary"
-              disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-              onClick={handleDelete}
-              variant="contained"
-              startIcon={<DeleteIcon />}
+          return (
+            <div
+              style={{
+                gap: "0.5rem",
+                display: "flex",
+                flexDirection: matches ? "column" : "row",
+              }}
             >
-              削除
-            </Button>
-            {fetchUserQuriousArmorData && (
-              <ManualSyncButton fetchUserEquipData={fetchUserQuriousArmorData} />
-            )}
-            {userQuriousArmorMetaData && (
-              <div>
-                <Tooltip title="最終更新日時とデータの更新回数" placement="top">
-                  <Typography
-                    variant="body1"
-                    component="div"
-                    sx={{ flexGrow: 1, fontSize: "0.7rem" }}
-                    color="text.secondary"
-                  >
-                    {new Date(userQuriousArmorMetaData.updated_at).toLocaleString()}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    component="div"
-                    sx={{ flexGrow: 1, fontSize: "0.7rem" }}
-                    color="text.secondary"
-                  >
-                    ver.{userQuriousArmorMetaData.revision_number}
-                  </Typography>
-                </Tooltip>
-              </div>
-            )}
-          </div>
-        );
-      }}
-    />
-    // </ThemeProvider>
+              <Button
+                color="secondary"
+                disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
+                onClick={handleDelete}
+                variant="contained"
+                startIcon={<DeleteIcon />}
+              >
+                削除
+              </Button>
+              {fetchUserQuriousArmorData && (
+                <ManualSyncButton fetchUserEquipData={fetchUserQuriousArmorData} />
+              )}
+              {userQuriousArmorMetaData && (
+                <div>
+                  <Tooltip title="最終更新日時とデータの更新回数" placement="top">
+                    <Typography
+                      variant="body1"
+                      component="div"
+                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                      color="text.secondary"
+                    >
+                      {new Date(userQuriousArmorMetaData.updated_at).toLocaleString()}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      component="div"
+                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                      color="text.secondary"
+                    >
+                      ver.{userQuriousArmorMetaData.revision_number}
+                    </Typography>
+                  </Tooltip>
+                </div>
+              )}
+            </div>
+          );
+        }}
+      />
+    </ThemeProvider>
   );
 }
 

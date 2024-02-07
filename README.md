@@ -70,7 +70,7 @@
     - [x] 発動率
       - [x] スライダーのバーの太さが違う問題 (Windows Chromeでしか再現しなかったので保留)
       - [x] スマホ表示のときは下線を表示する
-    - [ ] 護石錬成テーブルの背景色がPaperでない問題
+    - [x] 護石錬成テーブルの背景色がPaperでない問題
     - [ ] 「対応武器種」などの表示が折り返している (スマホサイズ)
     - [ ] iPhone:Safari で閲覧するとなぜか画面を左右に引っ張れる (Chromeは問題なし)
     - [x] スマホUIでは結果表示ウィンドウ内のスクロールを無しにしたい
@@ -81,7 +81,12 @@
     - [x] スクロールバー
   - [ ] fabicon 作成&設定
   - [ ] 初期表示のとき表示されないタブの描画やjs実行を遅らせる事はできないか？
-  - [ ] 巨大state分割&usememo検討
+  - [ ] UI高速化検討
+    - [ ] 巨大state分割&usememo検討
+    - [ ] データ件数が多いと重い
+    - [ ] Tab を アンマウントにする (データ件数が多いと重い)
+
+
  
   - [ ] SNSやDiscord等に貼り付けたときのサムネ概要表示 (embed?)
     - リッチプレビュー、リンクプレビューという
@@ -168,9 +173,9 @@
         - [x] Server
         - [x] Local
       - [x] メタデータ表示
-  - [ ] ユーザ傀異錬成データDB保存 API提供
+  - [x] ユーザ傀異錬成データDB保存 API提供
     - [x] APIの実装 (セッション認証付き)
-    - [ ] UIと同期処理の実装
+    - [x] UIと同期処理の実装
   - [x] 使い方
   - [x] ステージング環境
   - [x] CI/CD: [デプロイやり方](https://softwarenote.info/p3789/)
@@ -691,6 +696,16 @@ cms/static/cms/
         ├── main.8e3880be.js
         ├── main.8e3880be.js.LICENSE.txt
         └── main.8e3880be.js.map
+```
+
+# fabicon 作成
+プロンプト
+```
+modern flat design logo letter “D”, minimalist, design, creative, blue, purple, web agency, dynamic, white background, 8K
+```
+
+```
+High-end premium modern logo of the letters '[DMAX]', featured on 99designs
 ```
 
 # 以下は Next.js の README.md

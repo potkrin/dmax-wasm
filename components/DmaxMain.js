@@ -339,7 +339,7 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
             </Tooltip>
           </Typography>
 
-          <Grid container>
+          <Grid container marginBottom={2}>
             {Object.keys(staticSkillData)
               .filter((key) => staticSkillData[key].type === "FixedLevelDamage")
               .map((key) => (

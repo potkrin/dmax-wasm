@@ -249,8 +249,8 @@ export const Skill = ({ staticSkillData, userInputData, updateUserInputData }) =
                       max={100}
                       inputProps={{
                         style: {
+                          minWidth: "45px",
                           textAlign: "center",
-                          // maxWidth: "45px",
                         },
                       }}
                       matches={matches}

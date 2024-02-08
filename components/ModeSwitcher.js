@@ -2,9 +2,8 @@ import React from "react";
 import { useColorScheme } from "@mui/material/styles";
 import { Button, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import theme from "../src/theme";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 // ModeSwitcher is an example interface for toggling between modes.
 // Material UI does not provide the toggle interface—you have to build it yourself.
 export const ModeSwitcher = () => {
@@ -32,7 +31,7 @@ export const ModeSwitcher = () => {
           setMode("light");
         }
       }}
-      startIcon={mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+      startIcon={mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
       sx={{
         //   backgroundColor: theme.vars.palette.primary.main, // var(--mui-palette-primary-main)
         color: theme.vars.palette.primary.contrastText, // var(--mui-palette-primary-contrastText)
@@ -70,7 +69,7 @@ export const ModeSwitcherListItemButton = () => {
         }
       }}
     >
-      <ListItemIcon>{mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}</ListItemIcon>
+      <ListItemIcon>{mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
       <ListItemText primary={mode === "dark" ? "Light" : "Dark"} />
     </ListItemButton>
   );

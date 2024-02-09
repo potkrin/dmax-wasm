@@ -67,16 +67,8 @@ function a11yProps(index) {
 
 // allDmaxOutput : 最適化が完了したときのすべての中間出力 (DmaxResult と DmaxHistory で使用)
 export const DmaxHistory = ({ allDmaxOutput }) => {
-  // const dmaxResult = outputToResult(
-  //   middleOutput,
-  //   processingUserInputData,
-  //   processingUserArmorsData
-  // );
+  const [historyList, setHistoryLists] = React.useState([]);
 
-  const options = [];
-  const [historyList, setHistoryLists] = React.useState(options);
-
-  let latestTimeStamp;
   React.useEffect(() => {
     console.log("HistoryMenu useEffect called");
     const resultHistory = localStorage.getItem("resultHistory");
@@ -87,7 +79,6 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
         if (allDmaxOutput !== "") {
           resultHistoryArray = resultHistoryArray.slice(1);
         }
-        latestTimeStamp = resultHistoryArray[0].timeStamp;
         setHistoryLists(resultHistoryArray);
       }
     }

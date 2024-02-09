@@ -219,6 +219,7 @@
   - [ ] ひらがなカタカナ検索
   - [ ] 結果の欄を読みやすいUIにする
   - [ ] 水やられ時の肉質を表示
+  - [ ] Dark/Lightモード切替時のアニメーションかっこいい(https://blog.arlenx.io/posts/use-mui-css-theme-variables-to-prevent-dark-mode-ssr-flickering-in-nextjs-app)
   - [ ] light/darkのカラーテーマを適切に切り替える(theme.pallet.primary.mainをそれぞれのモードに対応する色に)
     - [ ] [MUI v5 Theme ～基本の使い方からカスタマイズまで～](https://zenn.dev/longbridge/articles/c100d0311ed1be)
     - [ ] [ここで定義したcolorThemeを import して theme と入れ替えればいいのでは？](https://github.com/potkrin/dmax-wasm/blob/d167ca8702337a3e14c26e030bf0c7dafcce83f9/src/App.js#L226)

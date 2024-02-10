@@ -19,6 +19,7 @@ import { applyWaterBlight } from "./HelperFunction";
 import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
 import { useTheme } from "@mui/material/styles";
 import { HideOnScroll } from "./App";
+import { useHideOnScroll } from "./HideOnScrollContext";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -340,6 +341,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   const dmaxSolverRef = useRef(null);
 
   const [memoryLimit, setMemoryLimit] = useState("?GB");
+  const { toggleHideOnScroll } = useHideOnScroll();
 
   // 最適化の開始
   const startOptimization = () => {
@@ -348,6 +350,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     // 最適化中間結果表示のコンポーネントまで自動でスクロールする
     if (dmaxSolverRef.current) {
       dmaxSolverRef.current.scrollIntoView({ behavior: "smooth" });
+      toggleHideOnScroll();
     }
 
     // ローカルサーバーの endpoint (dmax-core)

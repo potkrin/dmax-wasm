@@ -56,6 +56,7 @@ import {
   CharmAndQuriousArmorContext,
   useCharmAndQuriousArmorContext,
 } from "./CharmAndQuriousArmorContext";
+import { HideOnScrollContext, HideOnScrollProvider, useHideOnScroll } from "./HideOnScrollContext";
 import { LoginContext } from "./LoginContext";
 import { fetchWithRetry } from "../lib/utils";
 import QuriousArmorTab from "./QuriousArmorTab";
@@ -106,14 +107,15 @@ function a11yProps(index) {
 
 // スクロール時に AppBar を隠す
 export function HideOnScroll(props) {
-  const { children, window, direction = "down" } = props;
+  const { children, window, direction = "down", hidden } = props;
   // Note that you normally won't need to set the window ref as useScrollTrigger
   // will default to window.
   // This is only being set here because the demo is in an iframe.
   const trigger = useScrollTrigger();
-
+  // 上方向へスクロールしたときに表示
+  // (最適化ボタン押下時に自動スクロールした際は非表示を維持)
   return (
-    <Slide appear={false} direction={direction} in={!trigger}>
+    <Slide appear={false} direction={direction} in={!trigger && !hidden}>
       {children}
     </Slide>
   );
@@ -509,6 +511,18 @@ function App() {
 
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
+  // 最適化ボタン押下時のみHideOnScrollの非表示を維持するために利用
+  const [hidden, setHidden] = useState(false);
+  const trigger = useScrollTrigger();
+
+  const toggleHideOnScroll = () => {
+    setHidden(true);
+  };
+
+  useEffect(() => {
+    if (trigger) setHidden(false);
+  }, [trigger]);
+
   return (
     <SnackbarContext.Provider value={{ error, setError, open, setOpen, handleClose }}>
       <CharmAndQuriousArmorContext.Provider
@@ -557,120 +571,123 @@ function App() {
             </Alert>
           </Snackbar>
 
-          <div className="App">
-            {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
-            {/* <AppDiv> */}
-            {/* <AppBar component="nav">
+          {/* 最適化ボタン押下時のみ非表示を維持するために利用*/}
+          <HideOnScrollContext.Provider value={{ hidden, toggleHideOnScroll }}>
+            <div className="App">
+              {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
+              {/* <AppDiv> */}
+              {/* <AppBar component="nav">
                  </AppBar> */}
-            <HideOnScroll direction="down">
-              <AppBar component="nav" position="sticky">
-                {/* <Toolbar variant="dense" sx={{ backgroundColor: theme.palette.primary.main }}> */}
-                <Toolbar variant="dense">
-                  <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    edge="start"
-                    onClick={handleDrawerToggle}
-                    sx={{ mr: 2, display: { sm: "none" } }}
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                  <Typography
-                    variant="h6"
-                    component="div"
-                    sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-                  >
-                    DMAX
-                  </Typography>
-                  {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
+
+              <HideOnScroll direction="down" hidden={hidden}>
+                <AppBar component="nav" position="sticky">
+                  {/* <Toolbar variant="dense" sx={{ backgroundColor: theme.palette.primary.main }}> */}
+                  <Toolbar variant="dense">
+                    <IconButton
+                      color="inherit"
+                      aria-label="open drawer"
+                      edge="start"
+                      onClick={handleDrawerToggle}
+                      sx={{ mr: 2, display: { sm: "none" } }}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+                    >
+                      DMAX
+                    </Typography>
+                    {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
               {navItems.map((item) => (
                 <Button key={item} sx={{ color: "#fff" }}>
                   {item}
                 </Button>
               ))}
             </Box> */}
-                  <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                    <ModeSwitcher />
-                    <Button
-                      color="inherit"
-                      startIcon={isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
-                      style={{ textTransform: "none" }}
-                    >
-                      {isLoggedIn ? (
-                        <a
-                          href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/logout/?next=/dmax`}
-                          // target="_blank"
-                          // rel="noopener noreferrer"
-                          style={{
-                            color: theme.vars.palette.primary.contrastText,
-                            textDecoration: "none",
-                          }}
-                        >
-                          ログアウト
-                        </a>
-                      ) : (
-                        <a
-                          href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/?next=/dmax`}
-                          style={{
-                            color: theme.vars.palette.primary.contrastText,
-                            textDecoration: "none",
-                          }}
-                        >
-                          ログイン
-                        </a>
-                      )}
-                    </Button>
-
-                    <Button
-                      sx={{ color: theme.vars.palette.primary.contrastText }}
-                      startIcon={<OpenInNewIcon />}
-                    >
-                      <a
-                        href="https://www.mhrspeedrun.com/cms/quest/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          color: theme.vars.palette.primary.contrastText,
-                          textDecoration: "none",
-                        }}
+                    <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                      <ModeSwitcher />
+                      <Button
+                        color="inherit"
+                        startIcon={isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
+                        style={{ textTransform: "none" }}
                       >
-                        TA集計
-                      </a>
-                    </Button>
-                  </Box>
-                </Toolbar>
-                <MainTabs
-                  sx={{ display: { xs: "none", sm: "flex" } }}
-                  matches={matches}
-                  charmValue={charmValue}
-                  quriousArmorValue={quriousArmorValue}
-                  isCharmDataFetched={isCharmDataFetched}
-                  isQuriousArmorDataFetched={isQuriousArmorDataFetched}
-                  value={value}
-                  handleChange={handleChange}
-                />
-              </AppBar>
-            </HideOnScroll>
-            <HideOnScroll direction="up">
-              <Paper
-                sx={{
-                  position: "fixed",
-                  bottom: 0,
-                  width: "100%",
-                  zIndex: 1000,
-                }}
-              >
-                <MainTabs
-                  sx={{ display: { xs: "flex", sm: "none" } }}
-                  matches={matches}
-                  charmValue={charmValue}
-                  quriousArmorValue={quriousArmorValue}
-                  isCharmDataFetched={isCharmDataFetched}
-                  isQuriousArmorDataFetched={isQuriousArmorDataFetched}
-                  value={value}
-                  handleChange={handleChange}
-                />
-                {/* <Tabs
+                        {isLoggedIn ? (
+                          <a
+                            href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/logout/?next=/dmax`}
+                            // target="_blank"
+                            // rel="noopener noreferrer"
+                            style={{
+                              color: theme.vars.palette.primary.contrastText,
+                              textDecoration: "none",
+                            }}
+                          >
+                            ログアウト
+                          </a>
+                        ) : (
+                          <a
+                            href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login/?next=/dmax`}
+                            style={{
+                              color: theme.vars.palette.primary.contrastText,
+                              textDecoration: "none",
+                            }}
+                          >
+                            ログイン
+                          </a>
+                        )}
+                      </Button>
+
+                      <Button
+                        sx={{ color: theme.vars.palette.primary.contrastText }}
+                        startIcon={<OpenInNewIcon />}
+                      >
+                        <a
+                          href="https://www.mhrspeedrun.com/cms/quest/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: theme.vars.palette.primary.contrastText,
+                            textDecoration: "none",
+                          }}
+                        >
+                          TA集計
+                        </a>
+                      </Button>
+                    </Box>
+                  </Toolbar>
+                  <MainTabs
+                    sx={{ display: { xs: "none", sm: "flex" } }}
+                    matches={matches}
+                    charmValue={charmValue}
+                    quriousArmorValue={quriousArmorValue}
+                    isCharmDataFetched={isCharmDataFetched}
+                    isQuriousArmorDataFetched={isQuriousArmorDataFetched}
+                    value={value}
+                    handleChange={handleChange}
+                  />
+                </AppBar>
+              </HideOnScroll>
+              <HideOnScroll direction="up" hidden={hidden}>
+                <Paper
+                  sx={{
+                    position: "fixed",
+                    bottom: 0,
+                    width: "100%",
+                    zIndex: 1000,
+                  }}
+                >
+                  <MainTabs
+                    sx={{ display: { xs: "flex", sm: "none" } }}
+                    matches={matches}
+                    charmValue={charmValue}
+                    quriousArmorValue={quriousArmorValue}
+                    isCharmDataFetched={isCharmDataFetched}
+                    isQuriousArmorDataFetched={isQuriousArmorDataFetched}
+                    value={value}
+                    handleChange={handleChange}
+                  />
+                  {/* <Tabs
                       value={value}
                       onChange={handleChange}
                       indicatorColor="secondary"
@@ -725,48 +742,49 @@ function App() {
                         iconPosition={matches ? "top" : "start"}
                       />
                     </Tabs> */}
-              </Paper>
-            </HideOnScroll>
-            <nav>
-              <Drawer
-                variant="temporary"
-                open={mobileOpen}
-                onClose={handleDrawerToggle}
-                ModalProps={{
-                  keepMounted: true, // Better open performance on mobile.
-                }}
+                </Paper>
+              </HideOnScroll>
+              <nav>
+                <Drawer
+                  variant="temporary"
+                  open={mobileOpen}
+                  onClose={handleDrawerToggle}
+                  ModalProps={{
+                    keepMounted: true, // Better open performance on mobile.
+                  }}
+                  sx={{
+                    display: { xs: "block", sm: "none" },
+                    "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+                  }}
+                >
+                  {drawer}
+                </Drawer>
+              </nav>
+
+              <Container
+                ref={containerRef}
                 sx={{
-                  display: { xs: "block", sm: "none" },
-                  "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+                  paddingLeft: "0px !important",
+                  paddingRight: "0px !important",
+                  marginBottom: "0px !important", // 追加
+                  paddingBottom: "0px !important", // 追加
                 }}
               >
-                {drawer}
-              </Drawer>
-            </nav>
-
-            <Container
-              ref={containerRef}
-              sx={{
-                paddingLeft: "0px !important",
-                paddingRight: "0px !important",
-                marginBottom: "0px !important", // 追加
-                paddingBottom: "0px !important", // 追加
-              }}
-            >
-              <TabPanel value={value} index={0} dir={theme.direction}>
-                <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
-              </TabPanel>
-              <TabPanel value={value} index={1} dir={theme.direction}>
-                <CharmTab />
-              </TabPanel>
-              <TabPanel value={value} index={2} dir={theme.direction}>
-                <QuriousArmorTab />
-              </TabPanel>
-              <TabPanel value={value} index={3} dir={theme.direction}>
-                <Usage />
-              </TabPanel>
-            </Container>
-          </div>
+                <TabPanel value={value} index={0} dir={theme.direction}>
+                  <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
+                </TabPanel>
+                <TabPanel value={value} index={1} dir={theme.direction}>
+                  <CharmTab />
+                </TabPanel>
+                <TabPanel value={value} index={2} dir={theme.direction}>
+                  <QuriousArmorTab />
+                </TabPanel>
+                <TabPanel value={value} index={3} dir={theme.direction}>
+                  <Usage />
+                </TabPanel>
+              </Container>
+            </div>
+          </HideOnScrollContext.Provider>
           {/* </AppDiv> */}
           {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
           {/* </ThemeProvider> */}

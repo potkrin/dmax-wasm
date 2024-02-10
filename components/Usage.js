@@ -123,7 +123,7 @@ function Usage() {
           sx={{
             maxWidth: 500, // 最大幅
             boxShadow: 0, // シャドウの強度（0から24までの値）
-            borderRadius: 2, // ボーダーの角丸み
+            borderRadius: 1, // ボーダーの角丸み
             backgroundColor: theme.vars.palette.background.default,
             marginY: 2,
           }}
@@ -140,7 +140,16 @@ function Usage() {
                 <TableCell component="th" scope="row">
                   動作環境
                 </TableCell>
-                <TableCell align="left">PCブラウザ（モバイルは現在非対応）</TableCell>
+                <TableCell align="left">
+                  PCブラウザ
+                  <br />
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize: "0.8rem", color: theme.vars.palette.text.secondary }}
+                  >
+                    (モバイルは現在非推奨)
+                  </Typography>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>

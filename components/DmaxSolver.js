@@ -341,7 +341,9 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   const dmaxSolverRef = useRef(null);
 
   const [memoryLimit, setMemoryLimit] = useState("?GB");
-  const { toggleHideOnScroll } = useHideOnScroll();
+  const { appBarRef } = useHideOnScroll();
+  const { useServerData } = useCharmAndQuriousArmorContext();
+  const appBarHeight = appBarRef.current ? appBarRef.current.clientHeight : 0;
 
   // 最適化の開始
   const startOptimization = () => {
@@ -349,8 +351,13 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
     // 最適化中間結果表示のコンポーネントまで自動でスクロールする
     if (dmaxSolverRef.current) {
-      dmaxSolverRef.current.scrollIntoView({ behavior: "smooth" });
-      toggleHideOnScroll();
+      const offset = appBarHeight; // AppBarの高さに相当するオフセット。実際の値に応じて調整してください。
+      const elementPosition = dmaxSolverRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
     }
 
     // ローカルサーバーの endpoint (dmax-core)
@@ -368,12 +375,12 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     if (!excludeCharm) {
       // ユーザの護石を全防具データに追加
       let userCharmData = null;
-      if (charmValue === 0) {
-        // localsotrage から護石データを取得
-        userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
-      } else {
+      if (useServerData) {
         // サーバー上の護石データを取得
         userCharmData = JSON.parse(JSON.stringify(serverCharmData));
+      } else {
+        // localsotrage から護石データを取得
+        userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
       }
       if (userCharmData !== null) userArmors.push(...userCharmData);
     }
@@ -381,12 +388,12 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     if (!excludeQuriousArmor) {
       // ユーザの傀異錬成防具を全防具データに追加
       let userQuriousArmorData = null;
-      if (quriousArmorValue === 0) {
-        // localsotrage から傀異錬成防具データを取得
-        userQuriousArmorData = JSON.parse(localStorage.getItem("userQuriousArmorData"));
-      } else {
+      if (useServerData) {
         // サーバー上の傀異錬成防具データを取得
         userQuriousArmorData = JSON.parse(JSON.stringify(serverQuriousArmorData));
+      } else {
+        // localsotrage から傀異錬成防具データを取得
+        userQuriousArmorData = JSON.parse(localStorage.getItem("userQuriousArmorData"));
       }
       if (userQuriousArmorData !== null) userArmors.push(...userQuriousArmorData);
     }
@@ -492,11 +499,11 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   }, [fabRight]);
 
   // 傀異錬成防具と護石を最適化から除外するオプション
-  const [excludeQuriousArmor, setExcludeQuriousArmor] = useState(false);
+  const { excludeCharm, setExcludeCharm, excludeQuriousArmor, setExcludeQuriousArmor } =
+    useCharmAndQuriousArmorContext();
   const handleExcludeQuriousArmor = (e, v) => {
     setExcludeQuriousArmor(e.target.checked);
   };
-  const [excludeCharm, setExcludeCharm] = useState(false);
   const handleExcludeCharm = (e, v) => {
     setExcludeCharm(e.target.checked);
   };
@@ -553,7 +560,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
   return (
     <>
-      <Grid ref={dmaxSolverRef} container spacing={1} marginY={1} sx={{ minHeight: "600px" }}>
+      <Grid ref={dmaxSolverRef} container spacing={1} marginY={0} sx={{ minHeight: "600px" }}>
         <DmaxOutput
           dmaxOutput={dmaxOutput}
           resetMiddleOutputInfo={resetMiddleOutputInfo}

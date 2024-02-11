@@ -68,6 +68,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import { ModeSwitcher, ModeSwitcherListItemButton } from "./ModeSwitcher";
+import { CharmIcon } from "./icons/CharmIcon";
+import { ArmorIcon } from "./icons/ArmorIcon";
 
 /**
  * TODO:
@@ -107,15 +109,14 @@ function a11yProps(index) {
 
 // スクロール時に AppBar を隠す
 export function HideOnScroll(props) {
-  const { children, window, direction = "down", hidden } = props;
+  const { children, window, direction = "down" } = props;
   // Note that you normally won't need to set the window ref as useScrollTrigger
   // will default to window.
   // This is only being set here because the demo is in an iframe.
   const trigger = useScrollTrigger();
   // 上方向へスクロールしたときに表示
-  // (最適化ボタン押下時に自動スクロールした際は非表示を維持)
   return (
-    <Slide appear={false} direction={direction} in={!trigger && !hidden}>
+    <Slide appear={false} direction={direction} in={!trigger}>
       {children}
     </Slide>
   );
@@ -142,11 +143,20 @@ const MainTabs = ({
   value,
   handleChange,
   matches,
-  charmValue,
-  quriousArmorValue,
   isCharmDataFetched,
   isQuriousArmorDataFetched,
 }) => {
+  const customMargin = {
+    marginRight: matches ? "0px" : "8px",
+    marginBottom: matches ? "8px" : "0px",
+  };
+
+  const customSX = {
+    minHeight: "0px",
+    fontSize: "0.7rem",
+  };
+
+  const iconPosition = matches ? "top" : "start";
   return (
     <Tabs
       value={value}
@@ -163,41 +173,31 @@ const MainTabs = ({
     >
       <Tab
         label="最適化"
-        sx={{ minHeight: "0px", fontSize: "0.7rem" }}
+        sx={{ ...customSX }}
         {...a11yProps(0)}
         icon={<TrendingUpIcon />}
-        iconPosition={matches ? "top" : "start"}
+        iconPosition={iconPosition}
       />
       <Tab
         label="護石"
-        sx={{ minHeight: "0px", fontSize: "0.7rem" }}
+        sx={{ ...customSX }}
         {...a11yProps(1)}
-        icon={
-          charmValue === 0 ? <DevicesIcon /> : isCharmDataFetched ? <CloudIcon /> : <CloudOffIcon />
-        }
-        iconPosition={matches ? "top" : "start"}
+        icon={<CharmIcon sx={{ ...customMargin }} />}
+        iconPosition={iconPosition}
       />
       <Tab
         label="傀異錬成"
-        sx={{ minHeight: "0px", fontSize: "0.7rem" }}
+        sx={{ ...customSX }}
         {...a11yProps(2)}
-        icon={
-          quriousArmorValue === 0 ? (
-            <DevicesIcon />
-          ) : isQuriousArmorDataFetched ? (
-            <CloudIcon />
-          ) : (
-            <CloudOffIcon />
-          )
-        }
-        iconPosition={matches ? "top" : "start"}
+        icon={<ArmorIcon sx={{ ...customMargin }} />}
+        iconPosition={iconPosition}
       />
       <Tab
         label="使い方"
-        sx={{ minHeight: "0px", fontSize: "0.7rem" }}
+        sx={{ ...customSX }}
         {...a11yProps(3)}
         icon={<HelpIcon />}
-        iconPosition={matches ? "top" : "start"}
+        iconPosition={iconPosition}
       />
     </Tabs>
   );
@@ -292,6 +292,13 @@ function App() {
 
   const [charmValue, setCharmValue] = useState(0);
   const [quriousArmorValue, setQuriousArmorValue] = useState(0);
+  const [useServerData, setUseServerData] = useState(false);
+  const [excludeCharm, setExcludeCharm] = useState(false);
+  const [excludeQuriousArmor, setExcludeQuriousArmor] = useState(false);
+
+  useEffect(() => {
+    if (useServerData) checkLoginStatus();
+  }, [useServerData]);
 
   const handleChangeCharmValue = (event, newValue) => {
     setCharmValue(newValue);
@@ -314,6 +321,22 @@ function App() {
     if (initQuriousArmorValue === "1") initQuriousArmorValue = 1;
     else initQuriousArmorValue = 0;
     setQuriousArmorValue(initQuriousArmorValue);
+
+    let initUseServerData = localStorage.getItem("useServerData");
+    console.log("[dbgusd] initUseServerData: " + initUseServerData);
+    if (initUseServerData === "true") initUseServerData = true;
+    else initUseServerData = false;
+    setUseServerData(initUseServerData);
+
+    let initExcludeCharm = localStorage.getItem("excludeCharm");
+    if (initExcludeCharm === "true") initExcludeCharm = true;
+    else initExcludeCharm = false;
+    setExcludeCharm(initExcludeCharm);
+
+    let initExcludeQuriousArmor = localStorage.getItem("excludeQuriousArmor");
+    if (initExcludeQuriousArmor === "true") initExcludeQuriousArmor = true;
+    else initExcludeQuriousArmor = false;
+    setExcludeQuriousArmor(initExcludeQuriousArmor);
   }, []);
 
   // エラー出力用 Snackbar 管理
@@ -511,17 +534,8 @@ function App() {
 
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
-  // 最適化ボタン押下時のみHideOnScrollの非表示を維持するために利用
-  const [hidden, setHidden] = useState(false);
-  const trigger = useScrollTrigger();
-
-  const toggleHideOnScroll = () => {
-    setHidden(true);
-  };
-
-  useEffect(() => {
-    if (trigger) setHidden(false);
-  }, [trigger]);
+  // 自動スクロール時に AppBar の高さを Offset に指定するために利用
+  const appBarRef = useRef(null);
 
   return (
     <SnackbarContext.Provider value={{ error, setError, open, setOpen, handleClose }}>
@@ -542,6 +556,13 @@ function App() {
           handleChangeQuriousArmorValue,
           isQuriousArmorDataFetched,
           setIsQuriousArmorDataFetched,
+
+          useServerData,
+          setUseServerData,
+          excludeCharm,
+          setExcludeCharm,
+          excludeQuriousArmor,
+          setExcludeQuriousArmor,
         }}
       >
         <LoginContext.Provider
@@ -572,15 +593,15 @@ function App() {
           </Snackbar>
 
           {/* 最適化ボタン押下時のみ非表示を維持するために利用*/}
-          <HideOnScrollContext.Provider value={{ hidden, toggleHideOnScroll }}>
+          <HideOnScrollContext.Provider value={{ appBarRef }}>
             <div className="App">
               {/* <div> のかわりにこちらの <AppDiv> を利用するとタブ切替時にDmaxMain がアンマウントされる謎挙動が発生する */}
               {/* <AppDiv> */}
               {/* <AppBar component="nav">
                  </AppBar> */}
 
-              <HideOnScroll direction="down" hidden={hidden}>
-                <AppBar component="nav" position="sticky">
+              <HideOnScroll direction="down">
+                <AppBar ref={appBarRef} component="nav" position="sticky">
                   {/* <Toolbar variant="dense" sx={{ backgroundColor: theme.palette.primary.main }}> */}
                   <Toolbar variant="dense">
                     <IconButton
@@ -659,8 +680,6 @@ function App() {
                   <MainTabs
                     sx={{ display: { xs: "none", sm: "flex" } }}
                     matches={matches}
-                    charmValue={charmValue}
-                    quriousArmorValue={quriousArmorValue}
                     isCharmDataFetched={isCharmDataFetched}
                     isQuriousArmorDataFetched={isQuriousArmorDataFetched}
                     value={value}
@@ -668,7 +687,7 @@ function App() {
                   />
                 </AppBar>
               </HideOnScroll>
-              <HideOnScroll direction="up" hidden={hidden}>
+              <HideOnScroll direction="up">
                 <Paper
                   sx={{
                     position: "fixed",
@@ -680,8 +699,6 @@ function App() {
                   <MainTabs
                     sx={{ display: { xs: "flex", sm: "none" } }}
                     matches={matches}
-                    charmValue={charmValue}
-                    quriousArmorValue={quriousArmorValue}
                     isCharmDataFetched={isCharmDataFetched}
                     isQuriousArmorDataFetched={isQuriousArmorDataFetched}
                     value={value}

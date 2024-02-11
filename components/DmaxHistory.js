@@ -119,7 +119,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
         </Box>
         <Box
           style={{
-            ...(matches ? { minHeight: "200px" } : { height: "100%" }),
+            ...(matches ? { minHeight: "200px" } : {}),
             overflowY: "auto",
             paddingLeft: "8px",
             textAlign: "left",

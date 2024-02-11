@@ -31,14 +31,14 @@ export const ModeSwitcher = () => {
           setMode("light");
         }
       }}
-      startIcon={mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+      startIcon={mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />}
       sx={{
         //   backgroundColor: theme.vars.palette.primary.main, // var(--mui-palette-primary-main)
         color: theme.vars.palette.primary.contrastText, // var(--mui-palette-primary-contrastText)
         textTransform: "none",
       }}
     >
-      {mode === "light" ? "Dark" : "Light"}
+      {mode === "light" ? "Light" : "Dark"}
     </Button>
   );
 };

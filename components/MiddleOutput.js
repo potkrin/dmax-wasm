@@ -7,6 +7,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
 import { useTheme } from "@mui/material/styles";
 import { theme } from "../src/theme";
+import MemoryIcon from "@mui/icons-material/Memory";
 
 function NewlineText({ text }) {
   const newText = text
@@ -17,7 +18,7 @@ function NewlineText({ text }) {
   return <span dangerouslySetInnerHTML={{ __html: newText }} />;
 }
 
-export const MiddleOutput = ({ middleOutput }) => {
+export const MiddleOutput = ({ middleOutput, memoryLimit }) => {
   return (
     <>
       <Grid container alignItems={"center"} spacing={0} marginBottom={0.8}>
@@ -40,10 +41,27 @@ export const MiddleOutput = ({ middleOutput }) => {
             <PanoramaFishEyeIcon sx={{ fontSize: 12, color: theme.vars.palette.text.disabled }} />
           )}
         </Grid>
-        <Grid item xs={11.2} sm={11.5}>
+        <Grid item xs={5.2} sm={5.5}>
           <Typography variant="body1" sx={{}}>
             {middleOutput.title}
           </Typography>
+        </Grid>
+        <Grid item xs={6} sm={6} container justifyContent="flex-end" alignItems="center">
+          {memoryLimit && (
+            <>
+              <MemoryIcon sx={{ color: theme.vars.palette.text.hint }} />
+              <Typography
+                sx={{
+                  color: theme.vars.palette.text.hint,
+                  paddingRight: "0.5rem",
+                  alignItems: "center",
+                  fontSize: "0.8rem",
+                }}
+              >
+                メモリ上限 {memoryLimit}
+              </Typography>
+            </>
+          )}
         </Grid>
         <Grid item xs={0.8} sm={0.5}></Grid>
         <Grid item xs={2.7} sm={3}>

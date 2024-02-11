@@ -25,11 +25,7 @@ export const ModeSwitcher = () => {
       // variant="outlined"
       color="inherit"
       onClick={() => {
-        if (mode === "light") {
-          setMode("dark");
-        } else {
-          setMode("light");
-        }
+        mode === "light" ? setMode("dark") : setMode("light");
       }}
       startIcon={mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />}
       sx={{
@@ -38,7 +34,7 @@ export const ModeSwitcher = () => {
         textTransform: "none",
       }}
     >
-      {mode === "light" ? "Light" : "Dark"}
+      {mode === "dark" ? "Dark" : "Light"}
     </Button>
   );
 };
@@ -62,15 +58,11 @@ export const ModeSwitcherListItemButton = () => {
   return (
     <ListItemButton
       onClick={() => {
-        if (mode === "light") {
-          setMode("dark");
-        } else {
-          setMode("light");
-        }
+        mode === "light" ? setMode("dark") : setMode("light");
       }}
     >
-      <ListItemIcon>{mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
-      <ListItemText primary={mode === "dark" ? "Light" : "Dark"} />
+      <ListItemIcon>{mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />}</ListItemIcon>
+      <ListItemText primary={mode === "dark" ? "Dark" : "Light"} />
     </ListItemButton>
   );
 };

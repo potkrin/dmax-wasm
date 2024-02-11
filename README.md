@@ -736,6 +736,24 @@ cp brachistochrone1GB.* ~/work/react-tutorial/dmax-wasm/public/dmax-core/
 - [防具アイコン](https://www.iconfinder.com/icons/3938246/armor_body_costume_equipment_glove_knight_protection_icon)
 - [護石アイコン](https://www.iconfinder.com/icons/7345925/talisman_amulet_charm_luck_accessory_esoteric_superstition_icon)
 
+## lightTheme と darkTheme の要素を対称にしないとクラッシュする
+SSGのちらつき対策のため導入した CSSVarsProvider によるテーマ(src/theme.js)において
+**lightTheme にのみ primary.contrastText と background.paper がなかった時、**
+以下の条件でアプリケーションがクラッシュした
+- staging 環境で npm run build; PORT=3001 npm run start;
+- ログイン中
+- ライトモード
+
+開発環境や staging 環境の未ログイン状態では再現しなかった
+
+コンソールのエラーメッセージ (CSSVariables関連っぽい事以外さっぱりわからなかった)
+```sh
+framework-10fac88913917d91.js:9 TypeError: Cannot read properties of undefined (reading 'type')
+   at i (_app-896c02c779f6212a.js:24:12926)
+   at m (_app-896c02c779f6212a.js:24:14884)
+   ... 略
+```
+
 # [DUPLICATED] Django デプロイ用ビルド手順 (古い手順)
 Django において cms/static/cms 以下にファイルを配置することを想定
 

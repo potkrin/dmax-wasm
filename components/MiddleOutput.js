@@ -49,7 +49,7 @@ export const MiddleOutput = ({ middleOutput, memoryLimit }) => {
         <Grid item xs={6} sm={6} container justifyContent="flex-end" alignItems="center">
           {memoryLimit && (
             <>
-              <MemoryIcon sx={{ color: theme.vars.palette.text.hint }} />
+              <MemoryIcon sx={{ color: theme.vars.palette.text.hint, fontSize: "large" }} />
               <Typography
                 sx={{
                   color: theme.vars.palette.text.hint,

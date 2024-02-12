@@ -630,10 +630,10 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       {showFab && (
         <HideOnScroll direction="up">
           <Fab
-            variant="extended"
+            variant={matches ? "circular" : "extended"}
             sx={{
               position: "fixed",
-              bottom: matches ? "64px" : "48px",
+              bottom: matches ? "84px" : "48px",
               // right: "48px",
               right: matches ? "24px" : `${fabRight}px`,
               animation: "fadeIn 0.5s ease-in-out",

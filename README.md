@@ -102,9 +102,13 @@
     - [x] 最適化ボタン押下時に非表示にできていない
     - [x] threshold を設定すればいけそう
   - [x] スマホの場合は結果と履歴を統合したほうがいいのでは..?
+  - [x] 背景色との差分
+  - [ ] 最適化とグラフの統合
+  - [ ] 高速化
+    - 表の行数制限
+    - 不要なコンテンツをアンマウント
   - [ ] CDN検討
   - [ ] プライバシーポリシーや著作権のフッター
-  - [ ] 背景色との差分
   - [ ] ログイン画面の見た目をまともにする
   - [ ] 最適化の特性を書く (物理だけなら速い、属性も入ると重い、防具数が増えてもそこまで？)
     - [ ] スマホの場合、計算機だけ内部にタブ [参考](https://damage.paimon.app/calculator/)
@@ -201,6 +205,7 @@
   - [x] ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
 
 - **Midle 実装予定:**
+  - [ ] 表のページネーションの有効/無効を切り替えるUIを追加する？
   - [ ] 広告をはる？
   - [ ] CDN設定
     - [WebPageTest](https://www.webpagetest.org/)
@@ -753,6 +758,29 @@ framework-10fac88913917d91.js:9 TypeError: Cannot read properties of undefined (
    at m (_app-896c02c779f6212a.js:24:14884)
    ... 略
 ```
+
+## CDN検討
+[WebPageTest](https://www.webpagetest.org/) でロケーションを指定して Largest Contentful Paint (LCP) を計測する
+
+| URL           | 位置       | TFB    | LCP    | 結果 |
+| ----          | ----       | ----   | ----   | ---- |
+| :8000/dmax    | 東京       | 0.390S | 0.802S | https://www.webpagetest.org/result/240212_BiDcK1_TX/ |
+|               | 大阪       | 0.224S | 0.592S | https://www.webpagetest.org/result/240212_AiDcBM_T3/ |
+|               | シドニー   | 0.843S | 1.350S | https://www.webpagetest.org/result/240212_BiDcXX_TZ/ |
+|               | 北京       | 1.072S | 1.578S | https://www.webpagetest.org/result/240212_AiDcK8_XV/ |
+|               | バージニア | 1.093S | 1.714S | https://www.webpagetest.org/result/240212_BiDcBF_S8/ |
+|               | サンパウロ | 1.304S | 1.947S | https://www.webpagetest.org/result/240212_AiDcBM_T3/ |
+| sbfree/quest/ | 東京       | 1.004S | 1.825S | https://www.webpagetest.org/result/240212_AiDcM6_XZ/ |
+|               | 大阪       | 1.140S | 1.856S | https://www.webpagetest.org/result/240212_BiDc9B_V1/ |
+|               | シドニー   | 1.540S | 2.357S | https://www.webpagetest.org/result/240212_BiDcTC_VR/ |
+|               | 北京       |  |  |  |
+|               | バージニア | 2.044S | 3.120S | https://www.webpagetest.org/result/240212_AiDc5A_Y6/ |
+|               | サンパウロ | 2.801S | 4.202S | https://www.webpagetest.org/result/240212_BiDcN5_VT/ |
+
+
+
+
+
 
 # [DUPLICATED] Django デプロイ用ビルド手順 (古い手順)
 Django において cms/static/cms 以下にファイルを配置することを想定

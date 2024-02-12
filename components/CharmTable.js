@@ -127,7 +127,7 @@ export function CharmTable({
       <MaterialReactTable
         columns={columns}
         data={tableData}
-        enablePagination={false}
+        enablePagination={true}
         enableRowSelection
         enableDensityToggle={false}
         enableFullScreenToggle={false}

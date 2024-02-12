@@ -50,17 +50,16 @@ export const DmaxGraph = ({ chartData }) => {
         sx={{
           borderRadius: 1,
           padding: "16px 8px",
-          minHeight: "450px",
+          minHeight: "400px",
           height: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}
-        height={610}
       >
         <LineChart
           width={chartWidth}
-          height={matches ? chartWidth - 40 : 500}
+          height={matches ? chartWidth - 40 : 400}
           data={chartData}
           margin="auto"
           display="block"

@@ -416,7 +416,7 @@ export const DmaxOutput = ({
       <Card variant="outlined" sx={{ borderRadius: 1, height: "100%" }}>
         <Box
           style={{
-            minHeight: "610px",
+            minHeight: "480px",
             height: "100%",
             overflowY: "auto",
             padding: "8px",

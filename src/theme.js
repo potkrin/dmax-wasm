@@ -38,7 +38,7 @@ export const lightTheme = {
       hint: "#a2a2a2",
     },
     background: {
-      default: "#f3f6f9",
+      default: "#edf2f7",
       paper: "#ffffff",
     },
   },

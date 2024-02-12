@@ -590,7 +590,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
                   <Box height: "100%">
                     <高さが変わるコンテンツ>
       */}
-      <Grid container spacing={1} marginY={1} sx={{ minHeight: "600px" }}>
+      <Grid container spacing={1} marginY={0} sx={{ minHeight: "600px" }}>
         {!matches && (
           <DmaxResult
             allDmaxOutput={allDmaxOutput}
@@ -602,7 +602,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         <DmaxHistory allDmaxOutput={allDmaxOutput} />
       </Grid>
 
-      <Snackbar
+      {/* <Snackbar
         open={openStart}
         autoHideDuration={3000}
         transitionDuration={{ enter: 1000, exit: 1000 }}
@@ -613,7 +613,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         <Alert onClose={handleCloseStart} severity="info" sx={{ width: "100%" }}>
           最適化を開始しました
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
 
       <Snackbar
         open={openError}

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Grid, Paper, Box, Typography, Divider, useMediaQuery } from "@mui/material";
+import { Grid, Card, Box, Typography, Divider, useMediaQuery } from "@mui/material";
 
 import { armors, decos } from "../data/EquipData";
 import { staticSkillData } from "../data/StaticData";
@@ -307,7 +307,7 @@ export const DmaxResult = ({
 
   return (
     <Grid item xs={12} md={6}>
-      <Paper elevation={2} sx={{ height: "100%" }}>
+      <Card variant="outlined" sx={{ borderRadius: 1, height: "100%" }}>
         <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
           <Grid item>
             <InsightsIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
@@ -349,7 +349,7 @@ export const DmaxResult = ({
         >
           <NewlineText text={dmaxResult} />
         </Box>
-      </Paper>
+      </Card>
     </Grid>
   );
 };

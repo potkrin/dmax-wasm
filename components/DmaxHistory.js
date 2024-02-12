@@ -10,6 +10,7 @@ import {
   IconButton,
   Divider,
   useMediaQuery,
+  Card,
 } from "@mui/material";
 
 import { theme, breakpoints } from "../src/theme";
@@ -98,7 +99,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
 
   return (
     <Grid item xs={12} md={6}>
-      <Paper elevation={2} sx={{ height: "100%" }}>
+      <Card variant="outlined" sx={{ borderRadius: 1, height: "100%" }}>
         <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
           <Grid item>
             <HistoryIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
@@ -123,6 +124,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
             textAlign: "left",
             display: "flex", // Flexboxを使用
             flexDirection: "row-reverse", // 水平方向にコンポーネントを配置
+            height: "100%",
           }}
         >
           <Box
@@ -133,6 +135,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
               flexDirection: "column",
               mr: 0,
               border: 0,
+              height: "100%",
             }}
           >
             <Tabs
@@ -148,7 +151,6 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
                 borderColor: "divider",
                 width: "80px",
                 ...(matches ? { minHeight: "200px" } : { height: "100%" }),
-                maxHeight: "600px",
                 // インジケータのスタイルをオーバーライドする
                 "& .MuiTabs-indicator": {
                   left: 0, // インジケータを左側に配置
@@ -217,7 +219,7 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
             ))}
           </Box>
         </Box>
-      </Paper>
+      </Card>
     </Grid>
   );
 };

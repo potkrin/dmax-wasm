@@ -195,7 +195,7 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
       {/* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/}
       <DmaxSolver userInputData={userInputData} fabRight={fabRight} />
 
-      <Box>
+      <Box marginTop={1}>
         <Paper variant="outlined" sx={{ borderRadius: 1, padding: 2 }}>
           <Grid container alignItems="center">
             <Grid item>

@@ -591,11 +591,13 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
                     <高さが変わるコンテンツ>
       */}
       <Grid container spacing={1} marginY={1} sx={{ minHeight: "600px" }}>
-        <DmaxResult
-          allDmaxOutput={allDmaxOutput}
-          processingUserInputData={processingUserInputData}
-          processingUserArmorsData={processingUserArmorsData}
-        />
+        {!matches && (
+          <DmaxResult
+            allDmaxOutput={allDmaxOutput}
+            processingUserInputData={processingUserInputData}
+            processingUserArmorsData={processingUserArmorsData}
+          />
+        )}
 
         <DmaxHistory allDmaxOutput={allDmaxOutput} />
       </Grid>

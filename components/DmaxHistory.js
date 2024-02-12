@@ -68,21 +68,21 @@ function a11yProps(index) {
 // allDmaxOutput : 最適化が完了したときのすべての中間出力 (DmaxResult と DmaxHistory で使用)
 export const DmaxHistory = ({ allDmaxOutput }) => {
   const [historyList, setHistoryLists] = React.useState([]);
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
   React.useEffect(() => {
     console.log("HistoryMenu useEffect called");
     const resultHistory = localStorage.getItem("resultHistory");
     if (resultHistory) {
-      console.log("resultHistory is found");
       let resultHistoryArray = JSON.parse(resultHistory);
       if (resultHistoryArray.length > 0) {
-        if (allDmaxOutput !== "") {
+        if (allDmaxOutput !== "" && !matches) {
           resultHistoryArray = resultHistoryArray.slice(1);
         }
         setHistoryLists(resultHistoryArray);
       }
     }
-  }, [allDmaxOutput]);
+  }, [allDmaxOutput, matches]);
 
   const [value, setValue] = React.useState(0);
 
@@ -95,8 +95,6 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
     if (historyList.length === 0) return;
     setTextToCopy(historyList[value].result);
   }, [value, historyList]);
-
-  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
   return (
     <Grid item xs={12} md={6}>

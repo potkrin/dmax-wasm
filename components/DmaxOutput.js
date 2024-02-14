@@ -356,6 +356,7 @@ export const DmaxOutput = ({
   excludeCharm,
   handleExcludeCharm,
   memoryLimit,
+  chartData,
 }) => {
   // const classes = useStyles();
   const classes = {};
@@ -412,34 +413,34 @@ export const DmaxOutput = ({
   };
 
   return (
-    <Grid item xs={12} md={6}>
-      <Card variant="outlined" sx={{ borderRadius: 1, height: "100%" }}>
-        <Box
-          style={{
-            minHeight: "480px",
-            height: "100%",
-            overflowY: "auto",
-            padding: "8px",
-            textAlign: "left",
-          }}
-        >
-          <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
-            <Grid item>
-              <TrendingUpIcon sx={{ marginTop: "4px" }} color="primary" />
-            </Grid>
-            <Grid item xs>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
-                最適化
-              </Typography>
-            </Grid>
-
-            <Grid item xs container justifyContent="flex-end" sx={{ marginRight: 1 }}>
-              <OptimizationOptionButtons />
-            </Grid>
+    <Grid item xs={12} md={5.9}>
+      <Box
+        style={{
+          minHeight: "400px",
+          height: "100%",
+          // overflowY: "auto",
+          padding: "8px",
+          textAlign: "left",
+          width: "100%",
+        }}
+      >
+        <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
+          <Grid item>
+            <TrendingUpIcon sx={{ marginTop: "4px" }} color="primary" />
           </Grid>
-          <Divider />
+          <Grid item xs>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
+              最適化
+            </Typography>
+          </Grid>
 
-          {/* <Grid container marginTop={0}>
+          <Grid item xs container justifyContent="flex-end" sx={{ marginRight: 1 }}>
+            <OptimizationOptionButtons />
+          </Grid>
+        </Grid>
+        <Divider />
+
+        {/* <Grid container marginTop={0}>
             <Grid
               item
               container
@@ -461,16 +462,28 @@ export const DmaxOutput = ({
             </Grid>
           </Grid> */}
 
-          <Box sx={{ margin: 1.5, marginLeft: 2.0, marginBottom: 4 }}>
-            <MiddleOutput middleOutput={middleOutputInfo.launch} memoryLimit={memoryLimit} />
-            <MiddleOutput middleOutput={middleOutputInfo.load} />
-            <MiddleOutput middleOutput={middleOutputInfo.preprocess} />
-            <MiddleOutput middleOutput={middleOutputInfo.solverStart} />
-            <MiddleOutput middleOutput={middleOutputInfo.solve} />
-            <MiddleOutput middleOutput={middleOutputInfo.solverEnd} />
-          </Box>
-        </Box>
-      </Card>
+        <Grid container marginTop={0}>
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                margin: 1.5,
+                marginLeft: 2.0,
+                marginBottom: 4,
+                marginTop: 2,
+                minHeight: matches ? "" : "400px",
+                height: "100%",
+              }}
+            >
+              <MiddleOutput middleOutput={middleOutputInfo.launch} memoryLimit={memoryLimit} />
+              <MiddleOutput middleOutput={middleOutputInfo.load} />
+              <MiddleOutput middleOutput={middleOutputInfo.preprocess} />
+              <MiddleOutput middleOutput={middleOutputInfo.solverStart} />
+              <MiddleOutput middleOutput={middleOutputInfo.solve} />
+              <MiddleOutput middleOutput={middleOutputInfo.solverEnd} />
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
     </Grid>
   );
 };

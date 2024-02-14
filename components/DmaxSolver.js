@@ -1,7 +1,7 @@
 /* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/
 
 import { React, useState, useRef, useEffect, forwardRef } from "react";
-import { Grid, Button, Fab, Box } from "@mui/material";
+import { Grid, Card, Fab, Box } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Cookies from "js-cookie";
@@ -353,7 +353,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     if (dmaxSolverRef.current) {
       const offset = appBarHeight; // AppBarの高さに相当するオフセット。実際の値に応じて調整してください。
       const elementPosition = dmaxSolverRef.current.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      const offsetPosition = elementPosition + window.pageYOffset - offset - 64;
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth",
@@ -560,23 +560,39 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
   return (
     <>
-      <Grid ref={dmaxSolverRef} container spacing={1} marginY={0} sx={{ minHeight: "530px" }}>
-        <DmaxOutput
-          dmaxOutput={dmaxOutput}
-          resetMiddleOutputInfo={resetMiddleOutputInfo}
-          setResetMiddleOutputInfo={setResetMiddleOutputInfo}
-          startOptimization={startOptimization}
-          stopOptimization={stopOptimization}
-          handleToggle={handleToggle}
-          isOptimizing={isOptimizing}
-          excludeQuriousArmor={excludeQuriousArmor}
-          handleExcludeQuriousArmor={handleExcludeQuriousArmor}
-          excludeCharm={excludeCharm}
-          handleExcludeCharm={handleExcludeCharm}
-          memoryLimit={memoryLimit}
-        />
-        <DmaxGraph chartData={chartData} />
-      </Grid>
+      <Card
+        variant="outlined"
+        sx={{
+          borderRadius: 1,
+          minHeight: "400px",
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "8px",
+          marginBottom: 1,
+        }}
+      >
+        <Grid ref={dmaxSolverRef} container spacing={0} marginY={1} sx={{ minHeight: "400px" }}>
+          <DmaxOutput
+            dmaxOutput={dmaxOutput}
+            resetMiddleOutputInfo={resetMiddleOutputInfo}
+            setResetMiddleOutputInfo={setResetMiddleOutputInfo}
+            startOptimization={startOptimization}
+            stopOptimization={stopOptimization}
+            handleToggle={handleToggle}
+            isOptimizing={isOptimizing}
+            excludeQuriousArmor={excludeQuriousArmor}
+            handleExcludeQuriousArmor={handleExcludeQuriousArmor}
+            excludeCharm={excludeCharm}
+            handleExcludeCharm={handleExcludeCharm}
+            memoryLimit={memoryLimit}
+            chartData={chartData}
+          />
+          <DmaxGraph chartData={chartData} memoryLimit={memoryLimit} />
+        </Grid>
+      </Card>
       {/* 
           PC表示 では DmaxResult と DmaxHistory のうちより高い方に高さを合わせる (スマホは縦列なので関係なし)
           <Grid minHeight: "800px">
@@ -590,30 +606,20 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
                   <Box height: "100%">
                     <高さが変わるコンテンツ>
       */}
-      <Grid container spacing={1} marginY={0} sx={{ minHeight: "600px" }}>
-        {!matches && (
-          <DmaxResult
-            allDmaxOutput={allDmaxOutput}
-            processingUserInputData={processingUserInputData}
-            processingUserArmorsData={processingUserArmorsData}
-          />
-        )}
-
-        <DmaxHistory allDmaxOutput={allDmaxOutput} />
-      </Grid>
-
-      {/* <Snackbar
-        open={openStart}
-        autoHideDuration={3000}
-        transitionDuration={{ enter: 1000, exit: 1000 }}
-        onClose={handleCloseStart}
-        message={snackbarMessage}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleCloseStart} severity="info" sx={{ width: "100%" }}>
-          最適化を開始しました
-        </Alert>
-      </Snackbar> */}
+      <Card variant="outlined" sx={{ borderRadius: 1, height: "100%", width: "100%" }}>
+        <Grid container spacing={1} marginY={0} sx={{ minHeight: "600px" }}>
+          {!matches && (
+            <>
+              <DmaxResult
+                allDmaxOutput={allDmaxOutput}
+                processingUserInputData={processingUserInputData}
+                processingUserArmorsData={processingUserArmorsData}
+              />
+            </>
+          )}
+          <DmaxHistory allDmaxOutput={allDmaxOutput} />
+        </Grid>
+      </Card>
 
       <Snackbar
         open={openError}

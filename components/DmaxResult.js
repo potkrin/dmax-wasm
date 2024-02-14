@@ -306,8 +306,8 @@ export const DmaxResult = ({
   const matches = useMediaQuery(theme.breakpoints.down("md")); // 'sm' は600pxに設定されていることが多い
 
   return (
-    <Grid item xs={12} md={6}>
-      <Card variant="outlined" sx={{ borderRadius: 1, height: "100%" }}>
+    <>
+      <Grid item md={5.9}>
         <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
           <Grid item>
             <InsightsIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
@@ -349,8 +349,18 @@ export const DmaxResult = ({
         >
           <NewlineText text={dmaxResult} />
         </Box>
-      </Card>
-    </Grid>
+      </Grid>
+
+      <Grid item md={0.2}>
+        <Divider
+          orientation="vertical"
+          sx={{
+            height: "98%", // Dividerの高さをコンテナの80%に設定
+            my: "auto", // 上下マージンを自動で設定し、中央に配置
+          }}
+        />
+      </Grid>
+    </>
   );
 };
 

@@ -1,12 +1,10 @@
 import React, { useRef, useEffect } from "react";
-import { Grid, Paper, Box, Card, Typography, CircularProgress, Divider } from "@mui/material";
+import { Grid, Typography, CircularProgress, Divider, useMediaQuery } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import ErrorIcon from "@mui/icons-material/Error";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
-import { useTheme } from "@mui/material/styles";
-import { theme } from "../src/theme";
+import { breakpoints, theme } from "../src/theme";
 import MemoryIcon from "@mui/icons-material/Memory";
 
 function NewlineText({ text }) {
@@ -19,6 +17,8 @@ function NewlineText({ text }) {
 }
 
 export const MiddleOutput = ({ middleOutput, memoryLimit }) => {
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
+
   return (
     <>
       <Grid container alignItems={"center"} spacing={0} marginBottom={0.8}>
@@ -47,7 +47,7 @@ export const MiddleOutput = ({ middleOutput, memoryLimit }) => {
           </Typography>
         </Grid>
         <Grid item xs={6} sm={6} container justifyContent="flex-end" alignItems="center">
-          {memoryLimit && (
+          {memoryLimit && matches && (
             <>
               <MemoryIcon sx={{ color: theme.vars.palette.text.hint, fontSize: "large" }} />
               <Typography

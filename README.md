@@ -779,7 +779,41 @@ framework-10fac88913917d91.js:9 TypeError: Cannot read properties of undefined (
 
 
 
+[WebPageTest](https://www.webpagetest.org/) でロケーションを指定して Largest Contentful Paint (LCP) を計測する
+- 同一のVPSで Next.js と Django が稼働中
+- CDNなし
+- Next.js は SSG
+- Django は動的データからページを作成して返すので実質SSR
 
+| URL           | 位置       | TFB    | LCP    |
+| ----          | ----       | ----   | ----   |
+| Next.js (SSG) | 東京       | 0.390S | 0.802S |
+|               | 大阪       | 0.224S | 0.592S |
+|               | シドニー   | 0.843S | 1.350S |
+|               | バージニア | 1.093S | 1.714S |
+|               | サンパウロ | 1.304S | 1.947S |
+| Django (SSR)  | 東京       | 1.004S | 1.825S |
+|               | 大阪       | 1.140S | 1.856S |
+|               | シドニー   | 1.540S | 2.357S |
+|               | バージニア | 2.044S | 3.120S |
+|               | サンパウロ | 2.801S | 4.202S |
+
+- [Conohaドメイン移管(OUT)](https://support.conoha.jp/v/authcode-v/?btn_id=v-domaintransferin-v--related_v-authcode-v)
+  - Conoha から他へのドメイン管理権限移管の方法 (NSレコードの書き換え)
+  - AuthCode を利用すればNSレコードを手動で書き換える必要はないっぽい
+- [Cloudflareにドメインを移管してみた](https://dev.classmethod.jp/articles/domain-transfer-from-onamae-to-cloudflare/)
+- 証明書・TLSは大丈夫かな
+  - オリジンサーバーですでに Lets Encrypt の証明書によるTLSに対応している場合、
+  - Cloudflare 側では「フル（厳格）」モードを設定するだけで良いっぽい(GPT4によると)
+
+## 広告検討
+- [煩わしい自動広告の制御](https://note.com/harulog555/n/nfd3ab4fd0da4)
+- [Twitter:sm_hn 自動広告の検索結果](https://twitter.com/search?q=from%3Asm_hn%20%E8%87%AA%E5%8B%95%E5%BA%83%E5%91%8A&src=typed_query&f=top)
+
+
+#### 事務処理まわり
+- 確定申告が必要かどうか
+- 副業申請
 
 
 # [DUPLICATED] Django デプロイ用ビルド手順 (古い手順)

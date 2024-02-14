@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Grid, Card, useMediaQuery } from "@mui/material";
+import { Grid, Card, Box, Typography, useMediaQuery } from "@mui/material";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { useTheme } from "@mui/material/styles";
 import { theme, breakpoints } from "../src/theme";
+import MemoryIcon from "@mui/icons-material/Memory";
 
-export const DmaxGraph = ({ chartData }) => {
+export const DmaxGraph = ({ chartData, memoryLimit }) => {
   const [chartWidth, setChartWidth] = useState(0);
   const containerRef = useRef(null);
 
@@ -44,85 +45,99 @@ export const DmaxGraph = ({ chartData }) => {
   const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
   return (
-    <Grid item xs={12} md={6} ref={containerRef}>
-      <Card
-        variant="outlined"
-        sx={{
-          borderRadius: 1,
-          padding: "16px 8px",
-          minHeight: "400px",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+    <>
+      <Grid
+        item
+        xs={12}
+        md={5.9}
+        ref={containerRef}
+        // sx={{ padding: "16px", display: "flex", alignItems: "center" }}
+        sx={{ padding: "16px", display: "flex", flexDirection: "column", justifyContent: "center" }}
       >
-        <LineChart
-          width={chartWidth}
-          height={matches ? chartWidth - 40 : 400}
-          data={chartData}
-          margin="auto"
-          display="block"
-        >
-          <XAxis
-            dataKey="time"
-            unit="s"
-            type="number"
-            tick={{ fill: currentTheme.palette.text.secondary }}
-          />
-          <YAxis yAxisId="left" tick={{ fill: currentTheme.palette.text.secondary }} />
-          <YAxis
-            yAxisId="right"
-            unit="MB"
-            type="number"
-            orientation="right"
-            tick={{ fontSize: 10, fill: currentTheme.palette.text.secondary }}
-          />
-          <Tooltip
-            formatter={(value, name) => {
-              let unit;
-              switch (name) {
-                case "メモリ使用量":
-                  unit = " MB";
-                  break;
-                default:
-                  unit = ""; // 何もしない
-              }
-              return [`${value}${unit}`, name];
-            }}
-            contentStyle={{ backgroundColor: currentTheme.palette.background.default }}
-          />
-          <Legend wrapperStyle={{ fontSize: "0.9rem" }} />
-          <CartesianGrid stroke="#f5f5f5" />
-          <Line
-            type="linear"
-            dataKey="upperLimit"
-            name="ダメージ上限"
-            stroke={currentTheme.palette.primary.main}
-            yAxisId="left"
-            animationDuration={300}
-          />
-          <Line
-            type="linear"
-            dataKey="lowerLimit"
-            name="ダメージ下限"
-            stroke={currentTheme.palette.secondary.main}
-            yAxisId="left"
-            animationDuration={300}
-          />
-          <Line
-            type="linear"
-            dataKey="usedMemory"
-            name="メモリ使用量"
-            stroke={currentTheme.palette.text.secondary}
-            strokeDasharray={"3 3"}
-            dot={false}
-            yAxisId="right"
-            animationDuration={300}
-          />
-        </LineChart>
-      </Card>
-    </Grid>
+        {!matches && (
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <MemoryIcon sx={{ color: theme.vars.palette.text.hint, fontSize: "1.3rem" }} />
+            <Typography
+              sx={{
+                color: theme.vars.palette.text.hint,
+                paddingRight: "0.5rem",
+                alignItems: "center",
+                fontSize: "0.9rem",
+              }}
+            >
+              メモリ上限 {memoryLimit}
+            </Typography>
+          </Box>
+        )}
+
+        <Box sx={{ display: "flex" }}>
+          <LineChart
+            width={chartWidth}
+            height={matches ? chartWidth - 40 : 440}
+            data={chartData}
+            margin="auto"
+            display="block"
+          >
+            <XAxis
+              dataKey="time"
+              unit="s"
+              type="number"
+              tick={{ fill: currentTheme.palette.text.secondary }}
+            />
+            <YAxis yAxisId="left" tick={{ fill: currentTheme.palette.text.secondary }} />
+            <YAxis
+              yAxisId="right"
+              unit="MB"
+              type="number"
+              orientation="right"
+              tick={{ fontSize: 10, fill: currentTheme.palette.text.secondary }}
+            />
+            <Tooltip
+              formatter={(value, name) => {
+                let unit;
+                switch (name) {
+                  case "メモリ使用量":
+                    unit = " MB";
+                    break;
+                  default:
+                    unit = ""; // 何もしない
+                }
+                return [`${value}${unit}`, name];
+              }}
+              contentStyle={{ backgroundColor: currentTheme.palette.background.default }}
+            />
+            <Legend wrapperStyle={{ fontSize: "0.9rem" }} />
+            <CartesianGrid stroke="#f5f5f5" />
+            <Line
+              type="linear"
+              dataKey="upperLimit"
+              name="ダメージ上限"
+              stroke={currentTheme.palette.primary.main}
+              yAxisId="left"
+              animationDuration={300}
+            />
+            <Line
+              type="linear"
+              dataKey="lowerLimit"
+              name="ダメージ下限"
+              stroke={currentTheme.palette.secondary.main}
+              yAxisId="left"
+              animationDuration={300}
+            />
+            <Line
+              type="linear"
+              dataKey="usedMemory"
+              name="メモリ使用量"
+              stroke={currentTheme.palette.text.secondary}
+              strokeDasharray={"3 3"}
+              dot={false}
+              yAxisId="right"
+              animationDuration={300}
+            />
+          </LineChart>
+        </Box>
+      </Grid>
+    </>
   );
 };
 

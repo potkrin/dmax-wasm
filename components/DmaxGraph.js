@@ -51,8 +51,12 @@ export const DmaxGraph = ({ chartData, memoryLimit }) => {
         xs={12}
         md={5.9}
         ref={containerRef}
-        // sx={{ padding: "16px", display: "flex", alignItems: "center" }}
-        sx={{ padding: "16px", display: "flex", flexDirection: "column", justifyContent: "center" }}
+        sx={{
+          padding: "16px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
       >
         {!matches && (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -70,7 +74,7 @@ export const DmaxGraph = ({ chartData, memoryLimit }) => {
           </Box>
         )}
 
-        <Box sx={{ display: "flex" }}>
+        <Box sx={{ display: "flex", minHeigh: 440 }}>
           <LineChart
             width={chartWidth}
             height={matches ? chartWidth - 40 : 440}

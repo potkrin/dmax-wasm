@@ -74,7 +74,7 @@ export const DmaxGraph = ({ chartData, memoryLimit }) => {
           </Box>
         )}
 
-        <Box sx={{ display: "flex", minHeigh: 440 }}>
+        <Box sx={{ display: "flex" }}>
           <LineChart
             width={chartWidth}
             height={matches ? chartWidth - 40 : 440}

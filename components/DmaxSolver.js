@@ -1,6 +1,7 @@
 /* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/
 
-import { React, useState, useRef, useEffect, forwardRef } from "react";
+import React from "react";
+import { useState, useRef, useEffect, forwardRef, useMemo } from "react";
 import { Grid, Card, Fab, Box } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -255,7 +256,7 @@ const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const DmaxSolver = ({ userInputData, fabRight }) => {
+export const DmaxSolver = React.memo(({ userInputData, fabRight }) => {
   // useTheme() を使用して、テーマのブレークポイントにアクセス
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
@@ -334,8 +335,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   // DmaxOutput のリアルタイム中間出力をリセットする state
   const [resetMiddleOutputInfo, setResetMiddleOutputInfo] = useState(false);
 
-  const { serverCharmData, charmValue, serverQuriousArmorData, quriousArmorValue } =
-    useCharmAndQuriousArmorContext();
+  const { serverCharmData, serverQuriousArmorData } = useCharmAndQuriousArmorContext();
 
   // DmaxSolverコンポーネントへの参照を作成 (自動スクロールに利用)
   const dmaxSolverRef = useRef(null);
@@ -558,42 +558,34 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     return () => clearTimeout(timer);
   }, []); // 空の依存配列でマウント時のみ実行
 
-  return (
-    <>
-      <Card
-        variant="outlined"
-        sx={{
-          borderRadius: 1,
-          minHeight: "400px",
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "8px",
-          marginBottom: 1,
-        }}
-      >
-        <Grid ref={dmaxSolverRef} container spacing={0} marginY={1} sx={{ minHeight: "400px" }}>
-          <DmaxOutput
-            dmaxOutput={dmaxOutput}
-            resetMiddleOutputInfo={resetMiddleOutputInfo}
-            setResetMiddleOutputInfo={setResetMiddleOutputInfo}
-            startOptimization={startOptimization}
-            stopOptimization={stopOptimization}
-            handleToggle={handleToggle}
-            isOptimizing={isOptimizing}
-            excludeQuriousArmor={excludeQuriousArmor}
-            handleExcludeQuriousArmor={handleExcludeQuriousArmor}
-            excludeCharm={excludeCharm}
-            handleExcludeCharm={handleExcludeCharm}
-            memoryLimit={memoryLimit}
-            chartData={chartData}
-          />
-          <DmaxGraph chartData={chartData} memoryLimit={memoryLimit} />
-        </Grid>
-      </Card>
-      {/* 
+  return useMemo(
+    () => (
+      <>
+        <Card
+          variant="outlined"
+          sx={{
+            borderRadius: 1,
+            minHeight: "400px",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "8px",
+            marginBottom: 1,
+          }}
+        >
+          <Grid ref={dmaxSolverRef} container spacing={0} marginY={1} sx={{ minHeight: "400px" }}>
+            <DmaxOutput
+              dmaxOutput={dmaxOutput}
+              resetMiddleOutputInfo={resetMiddleOutputInfo}
+              setResetMiddleOutputInfo={setResetMiddleOutputInfo}
+              memoryLimit={memoryLimit}
+            />
+            <DmaxGraph chartData={chartData} memoryLimit={memoryLimit} />
+          </Grid>
+        </Card>
+        {/* 
           PC表示 では DmaxResult と DmaxHistory のうちより高い方に高さを合わせる (スマホは縦列なので関係なし)
           <Grid minHeight: "800px">
               <DmaxResult height: "100%" >
@@ -606,63 +598,76 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
                   <Box height: "100%">
                     <高さが変わるコンテンツ>
       */}
-      <Card variant="outlined" sx={{ borderRadius: 1, height: "100%", width: "100%" }}>
-        <Grid container spacing={1} marginY={0} sx={{ minHeight: "600px" }}>
-          {!matches && (
-            <>
-              <DmaxResult
-                allDmaxOutput={allDmaxOutput}
-                processingUserInputData={processingUserInputData}
-                processingUserArmorsData={processingUserArmorsData}
-              />
-            </>
-          )}
-          <DmaxHistory allDmaxOutput={allDmaxOutput} />
-        </Grid>
-      </Card>
-
-      <Snackbar
-        open={openError}
-        autoHideDuration={6000}
-        onClose={handleCloseError}
-        message={snackbarMessage}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleCloseError} severity="error" sx={{ width: "100%" }}>
-          APIの送受信に失敗しました
-        </Alert>
-      </Snackbar>
-
-      {showFab && (
-        <HideOnScroll direction="up">
-          <Fab
-            variant={matches ? "circular" : "extended"}
-            sx={{
-              position: "fixed",
-              bottom: matches ? "84px" : "48px",
-              // right: "48px",
-              right: matches ? "24px" : `${fabRight}px`,
-              animation: "fadeIn 0.5s ease-in-out",
-            }}
-            color="primary"
-            onClick={handleToggle}
-          >
-            {isOptimizing ? (
+        <Card variant="outlined" sx={{ borderRadius: 1, height: "100%", width: "100%" }}>
+          <Grid container spacing={1} marginY={0} sx={{ minHeight: "600px" }}>
+            {!matches && (
               <>
-                <CancelIcon />
-                {!matches && <Box sx={{ ml: 1 }}>中止</Box>}
-              </>
-            ) : (
-              <>
-                <TrendingUpIcon />
-                {!matches && <Box sx={{ ml: 1 }}>最適化</Box>}
+                <DmaxResult
+                  allDmaxOutput={allDmaxOutput}
+                  processingUserInputData={processingUserInputData}
+                  processingUserArmorsData={processingUserArmorsData}
+                />
               </>
             )}
-          </Fab>
-        </HideOnScroll>
-      )}
-    </>
+            <DmaxHistory allDmaxOutput={allDmaxOutput} />
+          </Grid>
+        </Card>
+
+        <Snackbar
+          open={openError}
+          autoHideDuration={6000}
+          onClose={handleCloseError}
+          message={snackbarMessage}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert onClose={handleCloseError} severity="error" sx={{ width: "100%" }}>
+            APIの送受信に失敗しました
+          </Alert>
+        </Snackbar>
+
+        {showFab && (
+          <HideOnScroll direction="up">
+            <Fab
+              variant={matches ? "circular" : "extended"}
+              sx={{
+                position: "fixed",
+                bottom: matches ? "84px" : "48px",
+                // right: "48px",
+                right: matches ? "24px" : `${fabRight}px`,
+                animation: "fadeIn 0.5s ease-in-out",
+              }}
+              color="primary"
+              onClick={handleToggle}
+            >
+              {isOptimizing ? (
+                <>
+                  <CancelIcon />
+                  {!matches && <Box sx={{ ml: 1 }}>中止</Box>}
+                </>
+              ) : (
+                <>
+                  <TrendingUpIcon />
+                  {!matches && <Box sx={{ ml: 1 }}>最適化</Box>}
+                </>
+              )}
+            </Fab>
+          </HideOnScroll>
+        )}
+      </>
+    ),
+    [
+      serverCharmData,
+      serverQuriousArmorData,
+      useServerData,
+      excludeCharm,
+      setExcludeCharm,
+      excludeQuriousArmor,
+      setExcludeQuriousArmor,
+      dmaxOutput,
+      memoryLimit,
+      isOptimizing,
+    ]
   );
-};
+});
 
 export default DmaxSolver;

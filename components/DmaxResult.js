@@ -287,81 +287,79 @@ function NewlineText({ text }) {
   return <span dangerouslySetInnerHTML={{ __html: newText }} />;
 }
 
-export const DmaxResult = ({
-  allDmaxOutput,
-  processingUserInputData,
-  processingUserArmorsData,
-}) => {
-  const dmaxResult = outputToResult(
-    allDmaxOutput,
-    processingUserInputData,
-    processingUserArmorsData
-  );
+export const DmaxResult = React.memo(
+  ({ allDmaxOutput, processingUserInputData, processingUserArmorsData }) => {
+    const dmaxResult = outputToResult(
+      allDmaxOutput,
+      processingUserInputData,
+      processingUserArmorsData
+    );
 
-  const [textToCopy, setTextToCopy] = React.useState("");
-  useEffect(() => {
-    setTextToCopy(dmaxResult);
-  }, [dmaxResult]);
+    const [textToCopy, setTextToCopy] = React.useState("");
+    useEffect(() => {
+      setTextToCopy(dmaxResult);
+    }, [dmaxResult]);
 
-  const matches = useMediaQuery(theme.breakpoints.down("md")); // 'sm' は600pxに設定されていることが多い
+    const matches = useMediaQuery(theme.breakpoints.down("md")); // 'sm' は600pxに設定されていることが多い
 
-  return (
-    <>
-      <Grid item md={5.9}>
-        <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
-          <Grid item>
-            <InsightsIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
+    return (
+      <>
+        <Grid item md={5.9}>
+          <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
+            <Grid item>
+              <InsightsIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
+            </Grid>
+            <Grid item xs>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, paddingLeft: "6px" }}>
+                結果
+              </Typography>
+            </Grid>
+            <Grid item xs={1}>
+              <CopyToClipboardButton textToCopy={textToCopy} />
+            </Grid>
           </Grid>
-          <Grid item xs>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, paddingLeft: "6px" }}>
-              結果
-            </Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <CopyToClipboardButton textToCopy={textToCopy} />
-          </Grid>
+
+          <Box sx={{ marginX: "8px" }}>
+            <Divider xs={{ margin: "8px" }} />
+          </Box>
+          <Box
+            style={{
+              // height: "900px",
+              ...(matches ? { minHeight: "200px" } : { height: "100%" }),
+              overflowY: "auto",
+              paddingLeft: "24px",
+              textAlign: "left",
+              fontSize: "14px",
+            }}
+            sx={{
+              flexGrow: 1, // コンテナの残りのスペースを埋める
+              overflowY: "auto", // 縦方向のスクロールを許可
+              padding: "16px",
+
+              "&::-webkit-scrollbar": {
+                display: "none", // Webkitブラウザ用のスクロールバーを非表示にする
+              },
+              // MSIEやEdge用の設定
+              "msOverflowStyle": "none", // IE 10+ スクロールバーを非表示
+              "scrollbarWidth": "none", // Firefox スクロールバーを非表示
+            }}
+          >
+            <NewlineText text={dmaxResult} />
+          </Box>
         </Grid>
 
-        <Box sx={{ marginX: "8px" }}>
-          <Divider xs={{ margin: "8px" }} />
-        </Box>
-        <Box
-          style={{
-            // height: "900px",
-            ...(matches ? { minHeight: "200px" } : { height: "100%" }),
-            overflowY: "auto",
-            paddingLeft: "24px",
-            textAlign: "left",
-            fontSize: "14px",
-          }}
-          sx={{
-            flexGrow: 1, // コンテナの残りのスペースを埋める
-            overflowY: "auto", // 縦方向のスクロールを許可
-            padding: "16px",
-
-            "&::-webkit-scrollbar": {
-              display: "none", // Webkitブラウザ用のスクロールバーを非表示にする
-            },
-            // MSIEやEdge用の設定
-            "msOverflowStyle": "none", // IE 10+ スクロールバーを非表示
-            "scrollbarWidth": "none", // Firefox スクロールバーを非表示
-          }}
-        >
-          <NewlineText text={dmaxResult} />
-        </Box>
-      </Grid>
-
-      <Grid item md={0.2}>
-        <Divider
-          orientation="vertical"
-          sx={{
-            height: "98%", // Dividerの高さをコンテナの80%に設定
-            my: "auto", // 上下マージンを自動で設定し、中央に配置
-          }}
-        />
-      </Grid>
-    </>
-  );
-};
+        <Grid item md={0.2}>
+          <Divider
+            orientation="vertical"
+            sx={{
+              height: "98%", // Dividerの高さをコンテナの80%に設定
+              my: "auto", // 上下マージンを自動で設定し、中央に配置
+            }}
+          />
+        </Grid>
+      </>
+    );
+  }
+);
 
 export default DmaxResult;

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Grid,
   Box,
@@ -343,104 +343,74 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
   console.log("print middle=" + JSON.stringify(nextMiddleOutputInfo));
 }
 
-export const DmaxOutput = ({
-  dmaxOutput,
-  resetMiddleOutputInfo,
-  setResetMiddleOutputInfo,
-  startOptimization,
-  stopOptimization,
-  handleToggle,
-  isOptimizing,
-  excludeQuriousArmor,
-  handleExcludeQuriousArmor,
-  excludeCharm,
-  handleExcludeCharm,
-  memoryLimit,
-  chartData,
-}) => {
-  // const classes = useStyles();
-  const classes = {};
+export const DmaxOutput = React.memo(
+  ({ dmaxOutput, resetMiddleOutputInfo, setResetMiddleOutputInfo, memoryLimit }) => {
+    // const classes = useStyles();
+    const classes = {};
 
-  const initMiddleOutputInfo = JSON.parse(JSON.stringify(defaultMiddleOutputInfo));
-  // dmaxOutput : 最適中の全ての出力をリアルタイム更新
-  // middleOutputInfo : dmaxOutput を解析してリアルタイムで表示する中間出力
-  const [middleOutputInfo, setMiddleOutputInfo] = useState(initMiddleOutputInfo);
+    const initMiddleOutputInfo = JSON.parse(JSON.stringify(defaultMiddleOutputInfo));
+    // dmaxOutput : 最適中の全ての出力をリアルタイム更新
+    // middleOutputInfo : dmaxOutput を解析してリアルタイムで表示する中間出力
+    const [middleOutputInfo, setMiddleOutputInfo] = useState(initMiddleOutputInfo);
 
-  const {
-    isLoggedIn,
-    setIsLoggedIn,
-    isDialogOpen,
-    setIsDialogOpen,
-    handleCloseDialog,
-    checkLoginStatus,
-  } = useLoginContext();
+    const { checkLoginStatus } = useLoginContext();
 
-  useEffect(() => {
-    updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInfo);
-  }, [dmaxOutput]);
+    useEffect(() => {
+      updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInfo);
+    }, [dmaxOutput]);
 
-  useEffect(() => {
-    if (resetMiddleOutputInfo) {
-      setMiddleOutputInfo(initMiddleOutputInfo);
-      setResetMiddleOutputInfo(false);
-    }
-  }, [resetMiddleOutputInfo]);
+    useEffect(() => {
+      if (resetMiddleOutputInfo) {
+        setMiddleOutputInfo(initMiddleOutputInfo);
+        setResetMiddleOutputInfo(false);
+      }
+    }, [resetMiddleOutputInfo]);
 
-  const {
-    charmValue,
-    handleChangeCharmValue,
-    isCharmDataFetched,
-    setIsCharmDataFetched,
-    value,
-    serverQuriousArmorData,
-    setServerQuriousArmorData,
-    quriousArmorValue,
-    handleChangeQuriousArmorValue,
-    isQuriousArmorDataFetched,
-    setIsQuriousArmorDataFetched,
-  } = useCharmAndQuriousArmorContext();
+    const { handleChangeCharmValue, handleChangeQuriousArmorValue } =
+      useCharmAndQuriousArmorContext();
 
-  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
+    const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
-  const useServerCharm = () => {
-    checkLoginStatus();
-    handleChangeCharmValue(null, 1);
-  };
+    const useServerCharm = () => {
+      checkLoginStatus();
+      handleChangeCharmValue(null, 1);
+    };
 
-  const useServerQuriousArmor = () => {
-    checkLoginStatus();
-    handleChangeQuriousArmorValue(null, 1);
-  };
+    const useServerQuriousArmor = () => {
+      checkLoginStatus();
+      handleChangeQuriousArmorValue(null, 1);
+    };
 
-  return (
-    <Grid item xs={12} md={5.9}>
-      <Box
-        style={{
-          minHeight: "400px",
-          height: "100%",
-          // overflowY: "auto",
-          padding: "8px",
-          textAlign: "left",
-          width: "100%",
-        }}
-      >
-        <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
-          <Grid item>
-            <TrendingUpIcon sx={{ marginTop: "4px" }} color="primary" />
-          </Grid>
-          <Grid item xs>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
-              最適化
-            </Typography>
-          </Grid>
+    return useMemo(
+      () => (
+        <Grid item xs={12} md={5.9}>
+          <Box
+            style={{
+              minHeight: "400px",
+              height: "100%",
+              // overflowY: "auto",
+              padding: "8px",
+              textAlign: "left",
+              width: "100%",
+            }}
+          >
+            <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
+              <Grid item>
+                <TrendingUpIcon sx={{ marginTop: "4px" }} color="primary" />
+              </Grid>
+              <Grid item xs>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
+                  最適化
+                </Typography>
+              </Grid>
 
-          <Grid item xs container justifyContent="flex-end" sx={{ marginRight: 1 }}>
-            <OptimizationOptionButtons />
-          </Grid>
-        </Grid>
-        <Divider />
+              <Grid item xs container justifyContent="flex-end" sx={{ marginRight: 1 }}>
+                <OptimizationOptionButtons />
+              </Grid>
+            </Grid>
+            <Divider />
 
-        {/* <Grid container marginTop={0}>
+            {/* <Grid container marginTop={0}>
             <Grid
               item
               container
@@ -462,30 +432,40 @@ export const DmaxOutput = ({
             </Grid>
           </Grid> */}
 
-        <Grid container marginTop={0}>
-          <Grid item xs={12}>
-            <Box
-              sx={{
-                margin: 1.5,
-                marginLeft: 2.0,
-                marginBottom: 4,
-                marginTop: 2,
-                minHeight: matches ? "" : "400px",
-                height: "100%",
-              }}
-            >
-              <MiddleOutput middleOutput={middleOutputInfo.launch} memoryLimit={memoryLimit} />
-              <MiddleOutput middleOutput={middleOutputInfo.load} />
-              <MiddleOutput middleOutput={middleOutputInfo.preprocess} />
-              <MiddleOutput middleOutput={middleOutputInfo.solverStart} />
-              <MiddleOutput middleOutput={middleOutputInfo.solve} />
-              <MiddleOutput middleOutput={middleOutputInfo.solverEnd} />
-            </Box>
-          </Grid>
+            <Grid container marginTop={0}>
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    margin: 1.5,
+                    marginLeft: 2.0,
+                    marginBottom: 4,
+                    marginTop: 2,
+                    minHeight: matches ? "" : "400px",
+                    height: "100%",
+                  }}
+                >
+                  <MiddleOutput middleOutput={middleOutputInfo.launch} memoryLimit={memoryLimit} />
+                  <MiddleOutput middleOutput={middleOutputInfo.load} />
+                  <MiddleOutput middleOutput={middleOutputInfo.preprocess} />
+                  <MiddleOutput middleOutput={middleOutputInfo.solverStart} />
+                  <MiddleOutput middleOutput={middleOutputInfo.solve} />
+                  <MiddleOutput middleOutput={middleOutputInfo.solverEnd} />
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
         </Grid>
-      </Box>
-    </Grid>
-  );
-};
+      ),
+      [
+        checkLoginStatus,
+        handleChangeCharmValue,
+        handleChangeQuriousArmorValue,
+        dmaxOutput,
+        memoryLimit,
+        middleOutputInfo,
+      ]
+    );
+  }
+);
 
 export default DmaxOutput;

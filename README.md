@@ -103,13 +103,28 @@
     - [x] threshold を設定すればいけそう
   - [x] スマホの場合は結果と履歴を統合したほうがいいのでは..?
   - [x] 背景色との差分
-  - [ ] 最適化とグラフの統合
-  - [ ] 高速化
+  - [x] 最適化とグラフの統合
+  - [x] 高速化
     - 表の行数制限
     - 不要なコンテンツをアンマウント
   - [ ] CDN検討
+  - [ ] 広告検討
+  - [ ] リファクタリング: RampageDecoなどの updateUserInputData を setter に修正できると思う
+  - [ ] バグ
+    - [ ] 多分スマホ版の result/history がバグっている
+    - [ ] スキルのその他入力だけ再レンダリング阻止できてない
+    - [ ] 全属性耐性が100以上入力できない
   - [ ] プライバシーポリシーや著作権のフッター
   - [ ] ログイン画面の見た目をまともにする
+  - [ ] 高速化検討
+    - 他の人の React 実装を見てみる
+    - [ ] [PageSpeed Insights指摘事項](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
+    - Pixel3a でみるとめっちゃ重い
+    - 参考記事
+      - Reactのレンダリングに関する完全ガイド - Qiita
+      - React (+ Redux) アプリの state 更新に関するパフォーマンス戦略 - 30歳からのプログラミング
+      - Reduxを用いる時にオススメしたい3つのTips - aptpod Tech Blog
+      - なぜReactは標準でComponentをmemo化しないのか？
   - [ ] 最適化の特性を書く (物理だけなら速い、属性も入ると重い、防具数が増えてもそこまで？)
     - [ ] スマホの場合、計算機だけ内部にタブ [参考](https://damage.paimon.app/calculator/)
   - [ ] 動作テスト
@@ -118,8 +133,6 @@
   - [ ] 警告系
     - [ ] unique key エラーを消す
     - [ ] Image has legacy prop "objectFit". Did you forget to run the codemod?
-  - [ ] [PageSpeed Insights](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
-  - [ ] 広告をはる？
   - [ ] リファクタリング
     - [ ] 状態管理 Context, Recoil, Redux
     - [ ] 名称整理
@@ -741,7 +754,7 @@ cp brachistochrone1GB.* ~/work/react-tutorial/dmax-wasm/public/dmax-core/
 - [防具アイコン](https://www.iconfinder.com/icons/3938246/armor_body_costume_equipment_glove_knight_protection_icon)
 - [護石アイコン](https://www.iconfinder.com/icons/7345925/talisman_amulet_charm_luck_accessory_esoteric_superstition_icon)
 
-## lightTheme と darkTheme の要素を対称にしないとクラッシュする
+# lightTheme と darkTheme の要素を対称にしないとクラッシュする
 SSGのちらつき対策のため導入した CSSVarsProvider によるテーマ(src/theme.js)において
 **lightTheme にのみ primary.contrastText と background.paper がなかった時、**
 以下の条件でアプリケーションがクラッシュした
@@ -759,9 +772,9 @@ framework-10fac88913917d91.js:9 TypeError: Cannot read properties of undefined (
    ... 略
 ```
 
-## CDN検討
+# CDN検討
 [WebPageTest](https://www.webpagetest.org/) でロケーションを指定して Largest Contentful Paint (LCP) を計測する
-
+## FirstView
 | URL           | 位置       | TFB    | LCP    | 結果 |
 | ----          | ----       | ----   | ----   | ---- |
 | :8000/dmax    | 東京       | 0.390S | 0.802S | https://www.webpagetest.org/result/240212_BiDcK1_TX/ |
@@ -798,6 +811,58 @@ framework-10fac88913917d91.js:9 TypeError: Cannot read properties of undefined (
 |               | バージニア | 2.044S | 3.120S |
 |               | サンパウロ | 2.801S | 4.202S |
 
+## First and Repeat
+| URL           | Location  | TFB (F) | LCP (F) | TFB (R) | LCP (R) | result |
+| ----          | ----      | ----    | ----    |  ----   | ----    | ---- |
+| :8000/dmax    | Tokyo     | 0.281s  | 0.604s  | 0.186s  | 0.495s  | https://www.webpagetest.org/result/240215_BiDcA2_C1N/ |
+|               | Osaka     | 0.378s  | 0.744s  | 0.181s  | 0.503s  | https://www.webpagetest.org/result/240215_AiDcEM_C4P/ |
+|               | Sydney    | 0.841s  | 1.300s  | 0.455s  | 0.738s  | https://www.webpagetest.org/result/240215_AiDcBH_C4Z/ |
+|               | Beijing   | 2.336s  | 4.089s  | 0.621s  | 0.934s  | https://www.webpagetest.org/result/240215_AiDcNY_C4V/ |
+|               | Virginia  | 1.066s  | 1.697s  | 0.644s  | 1.030s  | https://www.webpagetest.org/result/240215_BiDcAJ_C18/ |
+|               | Sao Paulo | 1.720s  | 2.352s  | 0.974s  | 1.313s  | https://www.webpagetest.org/result/240215_AiDcSE_C4B/ |
+|               | London    | 1.090s  | 1.795s  | 0.898s  | 1.211s  | https://www.webpagetest.org/result/240215_AiDcTF_C4F/ |
+|               | Seoul     | 1.090s  | 1.795s  | 0.898s  | 1.211s  | https://www.webpagetest.org/result/240215_BiDcAC_C24/ |
+| sbfree/quest/ | Tokyo     | 1.146s  | 1.974s  | 1.059s  | 1.340s  | https://www.webpagetest.org/result/240215_AiDcSQ_C71/ |
+|               | Osaka     | 1.091s  | 1.823s  | 1.100s  | 1.434s  | https://www.webpagetest.org/result/240215_AiDcNE_C75/ |
+|               | Sydney    | 1.715s  | 2.526s  | 1.506s  | 1.726s  | https://www.webpagetest.org/result/240215_AiDc3Z_C7B/ |
+|               | Beijing   |         |         |         |         |                                                       |
+|               | Virginia  | 2.075s  | 3.055s  | 1.807s  | 2.056s  | https://www.webpagetest.org/result/240215_BiDcDA_C3F/ |
+|               | Sao Paulo | 2.368s  | 3.804s  | 2.325s  | 2.578s  | https://www.webpagetest.org/result/240215_AiDc9V_C6C/ |
+|               | London    | 2.447s  | 3.724s  | 2.142s  | 2.407s  | https://www.webpagetest.org/result/240215_BiDcYY_C40/ |
+|               | Seoul     | 1.125s  | 2.068s  | 1.253s  | 1.496s  | https://www.webpagetest.org/result/240215_AiDcE1_C78/ |
+
+
+## First and Repeat
+[WebPageTest](https://www.webpagetest.org/) でロケーションを指定してページ表示速度を測定
+
+- 同一サーバーで Next.js と Django が稼働中
+  - Next.js はSSG
+  - Django SSR (テンプレートエンジン+動的データを返すので実質SSR)
+- TFB: 最初のデータが到着するまで何秒かかった？
+- LCP: ページの最大要素が描画されるまで何秒かかった？
+- (F) 初回アクセス時
+- (R) 2回目以降のアクセス時
+
+| URL           | Location  | TFB (F) | LCP (F) | TFB (R) | LCP (R) |
+| ----          | ----      | ----    | ----    |  ----   | ----    |
+| Next.js (SSG)   | 東京 | 0.281s  | 0.604s  | 0.186s  | 0.495s  |
+|               | 大阪| 0.378s  | 0.744s  | 0.181s  | 0.503s  |
+|               | ソウル| 1.090s  | 1.795s  | 0.898s  | 1.211s  |
+|               | 北京| 2.336s  | 4.089s  | 0.621s  | 0.934s  |
+|               | シドニー| 0.841s  | 1.300s  | 0.455s  | 0.738s  |
+|               | バージニア| 1.066s  | 1.697s  | 0.644s  | 1.030s  |
+|               | ロンドン| 1.090s  | 1.795s  | 0.898s  | 1.211s  |
+|               | サンパウロ| 1.720s  | 2.352s  | 0.974s  | 1.313s  |
+| Django (SSR)| 東京| 1.146s  | 1.974s  | 1.059s  | 1.340s  |
+|               | 大阪| 1.091s  | 1.823s  | 1.100s  | 1.434s  |
+|               | ソウル| 1.125s  | 2.068s  | 1.253s  | 1.496s  |
+|               | 北京| 3.485s | 25.854s        |    2.422s     |    2.698s     |                                                       |
+|               | シドニー| 1.715s  | 2.526s  | 1.506s  | 1.726s  |
+|               | バージニア| 2.075s  | 3.055s  | 1.807s  | 2.056s  |
+|               | ロンドン| 2.447s  | 3.724s  | 2.142s  | 2.407s  |
+|               | サンパウロ| 2.368s  | 3.804s  | 2.325s  | 2.578s  |
+
+
 - [Conohaドメイン移管(OUT)](https://support.conoha.jp/v/authcode-v/?btn_id=v-domaintransferin-v--related_v-authcode-v)
   - Conoha から他へのドメイン管理権限移管の方法 (NSレコードの書き換え)
   - AuthCode を利用すればNSレコードを手動で書き換える必要はないっぽい
@@ -806,14 +871,72 @@ framework-10fac88913917d91.js:9 TypeError: Cannot read properties of undefined (
   - オリジンサーバーですでに Lets Encrypt の証明書によるTLSに対応している場合、
   - Cloudflare 側では「フル（厳格）」モードを設定するだけで良いっぽい(GPT4によると)
 
-## 広告検討
+## CDN有効化
+- そもそも Cloudflare の CDN を利用するのにドメイン移管までする必要はなかった
+1. Conoha のダッシュボード > ドメイン > ドメイン名選択 > ネームサーバー設定 > カスタムを選択 (Conoha(標準)ではない)
+2. Cloudflare ダッシュボードで提示された自分用のネームサーバーをコピペ
+   - 今回は virginia.ns.cloudflare.com, kyrie.ns.cloudflare.com だった
+3. Cloudflare 側で再チェック要求のボタン押下 
+
+DNSわからん..
+なぜ .com に複数のレジストラから登録できるのか？
+NSレコードを書き換えるとどうなるのか？
+
+- レジストラとレジストリは違う
+- レジストリは .com などのドメインと一対一対応
+- Shared Registry System (SRS) という共有データベースのようなもので一元管理している
+- レジストラはドメインがほしいユーザーとレジストリを仲介する業者
+- レジストラは独自にNS(ネームサーバー)を立てている 例: ns-a1.conoha.io
+- レジストラのNSはユーザーに依頼されたドメイン (例: example.com) の権威サーバーを名乗ってレジストリに委任の依頼を出す
+  - 「example.com はウチのNS: ns-a1.conoha.io が権威サーバーになるので、この問い合わせが来たら ns-a1.conoha.io に委任してね」
+- レジストラのNSはユーザーから依頼された複数のドメインの権威サーバーになっている事が多い
+- レジストラのNSのTLD (.io) はかならずしもレジストリのTLD (.com) とあっていなくてもいい (ここ混乱してたところ)
+- レジストラのNSは必ずしも権威サーバーではない
+  - レジストラのNSに保存されているNSレコードを別のNS (virginia.ns.cloudflare.com) に書き換えることによって権威サーバーを書き換えられる
+  - NSレコードを書き換えただけではドメイン移管にはなっていない
+  - 依然として .com のSRSに example.com の登録依頼をしているのは conoha
+  - conoha の .com レジストリへの依頼内容「example.com の権威サーバーは virginia.ns.cloudflare.com だからここに委任してね」
+- conoha -> cloudflare にドメイン移管したら
+  - cloudflare の .com レジストリへの依頼内容「example.com の権威サーバーは virginia.ns.cloudflare.com だからここに委任してね」
+  - 更新手数料,shois代行手数料 などを払う先が conoha から cloudflareになる
+
+## 有効化したら リダイレクトループになった
+- ブラウザ上で「リダイレクトが繰り返し行われました」というエラーが表示されてページが閲覧できなくなった
+- いわゆるリダイレクトループ
+- [Cloudflare + Vercelでのリダイレクトループエラーの解消メモ](https://qiita.com/n0bisuke/items/ebdace6abf4423197373)
+- [公式: ERR_TOO_MANY_REDIRECTS](https://developers.cloudflare.com/ssl/troubleshooting/too-many-redirects/)
+  - 図がわかりやすい
+- デフォルトでは SSL/TLS 暗号化モードが Flexible になっているのでこれを Full 以上に変える
+  - Full (厳密) を選択したら解決した
+  - すでに オリジンサーバー(現在稼働しているconoha vps のサーバー) で Let's Encrypt によるTLS対応しているので選択するだけだった
+
+## 有効化したら :8000 ポートが閲覧できなくなった
+- [Cloudflare でデフォルトで利用可能なポート](https://developers.cloudflare.com/fundamentals/reference/network-ports/)
+  - [:3000 ポートは開いてないよ](https://community.cloudflare.com/t/need-to-add-port-for-additional-sites-on-same-ip/388971)
+- nginx の設定と next.js の .env.production のポート番号を 8000 -> 8443  に書き換えて reload したら解決
+
+## 導入後 再計測
+- なんか速くなっていない気がする
+- [Cloudflare を使ったキャッシュの基礎](https://numb86-tech.hatenablog.com/entry/2021/06/13/222623)
+- Cf-Cache-Status: Dynamic, Hit?
+- https://developers.cloudflare.com/cache/concepts/default-cache-behavior/#h_bd959d6a-39c0-4786-9bcd-6e6504dcdb97
+- ルール設定しないとキャッシュに乗らないそう (全部乗っても困る)
+- ユーザー個別情報を載せないように
+
+# 広告検討
 - [煩わしい自動広告の制御](https://note.com/harulog555/n/nfd3ab4fd0da4)
 - [Twitter:sm_hn 自動広告の検索結果](https://twitter.com/search?q=from%3Asm_hn%20%E8%87%AA%E5%8B%95%E5%BA%83%E5%91%8A&src=typed_query&f=top)
+- 審査申請だけ出した
+
+## 事務処理まわり
+確定申告が必要かどうか
+- 副業収入が20万円以下であれば所得税の確定申告は不要
+- 住民税申告は別途必要
+- 確定申告すると住民税申告もできるのでまとめるなら確定申告をする
+
+副業申請
 
 
-#### 事務処理まわり
-- 確定申告が必要かどうか
-- 副業申請
 
 
 # [DUPLICATED] Django デプロイ用ビルド手順 (古い手順)

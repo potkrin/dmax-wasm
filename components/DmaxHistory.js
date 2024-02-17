@@ -67,7 +67,7 @@ function a11yProps(index) {
 }
 
 // allDmaxOutput : 最適化が完了したときのすべての中間出力 (DmaxResult と DmaxHistory で使用)
-export const DmaxHistory = ({ allDmaxOutput }) => {
+export const DmaxHistory = React.memo(({ allDmaxOutput }) => {
   const [historyList, setHistoryLists] = React.useState([]);
   const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
@@ -220,6 +220,6 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
       </Box>
     </Grid>
   );
-};
+});
 
 export default DmaxHistory;

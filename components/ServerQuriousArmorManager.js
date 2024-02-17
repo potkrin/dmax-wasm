@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Grid, TextField, Button, Snackbar, Typography, Card, Box } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import Cookies from "js-cookie";
@@ -26,23 +26,17 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export function QuriousArmorManager() {
+export function ServerQuriousArmorManager() {
   // メモリ層で傀異錬成防具データを一元管理するstate (ストレージ層は localstorage or サーバ上のDB)
   const [userQuriousArmorData, setUserQuriousArmorData] = useState([]);
   const [nextUserQuriousArmorData, setNextUserQuriousArmorData] = useState([]);
   const [userQuriousArmorMetaData, setUserQuriousArmorMetaData] = useState(null);
 
-  const { isQuriousArmorDataFetched, setIsQuriousArmorDataFetched } =
+  const { isQuriousArmorDataFetched, setIsQuriousArmorDataFetched, setServerQuriousArmorData } =
     useCharmAndQuriousArmorContext();
 
-  const {
-    isLoggedIn,
-    setIsLoggedIn,
-    isDialogOpen,
-    setIsDialogOpen,
-    handleCloseDialog,
-    checkLoginStatus,
-  } = useLoginContext();
+  const { isLoggedIn, setIsLoggedIn, isDialogOpen, handleCloseDialog, checkLoginStatus } =
+    useLoginContext();
 
   const fetchUserQuriousArmorData = () => {
     console.log("ServerQuriousArmorManager: fetch qurious-armor-data from server");
@@ -383,8 +377,6 @@ export function QuriousArmorManager() {
   // ContextAPI からエラー出力用 Snackbar 管理用の関数を取得
   const { error, setError, open, setOpen, handleClose } = useSnackbar();
 
-  const { serverQuriousArmorData, setServerQuriousArmorData } = useCharmAndQuriousArmorContext();
-
   useEffect(() => {
     setServerQuriousArmorData(userQuriousArmorData);
   }, [userQuriousArmorData]);
@@ -443,161 +435,178 @@ export function QuriousArmorManager() {
     setNextUserQuriousArmorData(newQuriousArmorData);
   };
 
-  return (
-    <>
-      {/* エラー出力 */}
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message={error}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
+  return useMemo(
+    () => (
+      <>
+        {/* エラー出力 */}
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
           onClose={handleClose}
-          severity="error"
-          sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
+          message={error}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          {error}
-        </Alert>
-      </Snackbar>
-
-      {/* ログインダイアログ */}
-      <LoginDialog open={isDialogOpen} onClose={handleCloseDialog} />
-
-      {/* 削除・上書き確認ダイアログ */}
-      <ConfirmDialog
-        openConfirmDialog={openConfirmDialog}
-        handleCloseConfirmDialog={handleCloseConfirmDialog}
-        handleConfirmDelete={handleConfirmDelete}
-        handleConfirmOverwrite={handleConfirmOverwrite}
-        dialogMode={dialogMode}
-        dataType="傀異錬成"
-      />
-
-      <Grid
-        container
-        columnSpacing={3}
-        onClick={checkLoginStatus}
-        sx={{
-          opacity: isLoggedIn ? 1 : 0.5,
-        }}
-        ref={gridRef}
-      >
-        {/* データ入力欄 */}
-        <Grid item xs={12} md={6}>
-          <QuriousArmorInput
-            userQuriousArmorData={userQuriousArmorData}
-            setUserQuriousArmorData={setNextUserQuriousArmorData}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Card
-            variant="outlined"
-            sx={{
-              borderRadius: 1,
-              height: "100%",
-            }}
+          <Alert
+            onClose={handleClose}
+            severity="error"
+            sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
           >
-            <Box
+            {error}
+          </Alert>
+        </Snackbar>
+
+        {/* ログインダイアログ */}
+        <LoginDialog open={isDialogOpen} onClose={handleCloseDialog} />
+
+        {/* 削除・上書き確認ダイアログ */}
+        <ConfirmDialog
+          openConfirmDialog={openConfirmDialog}
+          handleCloseConfirmDialog={handleCloseConfirmDialog}
+          handleConfirmDelete={handleConfirmDelete}
+          handleConfirmOverwrite={handleConfirmOverwrite}
+          dialogMode={dialogMode}
+          dataType="傀異錬成"
+        />
+
+        <Grid
+          container
+          columnSpacing={3}
+          onClick={checkLoginStatus}
+          sx={{
+            opacity: isLoggedIn ? 1 : 0.5,
+          }}
+          ref={gridRef}
+        >
+          {/* データ入力欄 */}
+          <Grid item xs={12} md={6}>
+            <QuriousArmorInput
+              userQuriousArmorData={userQuriousArmorData}
+              setUserQuriousArmorData={setNextUserQuriousArmorData}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Card
+              variant="outlined"
               sx={{
-                margin: "20px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-between",
-                height: "93.5%",
+                borderRadius: 1,
+                height: "100%",
               }}
             >
-              <Grid container alignItems="flex-start">
-                <Grid item xs>
-                  <Typography
-                    variant="subtitle2"
-                    gutterBottom
-                    align="left"
-                    marginBottom={2}
-                    sx={commonStyles.customHeaderNoMargin}
-                  >
-                    CSV 入出力
-                  </Typography>
+              <Box
+                sx={{
+                  margin: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-between",
+                  height: "93.5%",
+                }}
+              >
+                <Grid container alignItems="flex-start">
+                  <Grid item xs>
+                    <Typography
+                      variant="subtitle2"
+                      gutterBottom
+                      align="left"
+                      marginBottom={2}
+                      sx={commonStyles.customHeaderNoMargin}
+                    >
+                      CSV 入出力
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1}>
+                    <CopyToClipboardButton textToCopy={textToCopy} />
+                  </Grid>
                 </Grid>
-                <Grid item xs={1}>
-                  <CopyToClipboardButton textToCopy={textToCopy} />
-                </Grid>
-              </Grid>
 
-              <Box sx={{ height: "100%" }}>
-                <TextField
-                  label="CSV"
-                  multiline
-                  variant="outlined"
-                  minRows={8}
-                  maxRows={8}
-                  value={csvData}
-                  onChange={handleCsvDataChange}
-                  InputProps={{
-                    onClick: (event) => {
-                      if (typeof event.target.select === "function") event.target.select();
-                    },
-                  }}
-                  sx={{
-                    width: "100%",
-                    height: "100%",
-                  }}
-                />
-              </Box>
-              <div style={{ marginTop: "10px" }}>
-                <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={writeToCsvData}
-                    disabled={userQuriousArmorData.length === 0}
-                    startIcon={<KeyboardDoubleArrowUpIcon />}
-                  >
-                    書き出し
-                  </Button>
-                  <div style={{ flex: 1 }}>
-                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={csvData === ""}
-                        onClick={handleOpenOverwriteConfirmDialog}
-                        sx={{ mr: 1 }}
-                        startIcon={<KeyboardDoubleArrowDownIcon />}
-                      >
-                        上書き
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={csvData === ""}
-                        onClick={() => readFromCsvData("append")}
-                        startIcon={<AddIcon />}
-                      >
-                        追加
-                      </Button>
-                    </Box>
-                  </div>
+                <Box sx={{ height: "100%" }}>
+                  <TextField
+                    label="CSV"
+                    multiline
+                    variant="outlined"
+                    minRows={8}
+                    maxRows={8}
+                    value={csvData}
+                    onChange={handleCsvDataChange}
+                    InputProps={{
+                      onClick: (event) => {
+                        if (typeof event.target.select === "function") event.target.select();
+                      },
+                    }}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
                 </Box>
-              </div>
-            </Box>
-          </Card>
-        </Grid>
+                <div style={{ marginTop: "10px" }}>
+                  <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={writeToCsvData}
+                      disabled={userQuriousArmorData.length === 0}
+                      startIcon={<KeyboardDoubleArrowUpIcon />}
+                    >
+                      書き出し
+                    </Button>
+                    <div style={{ flex: 1 }}>
+                      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disabled={csvData === ""}
+                          onClick={handleOpenOverwriteConfirmDialog}
+                          sx={{ mr: 1 }}
+                          startIcon={<KeyboardDoubleArrowDownIcon />}
+                        >
+                          上書き
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disabled={csvData === ""}
+                          onClick={() => readFromCsvData("append")}
+                          startIcon={<AddIcon />}
+                        >
+                          追加
+                        </Button>
+                      </Box>
+                    </div>
+                  </Box>
+                </div>
+              </Box>
+            </Card>
+          </Grid>
 
-        <Grid item xs={12} marginTop={3} onClick={checkLoginStatus}>
-          <QuriousArmorTable
-            userQuriousArmorData={userQuriousArmorData}
-            deleteUserQuriousArmors={deleteUserQuriousArmors}
-            fetchUserQuriousArmorData={fetchUserQuriousArmorData}
-            handleOpenDeleteConfirmDialog={handleOpenDeleteConfirmDialog}
-            userQuriousArmorMetaData={userQuriousArmorMetaData}
-          />
+          <Grid item xs={12} marginTop={3} onClick={checkLoginStatus}>
+            <QuriousArmorTable
+              userQuriousArmorData={userQuriousArmorData}
+              deleteUserQuriousArmors={deleteUserQuriousArmors}
+              fetchUserQuriousArmorData={fetchUserQuriousArmorData}
+              handleOpenDeleteConfirmDialog={handleOpenDeleteConfirmDialog}
+              userQuriousArmorMetaData={userQuriousArmorMetaData}
+            />
+          </Grid>
         </Grid>
-      </Grid>
-    </>
+      </>
+    ),
+    [
+      isQuriousArmorDataFetched,
+      setIsQuriousArmorDataFetched,
+      setServerQuriousArmorData,
+      isLoggedIn,
+      setIsLoggedIn,
+      isDialogOpen,
+      handleCloseDialog,
+      checkLoginStatus,
+      error,
+      setError,
+      open,
+      setOpen,
+      handleClose,
+    ]
   );
 }
 
-export default QuriousArmorManager;
+export default ServerQuriousArmorManager;

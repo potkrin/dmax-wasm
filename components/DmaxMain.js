@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Grid,
   Typography,
@@ -108,7 +108,7 @@ const actions = [
   { icon: <ShareIcon />, name: "Share" },
 ];
 
-export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
+export const DmaxMain = React.memo(({ fabRight, setFabRight, setValue }) => {
   const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
   const [userInputData, setUserInputData] = useState(defaultUserInputData);
@@ -126,12 +126,12 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
     }
   }, []);
 
-  const updateUserInputData = (key, value) => {
+  const updateUserInputData = useCallback((key, value) => {
     setUserInputData((prevData) => ({
       ...prevData,
       [key]: value,
     }));
-  };
+  });
 
   // ユーザが入力するたびに入力データを localstorage に書き込み
   useEffect(() => {
@@ -174,7 +174,7 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
   // Autoselect のテキストボックスに入力されている値 (onFocus でリセットするために定義)
   const [currentSkill, setCurrentSkill] = useState(null);
 
-  const handleSkillRemove = (indexToRemove) => {
+  const handleSkillRemove = useCallback((indexToRemove) => {
     const skillName = additionalSkills[indexToRemove].name;
     updateUserInputData("スキル", {
       ...userInputData["スキル"],
@@ -185,7 +185,7 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
     });
 
     setAdditionalSkills((prev) => prev.filter((_, index) => index !== indexToRemove));
-  };
+  }, []);
 
   return (
     <div className="DmaxMain">
@@ -349,8 +349,16 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
                 <Skill
                   key={key}
                   staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
+                  setUserInputData={setUserInputData}
+                  userInputDataSkill={userInputData["スキル"][key]}
+                  userInputDataOther={
+                    key === "龍気変換" ||
+                    key === "狂竜症【蝕】" ||
+                    key === "伏魔響命" ||
+                    key === "血氣覚醒"
+                      ? userInputData["その他"]
+                      : null
+                  }
                 />
               ))}
             {Object.keys(staticSkillData)
@@ -359,16 +367,24 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
                 <Skill
                   key={key}
                   staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
+                  setUserInputData={setUserInputData}
+                  userInputDataSkill={userInputData["スキル"][key]}
+                  userInputDataOther={
+                    key === "龍気変換" ||
+                    key === "狂竜症【蝕】" ||
+                    key === "伏魔響命" ||
+                    key === "血氣覚醒"
+                      ? userInputData["その他"]
+                      : null
+                  }
                 />
               ))}
           </Grid>
 
           {matches && (
             <SkillAdditionalInput
-              userInputData={userInputData}
-              updateUserInputData={updateUserInputData}
+              setUserInputData={setUserInputData}
+              userInputDataOther={userInputData["その他"]}
             />
           )}
 
@@ -392,8 +408,16 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
                 <Skill
                   key={key}
                   staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
+                  setUserInputData={setUserInputData}
+                  userInputDataSkill={userInputData["スキル"][key]}
+                  userInputDataOther={
+                    key === "龍気変換" ||
+                    key === "狂竜症【蝕】" ||
+                    key === "伏魔響命" ||
+                    key === "血氣覚醒"
+                      ? userInputData["その他"]
+                      : null
+                  }
                 />
               ))}
           </Grid>
@@ -466,6 +490,6 @@ export const DmaxMain = ({ fabRight, setFabRight, setValue }) => {
       </SpeedDial> */}
     </div>
   );
-};
+});
 
 export default DmaxMain;

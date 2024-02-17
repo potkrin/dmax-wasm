@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useMemo } from "react";
 import FormatBoldIcon from "@mui/icons-material/FormatBold";
 import FormatItalicIcon from "@mui/icons-material/FormatItalic";
 import FormatUnderlinedIcon from "@mui/icons-material/FormatUnderlined";
@@ -75,57 +75,69 @@ export default function OptimizationOptionButtons() {
     localStorage.setItem("formats", JSON.stringify(formats));
   }, [formats]);
 
-  return (
-    <ToggleButtonGroup
-      value={formats}
-      onChange={handleFormat}
-      aria-label="text formatting"
-      color="primary"
-      size="small"
-    >
-      <ToggleButton value="excludeCharm" aria-label="excludeCharm" sx={{ padding: 0 }}>
-        <Tooltip title="護石を除外" placement="top" sx={{ zIndex: 1000 }}>
-          {/* Tooltip を出すための span */}
-          <span style={{ lineHeight: "0", padding: "7px" }}>
-            {excludeCharm ? <CharmExcludeIcon /> : <CharmIcon />}
-          </span>
-        </Tooltip>
-      </ToggleButton>
-      <ToggleButton value="excludeArmor" aria-label="excludeArmor" sx={{ padding: 0 }}>
-        <Tooltip title="傀異錬成を除外" placement="top" sx={{ zIndex: 1000 }}>
-          {/* Tooltip を出すための span */}
-          <span style={{ lineHeight: "0", padding: "7px" }}>
-            {excludeQuriousArmor ? <ArmorExcludeIcon /> : <ArmorIcon />}
-          </span>
-        </Tooltip>
-      </ToggleButton>
+  return useMemo(
+    () => (
+      <ToggleButtonGroup
+        value={formats}
+        onChange={handleFormat}
+        aria-label="text formatting"
+        color="primary"
+        size="small"
+      >
+        <ToggleButton value="excludeCharm" aria-label="excludeCharm" sx={{ padding: 0 }}>
+          <Tooltip title="護石を除外" placement="top" sx={{ zIndex: 1000 }}>
+            {/* Tooltip を出すための span */}
+            <span style={{ lineHeight: "0", padding: "7px" }}>
+              {excludeCharm ? <CharmExcludeIcon /> : <CharmIcon />}
+            </span>
+          </Tooltip>
+        </ToggleButton>
+        <ToggleButton value="excludeArmor" aria-label="excludeArmor" sx={{ padding: 0 }}>
+          <Tooltip title="傀異錬成を除外" placement="top" sx={{ zIndex: 1000 }}>
+            {/* Tooltip を出すための span */}
+            <span style={{ lineHeight: "0", padding: "7px" }}>
+              {excludeQuriousArmor ? <ArmorExcludeIcon /> : <ArmorIcon />}
+            </span>
+          </Tooltip>
+        </ToggleButton>
 
-      <ToggleButton value="useServerData" aria-label="useServerData" sx={{ padding: 0 }}>
-        <Tooltip
-          title={
-            isCharmDataFetched && isQuriousArmorDataFetched ? "" : "データが同期されていません"
-          }
-          open={useServerData && !(isCharmDataFetched && isQuriousArmorDataFetched)}
-          sx={{ zIndex: 1000 }}
-          placement="top"
-        >
-          {useServerData ? (
-            <Tooltip title="サーバーのデータを利用" placement="top" sx={{ zIndex: 1000 }}>
-              {/* Tooltip を出すための span */}
-              <span style={{ lineHeight: "0", padding: "7px" }}>
-                <CloudIcon />
-              </span>
-            </Tooltip>
-          ) : (
-            <Tooltip title="ローカルのデータを利用" placement="top" sx={{ zIndex: 1000 }}>
-              {/* Tooltip を出すための span */}
-              <span style={{ lineHeight: "0", padding: "7px" }}>
-                <DevicesIcon />
-              </span>
-            </Tooltip>
-          )}
-        </Tooltip>
-      </ToggleButton>
-    </ToggleButtonGroup>
+        <ToggleButton value="useServerData" aria-label="useServerData" sx={{ padding: 0 }}>
+          <Tooltip
+            title={
+              isCharmDataFetched && isQuriousArmorDataFetched ? "" : "データが同期されていません"
+            }
+            open={useServerData && !(isCharmDataFetched && isQuriousArmorDataFetched)}
+            sx={{ zIndex: 1000 }}
+            placement="top"
+          >
+            {useServerData ? (
+              <Tooltip title="サーバーのデータを利用" placement="top" sx={{ zIndex: 1000 }}>
+                {/* Tooltip を出すための span */}
+                <span style={{ lineHeight: "0", padding: "7px" }}>
+                  <CloudIcon />
+                </span>
+              </Tooltip>
+            ) : (
+              <Tooltip title="ローカルのデータを利用" placement="top" sx={{ zIndex: 1000 }}>
+                {/* Tooltip を出すための span */}
+                <span style={{ lineHeight: "0", padding: "7px" }}>
+                  <DevicesIcon />
+                </span>
+              </Tooltip>
+            )}
+          </Tooltip>
+        </ToggleButton>
+      </ToggleButtonGroup>
+    ),
+    [
+      useServerData,
+      setUseServerData,
+      excludeCharm,
+      setExcludeCharm,
+      excludeQuriousArmor,
+      setExcludeQuriousArmor,
+      isCharmDataFetched,
+      isQuriousArmorDataFetched,
+    ]
   );
 }

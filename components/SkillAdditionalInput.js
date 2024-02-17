@@ -27,7 +27,7 @@ import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/Indeterminate
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useTheme } from "@mui/material/styles";
 
-export const SkillAdditionalInput = ({ userInputData, updateUserInputData }) => {
+export const SkillAdditionalInput = ({ setUserInputData, userInputDataOther }) => {
   const handleChangeOther = (key, event, value) => {
     if ((key === "全属性耐性値" || key === "狂竜症") && !value) {
       // TextField から呼び出された場合
@@ -36,7 +36,10 @@ export const SkillAdditionalInput = ({ userInputData, updateUserInputData }) => 
       value = event.target.value;
     }
 
-    updateUserInputData("その他", { ...userInputData["その他"], [key]: value });
+    setUserInputData((prevData) => ({
+      ...prevData,
+      その他: { ...prevData["その他"], [key]: value },
+    }));
   };
 
   return (
@@ -47,7 +50,7 @@ export const SkillAdditionalInput = ({ userInputData, updateUserInputData }) => 
           <NumberTextField
             label="全属性耐性合計"
             size="small"
-            value={userInputData["その他"]["全属性耐性値"]}
+            value={userInputDataOther["全属性耐性値"]}
             onChange={(e, v) => handleChangeOther("全属性耐性値", e, v)}
             min={0}
             max={250}
@@ -59,7 +62,7 @@ export const SkillAdditionalInput = ({ userInputData, updateUserInputData }) => 
           <NumberTextField
             label="狂竜症感染率"
             size="small"
-            value={userInputData["その他"]["狂竜症【蝕】感染時割合"]}
+            value={userInputDataOther["狂竜症【蝕】感染時割合"]}
             onChange={(e, v) => handleChangeOther("狂竜症【蝕】感染時割合", e, v)}
             min={0}
             max={100}
@@ -74,7 +77,7 @@ export const SkillAdditionalInput = ({ userInputData, updateUserInputData }) => 
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               size="small"
-              value={userInputData["その他"]["キュリア"]}
+              value={userInputDataOther["キュリア"]}
               label={"キュリア"}
               onChange={(e) => handleChangeOther("キュリア", e)}
             >
@@ -91,7 +94,7 @@ export const SkillAdditionalInput = ({ userInputData, updateUserInputData }) => 
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               size="small"
-              value={userInputData["その他"]["血氣覚醒"]}
+              value={userInputDataOther["血氣覚醒"]}
               label={"血氣覚醒"}
               onChange={(e) => handleChangeOther("血氣覚醒", e)}
             >

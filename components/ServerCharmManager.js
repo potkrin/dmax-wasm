@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Grid, TextField, Button, Snackbar, Typography, Card, Box } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import Cookies from "js-cookie";
@@ -35,16 +35,11 @@ export function ServerCharmManager() {
   const [nextUserCharmData, setNextUserCharmData] = useState([]);
   const [userCharmMetaData, setUserCharmMetaData] = useState(null);
 
-  const { isCharmDataFetched, setIsCharmDataFetched } = useCharmAndQuriousArmorContext();
+  const { isCharmDataFetched, setIsCharmDataFetched, setServerCharmData } =
+    useCharmAndQuriousArmorContext();
 
-  const {
-    isLoggedIn,
-    setIsLoggedIn,
-    isDialogOpen,
-    setIsDialogOpen,
-    handleCloseDialog,
-    checkLoginStatus,
-  } = useLoginContext();
+  const { isLoggedIn, setIsLoggedIn, isDialogOpen, handleCloseDialog, checkLoginStatus } =
+    useLoginContext();
 
   const fetchUserCharmData = () => {
     console.log("ServerCharmManager: fetch charmdata from server");
@@ -296,8 +291,6 @@ export function ServerCharmManager() {
   // ContextAPI からエラー出力用 Snackbar 管理用の関数を取得
   const { error, setError, open, setOpen, handleClose } = useSnackbar();
 
-  const { serverCharmData, setServerCharmData } = useCharmAndQuriousArmorContext();
-
   useEffect(() => {
     setServerCharmData(userCharmData);
   }, [userCharmData]);
@@ -410,91 +403,92 @@ export function ServerCharmManager() {
     setNextUserCharmData(newCharmData);
   };
 
-  return (
-    <>
-      {/* エラー出力 */}
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message={error}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
+  return useMemo(
+    () => (
+      <>
+        {/* エラー出力 */}
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
           onClose={handleClose}
-          severity="error"
-          sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
+          message={error}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          {error}
-        </Alert>
-      </Snackbar>
-
-      {/* ログインダイアログ */}
-      <LoginDialog open={isDialogOpen} onClose={handleCloseDialog} />
-
-      {/* 削除・上書き確認ダイアログ */}
-      <ConfirmDialog
-        openConfirmDialog={openConfirmDialog}
-        handleCloseConfirmDialog={handleCloseConfirmDialog}
-        handleConfirmDelete={handleConfirmDelete}
-        handleConfirmOverwrite={handleConfirmOverwrite}
-        dialogMode={dialogMode}
-        dataType={"護石"}
-      />
-
-      <Grid
-        container
-        columnSpacing={3}
-        onClick={checkLoginStatus}
-        sx={{
-          opacity: isLoggedIn ? 1 : 0.5,
-        }}
-        ref={gridRef}
-      >
-        {/* データ表示 */}
-        {/* データ入力欄 */}
-        <Grid item xs={12} md={6}>
-          <CharmInput
-            userCharmData={userCharmData}
-            setUserCharmData={setNextUserCharmData}
-            onClick={checkLoginStatus}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Card
-            variant="outlined"
-            sx={{
-              borderRadius: 1,
-              height: "100%",
-            }}
+          <Alert
+            onClose={handleClose}
+            severity="error"
+            sx={{ width: "100%", whiteSpace: "pre-line", textAlign: "left" }}
           >
-            <Box
+            {error}
+          </Alert>
+        </Snackbar>
+
+        {/* ログインダイアログ */}
+        <LoginDialog open={isDialogOpen} onClose={handleCloseDialog} />
+
+        {/* 削除・上書き確認ダイアログ */}
+        <ConfirmDialog
+          openConfirmDialog={openConfirmDialog}
+          handleCloseConfirmDialog={handleCloseConfirmDialog}
+          handleConfirmDelete={handleConfirmDelete}
+          handleConfirmOverwrite={handleConfirmOverwrite}
+          dialogMode={dialogMode}
+          dataType={"護石"}
+        />
+
+        <Grid
+          container
+          columnSpacing={3}
+          onClick={checkLoginStatus}
+          sx={{
+            opacity: isLoggedIn ? 1 : 0.5,
+          }}
+          ref={gridRef}
+        >
+          {/* データ表示 */}
+          {/* データ入力欄 */}
+          <Grid item xs={12} md={6}>
+            <CharmInput
+              userCharmData={userCharmData}
+              setUserCharmData={setNextUserCharmData}
+              onClick={checkLoginStatus}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Card
+              variant="outlined"
               sx={{
-                margin: "20px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-between",
-                height: "90%",
+                borderRadius: 1,
+                height: "100%",
               }}
             >
-              <Grid container alignItems="flex-start">
-                <Grid item xs>
-                  <Typography
-                    variant="subtitle2"
-                    gutterBottom
-                    align="left"
-                    marginBottom={2}
-                    sx={commonStyles.customHeaderNoMargin}
-                  >
-                    CSV 入出力
-                  </Typography>
+              <Box
+                sx={{
+                  margin: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-between",
+                  height: "90%",
+                }}
+              >
+                <Grid container alignItems="flex-start">
+                  <Grid item xs>
+                    <Typography
+                      variant="subtitle2"
+                      gutterBottom
+                      align="left"
+                      marginBottom={2}
+                      sx={commonStyles.customHeaderNoMargin}
+                    >
+                      CSV 入出力
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1}>
+                    <CopyToClipboardButton textToCopy={textToCopy} />
+                  </Grid>
                 </Grid>
-                <Grid item xs={1}>
-                  <CopyToClipboardButton textToCopy={textToCopy} />
-                </Grid>
-              </Grid>
 
-              {/* <Typography
+                {/* <Typography
                 variant="subtitle2"
                 gutterBottom
                 align="left"
@@ -503,77 +497,93 @@ export function ServerCharmManager() {
               >
                 CSV 入出力
               </Typography> */}
-              <Box sx={{ height: "100%" }}>
-                <TextField
-                  label="CSV"
-                  multiline
-                  variant="outlined"
-                  minRows={8}
-                  maxRows={8}
-                  value={csvData}
-                  onChange={handleCsvDataChange}
-                  InputProps={{
-                    onClick: (event) => {
-                      event.target.select();
-                    },
-                  }}
-                  sx={{
-                    width: "100%",
-                    height: "100%",
-                  }}
-                />
-              </Box>
-              <div style={{ marginTop: "10px" }}>
-                <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={writeToCsvData}
-                    disabled={userCharmData.length === 0}
-                    startIcon={<KeyboardDoubleArrowUpIcon />}
-                  >
-                    書き出し
-                  </Button>
-                  <div style={{ flex: 1 }}>
-                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={csvData === ""}
-                        onClick={handleOpenOverwriteConfirmDialog}
-                        sx={{ mr: 1 }}
-                        startIcon={<KeyboardDoubleArrowDownIcon />}
-                      >
-                        上書き
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={csvData === ""}
-                        onClick={() => readFromCsvData("append")}
-                        startIcon={<AddIcon />}
-                      >
-                        追加
-                      </Button>
-                    </Box>
-                  </div>
+                <Box sx={{ height: "100%" }}>
+                  <TextField
+                    label="CSV"
+                    multiline
+                    variant="outlined"
+                    minRows={8}
+                    maxRows={8}
+                    value={csvData}
+                    onChange={handleCsvDataChange}
+                    InputProps={{
+                      onClick: (event) => {
+                        event.target.select();
+                      },
+                    }}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
                 </Box>
-              </div>
-            </Box>
-          </Card>
-        </Grid>
+                <div style={{ marginTop: "10px" }}>
+                  <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={writeToCsvData}
+                      disabled={userCharmData.length === 0}
+                      startIcon={<KeyboardDoubleArrowUpIcon />}
+                    >
+                      書き出し
+                    </Button>
+                    <div style={{ flex: 1 }}>
+                      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disabled={csvData === ""}
+                          onClick={handleOpenOverwriteConfirmDialog}
+                          sx={{ mr: 1 }}
+                          startIcon={<KeyboardDoubleArrowDownIcon />}
+                        >
+                          上書き
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disabled={csvData === ""}
+                          onClick={() => readFromCsvData("append")}
+                          startIcon={<AddIcon />}
+                        >
+                          追加
+                        </Button>
+                      </Box>
+                    </div>
+                  </Box>
+                </div>
+              </Box>
+            </Card>
+          </Grid>
 
-        <Grid item xs={12} marginTop={3} onClick={checkLoginStatus}>
-          <CharmTable
-            userCharmData={userCharmData}
-            deleteUserCharms={deleteUserCharms}
-            fetchUserCharmData={fetchUserCharmData}
-            handleOpenDeleteConfirmDialog={handleOpenDeleteConfirmDialog}
-            userCharmMetaData={userCharmMetaData}
-          />
+          <Grid item xs={12} marginTop={3} onClick={checkLoginStatus}>
+            <CharmTable
+              userCharmData={userCharmData}
+              deleteUserCharms={deleteUserCharms}
+              fetchUserCharmData={fetchUserCharmData}
+              handleOpenDeleteConfirmDialog={handleOpenDeleteConfirmDialog}
+              userCharmMetaData={userCharmMetaData}
+            />
+          </Grid>
         </Grid>
-      </Grid>
-    </>
+      </>
+    ),
+    [
+      isCharmDataFetched,
+      setIsCharmDataFetched,
+      isLoggedIn,
+      setIsLoggedIn,
+      isDialogOpen,
+      handleCloseDialog,
+      checkLoginStatus,
+      error,
+      setError,
+      open,
+      setOpen,
+      handleClose,
+      setServerCharmData,
+    ]
   );
 }
 

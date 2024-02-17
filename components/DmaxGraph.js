@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import { theme, breakpoints } from "../src/theme";
 import MemoryIcon from "@mui/icons-material/Memory";
 
-export const DmaxGraph = ({ chartData, memoryLimit }) => {
+export const DmaxGraph = React.memo(({ chartData, memoryLimit }) => {
   const [chartWidth, setChartWidth] = useState(0);
   const containerRef = useRef(null);
 
@@ -143,6 +143,6 @@ export const DmaxGraph = ({ chartData, memoryLimit }) => {
       </Grid>
     </>
   );
-};
+});
 
 export default DmaxGraph;

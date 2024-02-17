@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createContext } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 // import "./App.css";
 import {
   Tabs,
@@ -52,11 +52,8 @@ import { SnackbarContext } from "./SnackbarContext";
 import Usage from "./Usage";
 import ServerCharmManager from "./ServerCharmManager";
 import CharmTab from "./CharmTab";
-import {
-  CharmAndQuriousArmorContext,
-  useCharmAndQuriousArmorContext,
-} from "./CharmAndQuriousArmorContext";
-import { HideOnScrollContext, HideOnScrollProvider, useHideOnScroll } from "./HideOnScrollContext";
+import { CharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
+import { HideOnScrollContext } from "./HideOnScrollContext";
 import { LoginContext } from "./LoginContext";
 import { fetchWithRetry } from "../lib/utils";
 import QuriousArmorTab from "./QuriousArmorTab";
@@ -77,21 +74,37 @@ import { ArmorIcon } from "./icons/ArmorIcon";
  */
 
 export function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, allowUnmount, ...other } = props;
 
-  return (
-    <div
-      role="tabpanel"
-      // タブ切替時にアンマウントされないように display: none で非表示
-      style={{ display: value === index ? "block" : "none" }}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {/* タブ切り替えを条件分岐によるレンダーON/OFFで実現すると OFF でアンマウントされ、state がリセットされてしまうので避ける */}
-      {children}
-    </div>
-  );
+  if (allowUnmount) {
+    return (
+      <div
+        role="tabpanel"
+        // タブ切替時にアンマウントされないように display: none で非表示
+        style={{ display: value === index ? "block" : "none" }}
+        id={`full-width-tabpanel-${index}`}
+        aria-labelledby={`full-width-tab-${index}`}
+        {...other}
+      >
+        {/* タブ切り替えを条件分岐によるレンダーON/OFFで実現すると OFF でアンマウントされ、state がリセットされてしまうので避ける */}
+        {value === index && children}
+      </div>
+    );
+  } else {
+    return (
+      <div
+        role="tabpanel"
+        // タブ切替時にアンマウントされないように display: none で非表示
+        style={{ display: value === index ? "block" : "none" }}
+        id={`full-width-tabpanel-${index}`}
+        aria-labelledby={`full-width-tab-${index}`}
+        {...other}
+      >
+        {/* タブ切り替えを条件分岐によるレンダーON/OFFで実現すると OFF でアンマウントされ、state がリセットされてしまうので避ける */}
+        {children}
+      </div>
+    );
+  }
 }
 
 TabPanel.propTypes = {
@@ -300,15 +313,15 @@ function App() {
     if (useServerData) checkLoginStatus();
   }, [useServerData]);
 
-  const handleChangeCharmValue = (event, newValue) => {
+  const handleChangeCharmValue = useCallback((event, newValue) => {
     setCharmValue(newValue);
     localStorage.setItem("charmValue", newValue);
-  };
+  }, []);
 
-  const handleChangeQuriousArmorValue = (event, newValue) => {
+  const handleChangeQuriousArmorValue = useCallback((event, newValue) => {
     setQuriousArmorValue(newValue);
     localStorage.setItem("quriousArmorValue", newValue);
-  };
+  }, []);
 
   // コンポーネントがマウントされた後にlocalStorageからデータを読み込む
   useEffect(() => {
@@ -343,9 +356,9 @@ function App() {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setOpen(false);
-  };
+  }, []);
 
   // ServerCharmData 共有用 state
   const [serverCharmData, setServerCharmData] = useState([]);
@@ -469,13 +482,13 @@ function App() {
   // ログインダイアログの開閉管理
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     console.log("close dialog");
     setIsDialogOpen(false);
-  };
+  }, []);
 
   // ログイン状態を確認して未ログインならログインダイアログを開く or ログイン画面へ自動遷移
-  const checkLoginStatus = () => {
+  const checkLoginStatus = useCallback(() => {
     // ログイン状態を確認した後に charmdata の取得する処理を一連の Promise で定義 (分離すると非同期に処理されてしまうため)
     fetchWithRetry(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/dmax-api/v1/check-login/`,
@@ -521,7 +534,7 @@ function App() {
         setOpen(true);
         // 通信失敗時にログインダイアログを開くべきかわからない
       });
-  };
+  }, []);
 
   const [isCharmDataFetched, setIsCharmDataFetched] = useState(false);
   const [isQuriousArmorDataFetched, setIsQuriousArmorDataFetched] = useState(false);
@@ -787,16 +800,16 @@ function App() {
                   paddingBottom: "0px !important", // 追加
                 }}
               >
-                <TabPanel value={value} index={0} dir={theme.direction}>
+                <TabPanel value={value} index={0} dir={theme.direction} allowUnmount={false}>
                   <DmaxMain fabRight={fabRight} setFabRight={setFabRight} setValue={setValue} />
                 </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
+                <TabPanel value={value} index={1} dir={theme.direction} allowUnmount={false}>
                   <CharmTab />
                 </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction}>
+                <TabPanel value={value} index={2} dir={theme.direction} allowUnmount={false}>
                   <QuriousArmorTab />
                 </TabPanel>
-                <TabPanel value={value} index={3} dir={theme.direction}>
+                <TabPanel value={value} index={3} dir={theme.direction} allowUnmount={false}>
                   <Usage />
                 </TabPanel>
               </Container>

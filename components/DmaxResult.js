@@ -30,8 +30,12 @@ function secondsToHumanReadable(seconds) {
   return result.trim();
 }
 
+// TODO: リファクタリング案
+// outputToResult は DmaxSolver に移動して DmaxResult 表示のみにしたほうがいいかも
+// スマホ表示用にDmaxResultを消して DmaxHistory に一本化したところ、結果が処理されなくなってしまったため
+
 // 全ての中間結果を含む文字列を処理し、最終結果を出力する
-function outputToResult(output, processingUserInputData, processingUserArmorsData) {
+export function outputToResult(output, processingUserInputData, processingUserArmorsData) {
   let result = "";
   let timeStamp = "";
   if (output.includes("SCIP Status") && output.includes("nlobjvar")) {
@@ -303,7 +307,13 @@ export const DmaxResult = React.memo(
     const matches = useMediaQuery(theme.breakpoints.down("md")); // 'sm' は600pxに設定されていることが多い
 
     return (
-      <>
+      <Box
+        sx={{
+          "@media (max-width: 960px)": {
+            display: "none",
+          },
+        }}
+      >
         <Grid item md={5.9}>
           <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
             <Grid item>
@@ -357,7 +367,7 @@ export const DmaxResult = React.memo(
             }}
           />
         </Grid>
-      </>
+      </Box>
     );
   }
 );

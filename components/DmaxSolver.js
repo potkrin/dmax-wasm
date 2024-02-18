@@ -600,15 +600,11 @@ export const DmaxSolver = React.memo(({ userInputData, fabRight }) => {
       */}
         <Card variant="outlined" sx={{ borderRadius: 1, height: "100%", width: "100%" }}>
           <Grid container spacing={1} marginY={0} sx={{ minHeight: "600px" }}>
-            {!matches && (
-              <>
-                <DmaxResult
-                  allDmaxOutput={allDmaxOutput}
-                  processingUserInputData={processingUserInputData}
-                  processingUserArmorsData={processingUserArmorsData}
-                />
-              </>
-            )}
+            <DmaxResult
+              allDmaxOutput={allDmaxOutput}
+              processingUserInputData={processingUserInputData}
+              processingUserArmorsData={processingUserArmorsData}
+            />
             <DmaxHistory allDmaxOutput={allDmaxOutput} />
           </Grid>
         </Card>
@@ -666,6 +662,7 @@ export const DmaxSolver = React.memo(({ userInputData, fabRight }) => {
       dmaxOutput,
       memoryLimit,
       isOptimizing,
+      showFab,
     ]
   );
 });

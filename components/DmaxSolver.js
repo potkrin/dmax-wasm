@@ -663,6 +663,7 @@ export const DmaxSolver = React.memo(({ userInputData, fabRight }) => {
       memoryLimit,
       isOptimizing,
       showFab,
+      fabRight,
     ]
   );
 });

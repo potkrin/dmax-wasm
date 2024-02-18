@@ -109,17 +109,19 @@
     - 不要なコンテンツをアンマウント
   - [ ] CDN検討
   - [ ] 広告検討
-  - [ ] リファクタリング: RampageDecoなどの updateUserInputData を setter に修正できると思う
+  - [ ] リファクタリング
+    - [ ] RampageDecoなどの updateUserInputData を setter に修正できると思う
+    - [ ] DmaxResult の ouputTo を DmaxSolver に移動したほうが良さそう
   - [ ] バグ
-    - [ ] 多分スマホ版の result/history がバグっている
-    - [ ] スキルのその他入力だけ再レンダリング阻止できてない
+    - [x] 多分スマホ版の result/history がバグっている
+    - [x] スキルのその他入力だけ再レンダリング阻止できてない
     - [ ] 全属性耐性が100以上入力できない
   - [ ] プライバシーポリシーや著作権のフッター
   - [ ] ログイン画面の見た目をまともにする
   - [ ] 高速化検討
-    - 他の人の React 実装を見てみる
+    - [ ] 他の人の React 実装を見てみる
     - [ ] [PageSpeed Insights指摘事項](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
-    - Pixel3a でみるとめっちゃ重い
+    - [x] Pixel3a でみるとめっちゃ重い
     - 参考記事
       - Reactのレンダリングに関する完全ガイド - Qiita
       - React (+ Redux) アプリの state 更新に関するパフォーマンス戦略 - 30歳からのプログラミング

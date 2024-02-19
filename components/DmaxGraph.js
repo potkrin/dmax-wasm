@@ -58,23 +58,34 @@ export const DmaxGraph = React.memo(({ chartData, memoryLimit }) => {
           justifyContent: "space-between",
         }}
       >
-        {!matches && (
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <MemoryIcon sx={{ color: theme.vars.palette.text.hint, fontSize: "1.3rem" }} />
-            <Typography
-              sx={{
-                color: theme.vars.palette.text.hint,
-                paddingRight: "0.5rem",
-                alignItems: "center",
-                fontSize: "0.9rem",
-              }}
-            >
-              メモリ上限 {memoryLimit}
-            </Typography>
-          </Box>
-        )}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            [`@media (max-width: ${breakpoints.values.sm}px)`]: {
+              display: "none",
+            },
+          }}
+        >
+          <MemoryIcon sx={{ color: theme.vars.palette.text.hint, fontSize: "1.3rem" }} />
+          <Typography
+            sx={{
+              color: theme.vars.palette.text.hint,
+              paddingRight: "0.5rem",
+              alignItems: "center",
+              fontSize: "0.9rem",
+            }}
+          >
+            メモリ上限 {memoryLimit}
+          </Typography>
+        </Box>
 
-        <Box sx={{ display: "flex" }}>
+        <Box
+          sx={{
+            display: "flex",
+            minHeight: "300px",
+          }}
+        >
           <LineChart
             width={chartWidth}
             height={matches ? chartWidth - 40 : 440}

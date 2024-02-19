@@ -109,15 +109,24 @@
     - 不要なコンテンツをアンマウント
   - [ ] CDN検討
   - [ ] 広告検討
-  - [ ] リファクタリング
-    - [ ] RampageDecoなどの updateUserInputData を setter に修正できると思う
-    - [ ] DmaxResult の ouputTo を DmaxSolver に移動したほうが良さそう
   - [ ] バグ
+    - [ ] がめんこわちゃった
     - [x] 多分スマホ版の result/history がバグっている
     - [x] スキルのその他入力だけ再レンダリング阻止できてない
     - [ ] 全属性耐性が100以上入力できない
-  - [ ] プライバシーポリシーや著作権のフッター
   - [ ] ログイン画面の見た目をまともにする
+    - [ ] CSS力が足りない
+      - [ ] https://developer.mozilla.org/ja/docs/Learn/CSS
+      - [ ] CSS設計の教科書
+  - [ ] リファクタリング
+    - [ ] RampageDecoなどの updateUserInputData を setter に修正できると思う
+    - [ ] DmaxResult の ouputTo を DmaxSolver に移動したほうが良さそう
+    - [ ] 状態管理 Context, Recoil, Redux
+    - [ ] 名称整理
+  - [ ] 警告系
+    - [ ] unique key エラーを消す
+    - [ ] Image has legacy prop "objectFit". Did you forget to run the codemod?
+  - [ ] プライバシーポリシーや著作権のフッター
   - [ ] 高速化検討
     - [ ] 他の人の React 実装を見てみる
     - [ ] [PageSpeed Insights指摘事項](https://pagespeed.web.dev/analysis/https-www-mhrspeedrun-com-dmax/qfhdby22i6?form_factor=desktop)
@@ -132,12 +141,6 @@
   - [ ] 動作テスト
     - [ ] ローカル/サーバーのデータ有り無しでの最適化確認
     - [ ] 複数デバイスで使ったときにサーバーデータが消えた気がする(iphone safari と windows chrome)
-  - [ ] 警告系
-    - [ ] unique key エラーを消す
-    - [ ] Image has legacy prop "objectFit". Did you forget to run the codemod?
-  - [ ] リファクタリング
-    - [ ] 状態管理 Context, Recoil, Redux
-    - [ ] 名称整理
   - [x] Next.js 移行対応
     - [x] images ファイルの修正 (なにか変わってるか確認?)
     - [x] SSG/SSR対応 window, localstorage など

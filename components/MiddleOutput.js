@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { Grid, Typography, CircularProgress, Divider, useMediaQuery } from "@mui/material";
+import { Grid, Typography, CircularProgress, Divider, useMediaQuery, Box } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import ErrorIcon from "@mui/icons-material/Error";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -47,8 +47,15 @@ export const MiddleOutput = ({ middleOutput, memoryLimit }) => {
           </Typography>
         </Grid>
         <Grid item xs={6} sm={6} container justifyContent="flex-end" alignItems="center">
-          {memoryLimit && matches && (
-            <>
+          {memoryLimit && (
+            <Box
+              sx={{
+                [`@media (min-width: ${breakpoints.values.sm + 1}px)`]: {
+                  display: "none",
+                },
+                display: "flex",
+              }}
+            >
               <MemoryIcon sx={{ color: theme.vars.palette.text.hint, fontSize: "large" }} />
               <Typography
                 sx={{
@@ -60,7 +67,7 @@ export const MiddleOutput = ({ middleOutput, memoryLimit }) => {
               >
                 メモリ上限 {memoryLimit}
               </Typography>
-            </>
+            </Box>
           )}
         </Grid>
         <Grid item xs={0.8} sm={0.5}></Grid>

@@ -57,7 +57,7 @@ import { HideOnScrollContext } from "./HideOnScrollContext";
 import { LoginContext } from "./LoginContext";
 import { fetchWithRetry } from "../lib/utils";
 import QuriousArmorTab from "./QuriousArmorTab";
-import theme from "../src/theme";
+import { theme, breakpoints } from "../src/theme";
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -151,25 +151,12 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const drawerWidth = 240;
 const navItems = ["Home", "About", "Contact"];
 
-const MainTabs = ({
-  sx,
-  value,
-  handleChange,
-  matches,
-  isCharmDataFetched,
-  isQuriousArmorDataFetched,
-}) => {
-  const customMargin = {
-    marginRight: matches ? "0px" : "8px",
-    marginBottom: matches ? "8px" : "0px",
-  };
-
+const MainTabs = ({ sx, value, handleChange, matches, iconPosition }) => {
   const customSX = {
     minHeight: "0px",
     fontSize: "0.7rem",
   };
 
-  const iconPosition = matches ? "top" : "start";
   return (
     <Tabs
       value={value}
@@ -181,7 +168,7 @@ const MainTabs = ({
       sx={{
         ...sx,
         minHeight: "0px",
-        boxShadow: matches ? "0px -1px 16px -3px rgba(0,0,0,0.2)" : "none",
+        // boxShadow: matches ? "0px -1px 16px -3px rgba(0,0,0,0.2)" : "none",
       }}
     >
       <Tab
@@ -195,14 +182,36 @@ const MainTabs = ({
         label="護石"
         sx={{ ...customSX }}
         {...a11yProps(1)}
-        icon={<CharmIcon sx={{ ...customMargin }} />}
+        icon={
+          <CharmIcon
+            sx={{
+              [`@media (max-width: ${breakpoints.values.sm}px)`]: {
+                marginBottom: "8px",
+              },
+              [`@media (min-width: ${breakpoints.values.sm + 1}px)`]: {
+                marginRight: "0px",
+              },
+            }}
+          />
+        }
         iconPosition={iconPosition}
       />
       <Tab
         label="傀異錬成"
         sx={{ ...customSX }}
         {...a11yProps(2)}
-        icon={<ArmorIcon sx={{ ...customMargin }} />}
+        icon={
+          <ArmorIcon
+            sx={{
+              [`@media (max-width: ${breakpoints.values.sm}px)`]: {
+                marginBottom: "8px",
+              },
+              [`@media (min-width: ${breakpoints.values.sm + 1}px)`]: {
+                marginRight: "0px",
+              },
+            }}
+          />
+        }
         iconPosition={iconPosition}
       />
       <Tab
@@ -691,12 +700,18 @@ function App() {
                     </Box>
                   </Toolbar>
                   <MainTabs
-                    sx={{ display: { xs: "none", sm: "flex" } }}
                     matches={matches}
-                    isCharmDataFetched={isCharmDataFetched}
-                    isQuriousArmorDataFetched={isQuriousArmorDataFetched}
                     value={value}
                     handleChange={handleChange}
+                    iconPosition="start"
+                    sx={{
+                      [`@media (max-width: ${breakpoints.values.sm}px)`]: {
+                        display: "none",
+                      },
+                      [`@media (min-width: ${breakpoints.values.sm + 1}px)`]: {
+                        display: "flex",
+                      },
+                    }}
                   />
                 </AppBar>
               </HideOnScroll>
@@ -710,12 +725,20 @@ function App() {
                   }}
                 >
                   <MainTabs
-                    sx={{ display: { xs: "flex", sm: "none" } }}
                     matches={matches}
-                    isCharmDataFetched={isCharmDataFetched}
-                    isQuriousArmorDataFetched={isQuriousArmorDataFetched}
                     value={value}
                     handleChange={handleChange}
+                    iconPosition={"top"}
+                    sx={{
+                      [`@media (max-width: ${breakpoints.values.sm}px)`]: {
+                        boxShadow: "0px -1px 16px -3px rgba(0,0,0,0.2)",
+                        display: "flex",
+                      },
+                      [`@media (min-width: ${breakpoints.values.sm + 1}px)`]: {
+                        boxShadow: "none",
+                        display: "none",
+                      },
+                    }}
                   />
                   {/* <Tabs
                       value={value}

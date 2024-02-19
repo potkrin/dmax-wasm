@@ -481,10 +481,9 @@ export const DmaxSolver = React.memo(({ userInputData, fabRight }) => {
   const [isOptimizing, setIsOptimizing] = useState(false);
 
   const handleToggle = () => {
-    // ユーザ入力による中断の場合メッセージを追加(表示への反映に利用)
-    if (isOptimizing) updateDmaxOutput("[User Interrupt] optimization stopped");
-
     if (isOptimizing) {
+      // ユーザ入力による中断の場合メッセージを追加(表示への反映に利用)
+      updateDmaxOutput("[User Interrupt] optimization stopped");
       stopOptimization();
     } else {
       startOptimization();
@@ -664,6 +663,9 @@ export const DmaxSolver = React.memo(({ userInputData, fabRight }) => {
       isOptimizing,
       showFab,
       fabRight,
+      snackbarMessage,
+      openError,
+      allDmaxOutput,
     ]
   );
 });

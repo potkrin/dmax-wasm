@@ -307,14 +307,16 @@ export const DmaxResult = React.memo(
     const matches = useMediaQuery(theme.breakpoints.down("md")); // 'sm' は600pxに設定されていることが多い
 
     return (
-      <Box
-        sx={{
-          "@media (max-width: 960px)": {
-            display: "none",
-          },
-        }}
-      >
-        <Grid item md={5.9}>
+      <>
+        <Grid
+          item
+          md={5.9}
+          sx={{
+            "@media (max-width: 960px)": {
+              display: "none",
+            },
+          }}
+        >
           <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
             <Grid item>
               <InsightsIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
@@ -358,7 +360,15 @@ export const DmaxResult = React.memo(
           </Box>
         </Grid>
 
-        <Grid item md={0.2}>
+        <Grid
+          item
+          md={0.2}
+          sx={{
+            "@media (max-width: 960px)": {
+              display: "none",
+            },
+          }}
+        >
           <Divider
             orientation="vertical"
             sx={{
@@ -367,7 +377,7 @@ export const DmaxResult = React.memo(
             }}
           />
         </Grid>
-      </Box>
+      </>
     );
   }
 );

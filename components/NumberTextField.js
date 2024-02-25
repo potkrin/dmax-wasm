@@ -27,7 +27,7 @@ export function NumberTextField(props) {
       onChange={handleChange}
       type="number"
       // HTML の <input> 要素の属性を指定する
-      inputProps={{ ...rest.inputProps, min: 0, max: 100 }}
+      inputProps={{ ...rest.inputProps }}
       // Input コンポーネントの属性を指定する
       InputProps={{
         disableUnderline: matches ? false : true, // PC表示では常時下線を非表示にする

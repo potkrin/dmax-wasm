@@ -257,6 +257,11 @@ const Alert = forwardRef(function Alert(props, ref) {
 });
 
 export const DmaxSolver = React.memo(({ userInputData, fabRight }) => {
+  // debug: user input data
+  useEffect(() => {
+    console.log("[dbg] userInputData.武器 = " + JSON.stringify(userInputData["武器"]));
+  }, [userInputData]);
+
   // useTheme() を使用して、テーマのブレークポイントにアクセス
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
@@ -662,10 +667,11 @@ export const DmaxSolver = React.memo(({ userInputData, fabRight }) => {
       memoryLimit,
       isOptimizing,
       showFab,
-      fabRight,
       snackbarMessage,
       openError,
       allDmaxOutput,
+      userInputData,
+      fabRight,
     ]
   );
 });

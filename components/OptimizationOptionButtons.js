@@ -110,21 +110,23 @@ export default function OptimizationOptionButtons() {
             sx={{ zIndex: 1000 }}
             placement="top"
           >
-            {useServerData ? (
-              <Tooltip title="サーバーのデータを利用" placement="top" sx={{ zIndex: 1000 }}>
-                {/* Tooltip を出すための span */}
-                <span style={{ lineHeight: "0", padding: "7px" }}>
-                  <CloudIcon />
-                </span>
-              </Tooltip>
-            ) : (
-              <Tooltip title="ローカルのデータを利用" placement="top" sx={{ zIndex: 1000 }}>
-                {/* Tooltip を出すための span */}
-                <span style={{ lineHeight: "0", padding: "7px" }}>
-                  <DevicesIcon />
-                </span>
-              </Tooltip>
-            )}
+            <div style={{ lineHeight: "0", padding: "7px" }}>
+              {useServerData ? (
+                <Tooltip title="サーバーのデータを利用" placement="top" sx={{ zIndex: 1000 }}>
+                  {/* Tooltip を出すための span */}
+                  <span>
+                    <CloudIcon />
+                  </span>
+                </Tooltip>
+              ) : (
+                <Tooltip title="ローカルのデータを利用" placement="top" sx={{ zIndex: 1000 }}>
+                  {/* Tooltip を出すための span */}
+                  <span>
+                    <DevicesIcon />
+                  </span>
+                </Tooltip>
+              )}
+            </div>
           </Tooltip>
         </ToggleButton>
       </ToggleButtonGroup>

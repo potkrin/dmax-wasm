@@ -158,6 +158,7 @@ export const DmaxHistory = React.memo(({ allDmaxOutput }) => {
           >
             {historyList.map((option) => (
               <Tab
+                key={option.timeStamp}
                 sx={{ alignItems: "start" }}
                 label={
                   <>
@@ -212,7 +213,7 @@ export const DmaxHistory = React.memo(({ allDmaxOutput }) => {
           }}
         >
           {historyList.map((option, index) => (
-            <TabPanel value={value} index={index} sx={{ height: "100%" }}>
+            <TabPanel key={index} value={value} index={index} sx={{ height: "100%" }}>
               <NewlineText text={option.result} sx={{ height: "100%" }} />
             </TabPanel>
           ))}

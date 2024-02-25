@@ -88,7 +88,8 @@ function UsageImage({ srcDark, srcLight, alt, matches, height }) {
         src={mode === "dark" ? srcDark : srcLight}
         alt={alt}
         fill={true}
-        objectFit="contain" // または他の object-fit の値
+        style={{ objectFit: "contain" }}
+        // objectFit="contain" // または他の object-fit の値
       />
     </Box>
   );

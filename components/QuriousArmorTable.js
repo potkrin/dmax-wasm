@@ -179,22 +179,24 @@ export function QuriousArmorTable({
               {userQuriousArmorMetaData && (
                 <div>
                   <Tooltip title="最終更新日時とデータの更新回数" placement="top">
-                    <Typography
-                      variant="body1"
-                      component="div"
-                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
-                      color="text.secondary"
-                    >
-                      {new Date(userQuriousArmorMetaData.updated_at).toLocaleString()}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      component="div"
-                      sx={{ flexGrow: 1, fontSize: "0.7rem" }}
-                      color="text.secondary"
-                    >
-                      ver.{userQuriousArmorMetaData.revision_number}
-                    </Typography>
+                    <div>
+                      <Typography
+                        variant="body1"
+                        component="div"
+                        sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                        color="text.secondary"
+                      >
+                        {new Date(userQuriousArmorMetaData.updated_at).toLocaleString()}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        component="div"
+                        sx={{ flexGrow: 1, fontSize: "0.7rem" }}
+                        color="text.secondary"
+                      >
+                        ver.{userQuriousArmorMetaData.revision_number}
+                      </Typography>
+                    </div>
                   </Tooltip>
                 </div>
               )}

@@ -109,26 +109,17 @@
     - 不要なコンテンツをアンマウント
   - [ ] CDN検討
   - [ ] 広告検討
-  - [ ] バグ
+  - [x] バグ
     - [x] API 送受信に失敗の snackbar が表示されない
     - [x] 最適化結果がすぐに表示されない (護石除外などの適当なボタンを押すと更新される)
     - [x] がめんこわちゃった
     - [x] 多分スマホ版の result/history がバグっている
     - [x] スキルのその他入力だけ再レンダリング阻止できてない
     - [x] 全属性耐性が100以上入力できない
-    - [ ] 計算結果が一周遅れてきている気がする
-  - [ ] ログイン画面の見た目をまともにする
-    - [ ] CSS力が足りない
-      - [ ] https://developer.mozilla.org/ja/docs/Learn/CSS
-      - [ ] CSS設計の教科書
-  - [ ] リファクタリング
-    - [ ] RampageDecoなどの updateUserInputData を setter に修正できると思う
-    - [ ] DmaxResult の ouputTo を DmaxSolver に移動したほうが良さそう
-    - [ ] 状態管理 Context, Recoil, Redux
-    - [ ] 名称整理
-  - [ ] 警告系
-    - [ ] unique key エラーを消す
-    - [ ] Image has legacy prop "objectFit". Did you forget to run the codemod?
+    - [x] 計算結果が一周遅れてきている気がする
+  - [x] 警告系
+    - [x] unique key エラーを消す
+    - [x] Image has legacy prop "objectFit". Did you forget to run the codemod?
   - [ ] プライバシーポリシーや著作権のフッター
   - [ ] 高速化検討
     - [ ] 他の人の React 実装を見てみる
@@ -139,20 +130,24 @@
       - React (+ Redux) アプリの state 更新に関するパフォーマンス戦略 - 30歳からのプログラミング
       - Reduxを用いる時にオススメしたい3つのTips - aptpod Tech Blog
       - なぜReactは標準でComponentをmemo化しないのか？
+  - [ ] ログイン画面の見た目をまともにする
+    - [ ] CSS力が足りない
+      - [ ] https://developer.mozilla.org/ja/docs/Learn/CSS
+      - [ ] CSS設計の教科書
   - [ ] 最適化の特性を書く (物理だけなら速い、属性も入ると重い、防具数が増えてもそこまで？)
     - [ ] スマホの場合、計算機だけ内部にタブ [参考](https://damage.paimon.app/calculator/)
   - [ ] 動作テスト
     - [ ] ローカル/サーバーのデータ有り無しでの最適化確認
     - [ ] 複数デバイスで使ったときにサーバーデータが消えた気がする(iphone safari と windows chrome)
+  - [ ] テーマカラーの色候補: [Zenn](https://zenn.dev/ame_x/articles/e314ce3a84ad1f)
+  - [ ] Fab をなんとかする
   - [x] Next.js 移行対応
     - [x] images ファイルの修正 (なにか変わってるか確認?)
     - [x] SSG/SSR対応 window, localstorage など
   - [x] console にでている warning を消す
   - [x] dmax問題出力APIの移植
   - [x] 護石テーブルのサーバー護石のUIが壊れている
-  - [ ] テーマカラーの色候補: [Zenn](https://zenn.dev/ame_x/articles/e314ce3a84ad1f)
-  - [ ] Fab をなんとかする
-  - [ ] wasm ハンドルされていない例外の表示
+  - [x] wasm ハンドルされていない例外の表示
   - [x] error message received from worker: Uncaught ReferenceError: SharedArrayBuffer is not defined
   - [x] 読みやすい段落幅 https://www.gizmodo.jp/2023/12/google-gemini.html
   - [x] 並列ソルバ起動 の欄 で1スレッドだけ表示されない
@@ -226,6 +221,11 @@
   - [x] ローカルビルド&コピーのスクリプト と 手順ドキュメント整備
 
 - **Midle 実装予定:**
+  - [ ] リファクタリング
+      - [ ] RampageDecoなどの updateUserInputData を setter に修正できると思う
+      - [ ] DmaxResult の ouputTo を DmaxSolver に移動したほうが良さそう
+      - [ ] 状態管理 Context, Recoil, Redux
+      - [ ] 名称整理
   - [ ] 表のページネーションの有効/無効を切り替えるUIを追加する？
   - [ ] 広告をはる？
   - [ ] CDN設定

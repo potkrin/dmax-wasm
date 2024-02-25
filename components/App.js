@@ -230,6 +230,7 @@ function App() {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    window.scrollTo(0, 0);
   };
 
   const handleChangeIndex = (index) => {
@@ -391,7 +392,7 @@ function App() {
           <ModeSwitcherListItemButton />
         </ListItem>
 
-        <ListItem key={"leaderboardLink"} disablePadding>
+        <ListItem key={"loginLogout"} disablePadding>
           <ListItemButton>
             <ListItemIcon>{isLoggedIn ? <LogoutIcon /> : <LoginIcon />}</ListItemIcon>
             {isLoggedIn ? (

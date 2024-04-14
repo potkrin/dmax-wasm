@@ -131,9 +131,12 @@
       - Reduxを用いる時にオススメしたい3つのTips - aptpod Tech Blog
       - なぜReactは標準でComponentをmemo化しないのか？
   - [ ] ログイン画面の見た目をまともにする
-    - [ ] CSS力が足りない
-      - [ ] https://developer.mozilla.org/ja/docs/Learn/CSS
-      - [ ] CSS設計の教科書
+    - [ ] [すばらしいサンプル コード付き](https://mdbootstrap.com/docs/standard/extended/login/#example3)
+    - [ ] [Styling django-allauth Authentication Pages](https://builtwithdjango.com/blog/styling-authentication-pages)
+    - [x] CSS力が足りない
+      - [x] https://developer.mozilla.org/ja/docs/Learn/CSS
+      - [x] [次はここから: レイアウト](https://developer.mozilla.org/ja/docs/Learn/CSS/CSS_layout/Introduction)
+      - [x] CSS設計の教科書
   - [ ] 最適化の特性を書く (物理だけなら速い、属性も入ると重い、防具数が増えてもそこまで？)
     - [ ] スマホの場合、計算機だけ内部にタブ [参考](https://damage.paimon.app/calculator/)
   - [ ] 動作テスト
@@ -935,6 +938,9 @@ NSレコードを書き換えるとどうなるのか？
 - [煩わしい自動広告の制御](https://note.com/harulog555/n/nfd3ab4fd0da4)
 - [Twitter:sm_hn 自動広告の検索結果](https://twitter.com/search?q=from%3Asm_hn%20%E8%87%AA%E5%8B%95%E5%BA%83%E5%91%8A&src=typed_query&f=top)
 - 審査申請だけ出した
+
+# 参考資料
+[60分で学ぶ数理最適化](https://speakerdeck.com/umepon/mathematical-optimization-in-60-minutes)
 
 ## 事務処理まわり
 確定申告が必要かどうか

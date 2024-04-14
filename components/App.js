@@ -151,7 +151,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const drawerWidth = 240;
 const navItems = ["Home", "About", "Contact"];
 
-const MainTabs = ({ sx, value, handleChange, matches, iconPosition }) => {
+const MainTabs = ({ sx, value, handleChange, iconPosition }) => {
   const customSX = {
     minHeight: "0px",
     fontSize: "0.7rem",
@@ -168,7 +168,6 @@ const MainTabs = ({ sx, value, handleChange, matches, iconPosition }) => {
       sx={{
         ...sx,
         minHeight: "0px",
-        // boxShadow: matches ? "0px -1px 16px -3px rgba(0,0,0,0.2)" : "none",
       }}
     >
       <Tab
@@ -555,8 +554,6 @@ function App() {
   //   backgroundColor: theme.palette.background.default,
   // }));
 
-  const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
-
   // 自動スクロール時に AppBar の高さを Offset に指定するために利用
   const appBarRef = useRef(null);
 
@@ -701,7 +698,6 @@ function App() {
                     </Box>
                   </Toolbar>
                   <MainTabs
-                    matches={matches}
                     value={value}
                     handleChange={handleChange}
                     iconPosition="start"
@@ -726,7 +722,6 @@ function App() {
                   }}
                 >
                   <MainTabs
-                    matches={matches}
                     value={value}
                     handleChange={handleChange}
                     iconPosition={"top"}
@@ -741,61 +736,6 @@ function App() {
                       },
                     }}
                   />
-                  {/* <Tabs
-                      value={value}
-                      onChange={handleChange}
-                      indicatorColor="secondary"
-                      textColor="inherit"
-                      variant="fullWidth"
-                      aria-label="tabs example"
-                      sx={{
-                        minHeight: "0px",
-                      }}
-                    >
-                      <Tab
-                        // label="最適化"
-                        sx={{ minHeight: "0px" }}
-                        {...a11yProps(0)}
-                        icon={<TrendingUpIcon />}
-                        iconPosition={matches ? "top" : "start"}
-                      />
-                      <Tab
-                        // label="護石"
-                        sx={{ minHeight: "0px" }}
-                        {...a11yProps(1)}
-                        icon={
-                          charmValue === 0 ? (
-                            <DevicesIcon />
-                          ) : isCharmDataFetched ? (
-                            <CloudIcon />
-                          ) : (
-                            <CloudOffIcon />
-                          )
-                        }
-                        iconPosition={matches ? "top" : "start"}
-                      />
-                      <Tab
-                        sx={{ minHeight: "0px" }}
-                        {...a11yProps(2)}
-                        icon={
-                          quriousArmorValue === 0 ? (
-                            <DevicesIcon />
-                          ) : isQuriousArmorDataFetched ? (
-                            <CloudIcon />
-                          ) : (
-                            <CloudOffIcon />
-                          )
-                        }
-                        iconPosition={matches ? "top" : "start"}
-                      />
-                      <Tab
-                        // label="使い方"
-                        sx={{ minHeight: "0px" }}
-                        {...a11yProps(3)}
-                        icon={<HelpIcon />}
-                        iconPosition={matches ? "top" : "start"}
-                      />
-                    </Tabs> */}
                 </Paper>
               </HideOnScroll>
               <nav>

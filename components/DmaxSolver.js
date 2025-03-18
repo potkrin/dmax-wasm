@@ -1,7 +1,8 @@
 /* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/
 
-import { React, useState, useRef, useEffect, forwardRef } from "react";
-import { Grid, Button, Fab, Box } from "@mui/material";
+import React from "react";
+import { useState, useRef, useEffect, forwardRef, useMemo } from "react";
+import { Grid, Card, Fab, Box } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Cookies from "js-cookie";
@@ -15,9 +16,11 @@ import { DmaxResult } from "./DmaxResult";
 import { armors, decos } from "../data/EquipData";
 import { staticData } from "../data/StaticData";
 import { DmaxHistory } from "./DmaxHistory";
-// import "../App.css";
-import { theme } from "./ThemeProvider";
 import { applyWaterBlight } from "./HelperFunction";
+import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
+import { useTheme } from "@mui/material/styles";
+import { HideOnScroll } from "./App";
+import { useHideOnScroll } from "./HideOnScrollContext";
 
 // dmax-core を呼び出すための処理
 let startWasmWorker;
@@ -56,7 +59,15 @@ function supportsNestedWebWorkers(updateDmaxOutput) {
   }
 }
 
-function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, setIsOptimizing) {
+// limitMemory: true ならメモリ 1GB 制限の wasm バイナリを起動する worker を呼び出す
+function call_worker_wasm_main(
+  problem_data,
+  updateDmaxOutput,
+  updateChartData,
+  setIsOptimizing,
+  limitMemory,
+  setMemoryLimit
+) {
   supportsNestedWebWorkers(updateDmaxOutput);
 
   // gonextbench = false;
@@ -66,16 +77,40 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, 
     if (startWasmWorker) {
       startWasmWorker.terminate();
     }
+
+    // メモリ制限を行うかどうか切り替える
+    let workerPath = "/dmax-core/worker3.js";
+    if (limitMemory) {
+      workerPath = "/dmax-core/worker1GB.js";
+      setMemoryLimit("1GB");
+      localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
+    } else {
+      setMemoryLimit("4GB");
+      localStorage.setItem("wasmWorkerStatus", "memory limit 4GB");
+
+      // 過去1週間以内に oom 発生記録があれば 1GB 制限の wasm バイナリを起動する
+      const data = localStorage.getItem("OutOfMemoryOn4GB");
+      if (data) {
+        const oomInfo = JSON.parse(data);
+        if (oomInfo.oom) {
+          const oomTime = new Date(oomInfo.time);
+          const now = new Date();
+          const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+          if (oneWeekAgo < oomTime) {
+            workerPath = "/dmax-core/worker1GB.js";
+            setMemoryLimit("1GB");
+            localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
+          }
+        }
+      }
+    }
+
     console.log("Solve Start TimeStamp: " + new Date().toISOString());
     updateDmaxOutput("Solve Start TimeStamp: " + new Date().toISOString());
-    startWasmWorker = new Worker("/dmax-core/worker3.js", {
+    startWasmWorker = new Worker(workerPath, {
       name: "startWasmWorker",
     });
-
-    updateDmaxOutput("webworker launched");
-
-    startWasmWorker.postMessage(["file.nl", 4, 3072, problem_data]);
-    console.log("Message posted to worker");
 
     startWasmWorker.onmessage = function (e) {
       const worker_response = e.data;
@@ -114,7 +149,48 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, 
       setIsOptimizing(false);
       // 終了が早すぎると postmessage の受信が中断されてしまうので保留
       // startWasmWorker.terminate();
+
+      // 特定のエラーメッセージに基づいて処理を行う
+      if (workerError.includes("RangeError: Out of memory")) {
+        // Out of Memory が発生した際の処理
+        console.error("RangeError: Out of memory occured on webworker - commonly occurs on iOS");
+        console.error("RangeError: Out of memory occured on webworker - throw new Error");
+
+        if (!limitMemory) {
+          const oomInfo = { "oom": true, "time": new Date().toISOString() };
+          localStorage.setItem("OutOfMemoryOn4GB", JSON.stringify(oomInfo));
+          setMemoryLimit("1GB");
+          localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
+
+          startWasmWorker.terminate();
+          // limitMemory が false の場合、limitMemory を true にして再度 wasm-worker を呼び出す
+          call_worker_wasm_main(
+            problem_data,
+            updateDmaxOutput,
+            updateChartData,
+            setIsOptimizing,
+            true,
+            setMemoryLimit
+          );
+        } else {
+          // 1GB 制限で Out of Memory が発生した場合、現状はエラーを表示するのみ
+          setMemoryLimit("?GB");
+          localStorage.setItem("wasmWorkerStatus", "Out of Memory on 1GB wasm-worker");
+          updateDmaxOutput("[oom1GB] Out of Memory on 1GB wasm-worker");
+        }
+      } else if (workerError.includes("Uncaught RuntimeError: Aborted(OOM)")) {
+        // worker の起動には成功したが、最適化処理中にメモリが枯渇して処理が中断された場合
+        console.log("[Aborted(OOM)]" + workerError);
+        updateDmaxOutput("[Aborted(OOM)]" + workerError);
+      } else {
+        console.error("Unexpected Error Occured: " + workerError);
+        updateDmaxOutput("[Unexpected Error] " + workerError);
+      }
     };
+
+    // onmessage と onerror のセットが完了したので worker でメインジョブを開始するメッセージを送信
+    updateDmaxOutput("webworker launched");
+    startWasmWorker.postMessage(["file.nl", 4, 3072, problem_data]);
   } else {
     console.log("Your browser doesn't support web workers.");
     updateDmaxOutput("Your browser doesn't support web workers.");
@@ -122,7 +198,51 @@ function call_worker_wasm_main(problem_data, updateDmaxOutput, updateChartData, 
   }
 }
 
-// dmax-core を呼び出すための処理 ここまで
+// worker の非同期処理ではコンテキストが違うためエラーを投げても catch できないので廃止予定
+
+// // リトライ処理付き wasm-worker 呼び出し: Out of Memory が発生した場合、1GBメモリ制限ありで再び wasm-worker を呼び出す
+// function wasm_worker_with_retry(
+//   problem_data,
+//   updateDmaxOutput,
+//   updateChartData,
+//   setIsOptimizing,
+//   setMemoryLimit
+// ) {
+//   console.log("wasm_worker_with_retry: test with 1GB memory limit wasm-worker");
+//   try {
+//     // メモリ制限なしで wasm-worker を呼び出す
+//     localStorage.setItem("wasmWorkerStatus", "memory limit 4GB");
+//     call_worker_wasm_main(
+//       problem_data,
+//       updateDmaxOutput,
+//       updateChartData,
+//       setIsOptimizing,
+//       false,
+//       setMemoryLimit
+//     );
+//   } catch (e) {
+//     console.log("catched error: " + e);
+//     if (e.message === "RangeError: Out of memory occured on webworker - commonly occurs on iOS") {
+//       // Out of Memory が発生した場合、メモリ制限ありで再び wasm-worker を呼び出す
+//       console.log(
+//         "RangeError: Out of memory occured on webworker - commonly occurs on iOS occured. try 1GB limited memory wasm-worker"
+//       );
+//       localStorage.setItem("wasmWorkerStatus", "memory limit 1GB");
+//       call_worker_wasm_main(
+//         problem_data,
+//         updateDmaxOutput,
+//         updateChartData,
+//         setIsOptimizing,
+//         true,
+//         setMemoryLimit
+//       );
+//     } else {
+//       localStorage.setItem("wasmWorkerStatus", "unexpected error");
+//       setMemoryLimit("unexpected error");
+//       console.error("An unexpected error occured: " + e);
+//     }
+//   }
+// }
 
 // CSRFトークンを取得するためのヘルパー関数
 // Django 本番環境で必要
@@ -136,8 +256,14 @@ const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const DmaxSolver = ({ userInputData, fabRight }) => {
-  // useTheme() を使用して、テーマのブレークポイントにアクセスできます。
+export const DmaxSolver = React.memo(({ userInputData, fabRight }) => {
+  // debug: user input data
+  useEffect(() => {
+    console.log("[dbg] userInputData.武器 = " + JSON.stringify(userInputData["武器"]));
+  }, [userInputData]);
+
+  // useTheme() を使用して、テーマのブレークポイントにアクセス
+  const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm")); // 'sm' は600pxに設定されていることが多い
 
   // dmaxOutput : 最適中の全ての出力
@@ -211,35 +337,70 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
     setProcessingUserArmorsData(newData);
   };
 
-  useEffect(() => {
-    console.log("processingUserArmorsData = " + JSON.stringify(processingUserArmorsData, null, 4));
-  }, [processingUserArmorsData]);
-
   // DmaxOutput のリアルタイム中間出力をリセットする state
   const [resetMiddleOutputInfo, setResetMiddleOutputInfo] = useState(false);
+
+  const { serverCharmData, serverQuriousArmorData } = useCharmAndQuriousArmorContext();
+
+  // DmaxSolverコンポーネントへの参照を作成 (自動スクロールに利用)
+  const dmaxSolverRef = useRef(null);
+
+  const [memoryLimit, setMemoryLimit] = useState("?GB");
+  const { appBarRef } = useHideOnScroll();
+  const { useServerData } = useCharmAndQuriousArmorContext();
+  const appBarHeight = appBarRef.current ? appBarRef.current.clientHeight : 0;
 
   // 最適化の開始
   const startOptimization = () => {
     setResetMiddleOutputInfo(true);
-    // ローカルサーバーの endpoint
-    // const apiUrl = "http://127.0.0.1:8000/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
-    // 本番サーバーの endpoint
-    const apiUrl = "https://www.mhrspeedrun.com/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
+    // 最適化中間結果表示のコンポーネントまで自動でスクロールする
+    if (dmaxSolverRef.current) {
+      const offset = appBarHeight; // AppBarの高さに相当するオフセット。実際の値に応じて調整してください。
+      const elementPosition = dmaxSolverRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset - 64;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+
+    // ローカルサーバーの endpoint (dmax-core)
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/dmax-api/v1/dmax-problem/`;
+
+    // // ローカルサーバーの endpoint (cms)
+    // const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/en/cms/dmaxapi/`;
+
+    // // 本番サーバーの endpoint
+    // const apiUrl = "https://www.mhrspeedrun.com/en/cms/dmaxapi/"; // en/ja を含めないとリダイレクトレスポンスがCORSポリシーで弾かれる
 
     // 最適化に含める防具データ定義 (オプションに応じて 護石, 傀異錬成防具を追加)
     const userArmors = JSON.parse(JSON.stringify(armors));
 
     if (!excludeCharm) {
       // ユーザの護石を全防具データに追加
-      const userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
-      userArmors.push(...userCharmData);
+      let userCharmData = null;
+      if (useServerData) {
+        // サーバー上の護石データを取得
+        userCharmData = JSON.parse(JSON.stringify(serverCharmData));
+      } else {
+        // localsotrage から護石データを取得
+        userCharmData = JSON.parse(localStorage.getItem("userCharmData"));
+      }
+      if (userCharmData !== null) userArmors.push(...userCharmData);
     }
 
     if (!excludeQuriousArmor) {
       // ユーザの傀異錬成防具を全防具データに追加
-      const userQuriousArmorData = JSON.parse(localStorage.getItem("userQuriousArmorData"));
-      userArmors.push(...userQuriousArmorData);
+      let userQuriousArmorData = null;
+      if (useServerData) {
+        // サーバー上の傀異錬成防具データを取得
+        userQuriousArmorData = JSON.parse(JSON.stringify(serverQuriousArmorData));
+      } else {
+        // localsotrage から傀異錬成防具データを取得
+        userQuriousArmorData = JSON.parse(localStorage.getItem("userQuriousArmorData"));
+      }
+      if (userQuriousArmorData !== null) userArmors.push(...userQuriousArmorData);
     }
 
     // 肉質を水やられ状態に変換したデータを送信
@@ -256,6 +417,7 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
 
     fetch(apiUrl, {
       method: "POST",
+      credentials: "include", // クッキーベースの認証に必要
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": csrfToken,
@@ -281,7 +443,22 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
         // 前回の中間出力データを消去
         eraseDmaxOutput();
         eraseChartData();
-        call_worker_wasm_main(data, updateDmaxOutput, updateChartData, setIsOptimizing);
+
+        call_worker_wasm_main(
+          data,
+          updateDmaxOutput,
+          updateChartData,
+          setIsOptimizing,
+          false,
+          setMemoryLimit
+        );
+        // wasm_worker_with_retry(
+        //   data,
+        //   updateDmaxOutput,
+        //   updateChartData,
+        //   setIsOptimizing,
+        //   setMemoryLimit
+        // );
       })
       .catch((error) => {
         setOpenStart(false);
@@ -309,10 +486,9 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   const [isOptimizing, setIsOptimizing] = useState(false);
 
   const handleToggle = () => {
-    // ユーザ入力による中断の場合メッセージを追加(表示への反映に利用)
-    if (isOptimizing) updateDmaxOutput("[User Interrupt] optimization stopped");
-
     if (isOptimizing) {
+      // ユーザ入力による中断の場合メッセージを追加(表示への反映に利用)
+      updateDmaxOutput("[User Interrupt] optimization stopped");
       stopOptimization();
     } else {
       startOptimization();
@@ -327,11 +503,11 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
   }, [fabRight]);
 
   // 傀異錬成防具と護石を最適化から除外するオプション
-  const [excludeQuriousArmor, setExcludeQuriousArmor] = useState(false);
+  const { excludeCharm, setExcludeCharm, excludeQuriousArmor, setExcludeQuriousArmor } =
+    useCharmAndQuriousArmorContext();
   const handleExcludeQuriousArmor = (e, v) => {
     setExcludeQuriousArmor(e.target.checked);
   };
-  const [excludeCharm, setExcludeCharm] = useState(false);
   const handleExcludeCharm = (e, v) => {
     setExcludeCharm(e.target.checked);
   };
@@ -373,90 +549,131 @@ export const DmaxSolver = ({ userInputData, fabRight }) => {
       setShowFab(true);
     }, 500); // 500ミリ秒後に実行
 
+    const wasmWorkerStatus = localStorage.getItem("wasmWorkerStatus");
+    if (wasmWorkerStatus === "memory limit 4GB") {
+      setMemoryLimit("4GB");
+    } else if (wasmWorkerStatus === "memory limit 1GB") {
+      setMemoryLimit("1GB");
+    } else {
+      setMemoryLimit("?GB");
+    }
+
     // コンポーネントのアンマウント時にタイマーをクリアする
     return () => clearTimeout(timer);
   }, []); // 空の依存配列でマウント時のみ実行
 
-  return (
-    <>
-      <Grid container spacing={1} marginY={1}>
-        <DmaxOutput
-          dmaxOutput={dmaxOutput}
-          resetMiddleOutputInfo={resetMiddleOutputInfo}
-          setResetMiddleOutputInfo={setResetMiddleOutputInfo}
-          startOptimization={startOptimization}
-          stopOptimization={stopOptimization}
-          handleToggle={handleToggle}
-          isOptimizing={isOptimizing}
-          excludeQuriousArmor={excludeQuriousArmor}
-          handleExcludeQuriousArmor={handleExcludeQuriousArmor}
-          excludeCharm={excludeCharm}
-          handleExcludeCharm={handleExcludeCharm}
-        />
-        <DmaxGraph chartData={chartData} />
-      </Grid>
-      <Grid container spacing={1} marginY={1}>
-        <DmaxResult
-          allDmaxOutput={allDmaxOutput}
-          processingUserInputData={processingUserInputData}
-          processingUserArmorsData={processingUserArmorsData}
-        />
-
-        <DmaxHistory allDmaxOutput={allDmaxOutput} />
-      </Grid>
-
-      <Snackbar
-        open={openStart}
-        autoHideDuration={6000}
-        onClose={handleCloseStart}
-        message={snackbarMessage}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleCloseStart} severity="info" sx={{ width: "100%" }}>
-          最適化を開始しました
-        </Alert>
-      </Snackbar>
-
-      <Snackbar
-        open={openError}
-        autoHideDuration={6000}
-        onClose={handleCloseError}
-        message={snackbarMessage}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleCloseError} severity="error" sx={{ width: "100%" }}>
-          APIの送受信に失敗しました
-        </Alert>
-      </Snackbar>
-
-      {showFab && (
-        <Fab
-          variant="extended"
+  return useMemo(
+    () => (
+      <>
+        <Card
+          variant="outlined"
           sx={{
-            position: "fixed",
-            bottom: "48px",
-            // right: "48px",
-            right: `${fabRight}px`,
-            animation: "fadeIn 0.5s ease-in-out",
+            borderRadius: 1,
+            minHeight: "400px",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "8px",
+            marginBottom: 1,
           }}
-          color="primary"
-          onClick={handleToggle}
         >
-          {isOptimizing ? (
-            <>
-              <CancelIcon />
-              {!matches && <Box sx={{ ml: 1 }}>中止</Box>}
-            </>
-          ) : (
-            <>
-              <TrendingUpIcon />
-              {!matches && <Box sx={{ ml: 1 }}>最適化</Box>}
-            </>
-          )}
-        </Fab>
-      )}
-    </>
+          <Grid ref={dmaxSolverRef} container spacing={0} marginY={1} sx={{ minHeight: "400px" }}>
+            <DmaxOutput
+              dmaxOutput={dmaxOutput}
+              resetMiddleOutputInfo={resetMiddleOutputInfo}
+              setResetMiddleOutputInfo={setResetMiddleOutputInfo}
+              memoryLimit={memoryLimit}
+            />
+            <DmaxGraph chartData={chartData} memoryLimit={memoryLimit} />
+          </Grid>
+        </Card>
+        {/* 
+          PC表示 では DmaxResult と DmaxHistory のうちより高い方に高さを合わせる (スマホは縦列なので関係なし)
+          <Grid minHeight: "800px">
+              <DmaxResult height: "100%" >
+                <Paper height: "100%">
+                  <Box height: "100%">
+                    <高さが変わるコンテンツ>
+              
+              <DmaxHistory height: "100%">
+                <Paper height: "100%">
+                  <Box height: "100%">
+                    <高さが変わるコンテンツ>
+      */}
+        <Card variant="outlined" sx={{ borderRadius: 1, height: "100%", width: "100%" }}>
+          <Grid container spacing={1} marginY={0} sx={{ minHeight: "600px" }}>
+            <DmaxResult
+              allDmaxOutput={allDmaxOutput}
+              processingUserInputData={processingUserInputData}
+              processingUserArmorsData={processingUserArmorsData}
+            />
+            <DmaxHistory allDmaxOutput={allDmaxOutput} />
+          </Grid>
+        </Card>
+
+        <Snackbar
+          open={openError}
+          autoHideDuration={6000}
+          onClose={handleCloseError}
+          message={snackbarMessage}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert onClose={handleCloseError} severity="error" sx={{ width: "100%" }}>
+            APIの送受信に失敗しました
+          </Alert>
+        </Snackbar>
+
+        {showFab && (
+          <HideOnScroll direction="up">
+            <Fab
+              variant={matches ? "circular" : "extended"}
+              sx={{
+                position: "fixed",
+                bottom: matches ? "84px" : "48px",
+                // right: "48px",
+                right: matches ? "24px" : `${fabRight}px`,
+                animation: "fadeIn 0.5s ease-in-out",
+              }}
+              color="primary"
+              onClick={handleToggle}
+            >
+              {isOptimizing ? (
+                <>
+                  <CancelIcon />
+                  {!matches && <Box sx={{ ml: 1 }}>中止</Box>}
+                </>
+              ) : (
+                <>
+                  <TrendingUpIcon />
+                  {!matches && <Box sx={{ ml: 1 }}>最適化</Box>}
+                </>
+              )}
+            </Fab>
+          </HideOnScroll>
+        )}
+      </>
+    ),
+    [
+      serverCharmData,
+      serverQuriousArmorData,
+      useServerData,
+      excludeCharm,
+      setExcludeCharm,
+      excludeQuriousArmor,
+      setExcludeQuriousArmor,
+      dmaxOutput,
+      memoryLimit,
+      isOptimizing,
+      showFab,
+      snackbarMessage,
+      openError,
+      allDmaxOutput,
+      userInputData,
+      fabRight,
+    ]
   );
-};
+});
 
 export default DmaxSolver;

@@ -1,7 +1,4 @@
 import { createTheme } from "@mui/material";
-import { createContext } from "react";
-
-export const LDThemeContext = createContext();
 
 export const lightTheme = createTheme({
   palette: {

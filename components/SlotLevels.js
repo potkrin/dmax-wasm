@@ -1,12 +1,11 @@
 import React from "react";
 import { Button, Grid, ButtonGroup } from "@mui/material";
 import DiamondIcon from "@mui/icons-material/Diamond";
-import { LDThemeContext } from "./LDThemeContext";
+import { useTheme } from "@mui/material/styles";
+import theme from "../src/theme";
 
 export function SlotLevels({ slotLevel, setSlotLevel }) {
   const slotLevels = [0, 1, 2, 3, 4];
-
-  const { currentTheme } = React.useContext(LDThemeContext);
 
   return (
     <>
@@ -18,10 +17,20 @@ export function SlotLevels({ slotLevel, setSlotLevel }) {
           <ButtonGroup color="primary" variant="outlined" aria-label="radio button group">
             {slotLevels.map((level) => (
               <Button
+                key={level}
                 onClick={() => setSlotLevel(level)}
                 sx={{
-                  backgroundColor: slotLevel === level ? currentTheme.palette.primary.main : "",
-                  color: slotLevel === level ? currentTheme.palette.primary.contrastText : "",
+                  backgroundColor: slotLevel === level ? theme.vars.palette.primary.main : "",
+                  borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
+                  color: slotLevel === level ? theme.vars.palette.primary.contrastText : "",
+
+                  "&:hover": {
+                    backgroundColor:
+                      slotLevel === level
+                        ? theme.vars.palette.primary.dark
+                        : theme.vars.palette.action.hover,
+                    borderRight: "1px solid " + theme.vars.palette.primary.main + "!important",
+                  },
                 }}
               >
                 {level}

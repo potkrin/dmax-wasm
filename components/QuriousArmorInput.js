@@ -179,8 +179,10 @@ export function QuriousArmorInput({ userQuriousArmorData, setUserQuriousArmorDat
       <Box ref={ref}>
         <Card
           variant="outlined"
-          sx={{ borderRadius: 1, padding: "20px" }}
-          backgroundColor="#f5f5f5"
+          sx={{
+            borderRadius: 1,
+            padding: "20px",
+          }}
         >
           <Typography
             variant="subtitle2"

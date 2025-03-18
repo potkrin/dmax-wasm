@@ -1,5 +1,19 @@
 import React, { useEffect } from "react";
-import { Grid, Paper, Box, Typography, Tab, Tabs, Icon, IconButton, Divider } from "@mui/material";
+import {
+  Grid,
+  Paper,
+  Box,
+  Typography,
+  Tab,
+  Tabs,
+  Icon,
+  IconButton,
+  Divider,
+  useMediaQuery,
+  Card,
+} from "@mui/material";
+
+import { theme, breakpoints } from "../src/theme";
 
 // import { armors, decos } from "../data/EquipData";
 // import { staticSkillData } from "../data/StaticData";
@@ -8,8 +22,7 @@ import { Grid, Paper, Box, Typography, Tab, Tabs, Icon, IconButton, Divider } fr
 import HistoryIcon from "@mui/icons-material/History";
 import PropTypes from "prop-types";
 import CopyToClipboardButton from "./CopyToClipboardButton";
-import { theme } from "./ThemeProvider";
-import { LDThemeContext } from "./LDThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 function NewlineText({ text }) {
   const newText = text
@@ -53,32 +66,24 @@ function a11yProps(index) {
   };
 }
 
-export const DmaxHistory = ({ allDmaxOutput }) => {
-  // const dmaxResult = outputToResult(
-  //   middleOutput,
-  //   processingUserInputData,
-  //   processingUserArmorsData
-  // );
+// allDmaxOutput : 最適化が完了したときのすべての中間出力 (DmaxResult と DmaxHistory で使用)
+export const DmaxHistory = React.memo(({ allDmaxOutput }) => {
+  const [historyList, setHistoryLists] = React.useState([]);
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
 
-  const options = [];
-  const [historyList, setHistoryLists] = React.useState(options);
-
-  let latestTimeStamp;
   React.useEffect(() => {
     console.log("HistoryMenu useEffect called");
     const resultHistory = localStorage.getItem("resultHistory");
     if (resultHistory) {
-      console.log("resultHistory is found");
       let resultHistoryArray = JSON.parse(resultHistory);
-      if (resultHistoryArray.length > 1) {
-        if (allDmaxOutput !== "") {
+      if (resultHistoryArray.length > 0) {
+        if (allDmaxOutput !== "" && !matches) {
           resultHistoryArray = resultHistoryArray.slice(1);
         }
-        latestTimeStamp = resultHistoryArray[0].timeStamp;
         setHistoryLists(resultHistoryArray);
       }
     }
-  }, [allDmaxOutput]);
+  }, [allDmaxOutput, matches]);
 
   const [value, setValue] = React.useState(0);
 
@@ -92,130 +97,130 @@ export const DmaxHistory = ({ allDmaxOutput }) => {
     setTextToCopy(historyList[value].result);
   }, [value, historyList]);
 
-  const { currentTheme } = React.useContext(LDThemeContext);
-
   return (
-    <Grid item xs={12} md={6}>
-      <Paper elevation={2}>
-        <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
-          <Grid item>
-            <HistoryIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
-          </Grid>
-          <Grid item xs>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, paddingLeft: "4px" }}>
-              履歴
-            </Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <CopyToClipboardButton textToCopy={textToCopy} />
-          </Grid>
+    <Grid item xs={12} md={5.9} sx={{ minHeight: "400px" }}>
+      <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
+        <Grid item>
+          <HistoryIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
         </Grid>
-        <Box sx={{ marginX: "8px" }}>
-          <Divider xs={{ margin: "8px" }} />
-        </Box>
+        <Grid item xs>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, paddingLeft: "4px" }}>
+            履歴
+          </Typography>
+        </Grid>
+        <Grid item xs={1}>
+          <CopyToClipboardButton textToCopy={textToCopy} />
+        </Grid>
+      </Grid>
+      <Box sx={{ marginX: "8px" }}>
+        <Divider xs={{ margin: "8px" }} />
+      </Box>
+      <Box
+        style={{
+          minHeight: matches ? "200px" : "400px",
+          // overflowY: "auto",
+          paddingLeft: "8px",
+          textAlign: "left",
+          display: "flex", // Flexboxを使用
+          flexDirection: "row-reverse", // 水平方向にコンポーネントを配置
+        }}
+      >
         <Box
-          style={{
-            height: "900px",
-            overflowY: "auto",
-            paddingLeft: "8px",
-            textAlign: "left",
-            display: "flex", // Flexboxを使用
-            flexDirection: "row-reverse", // 水平方向にコンポーネントを配置
+          sx={{
+            flexGrow: 0,
+            flexShrink: 0,
+            display: "flex",
+            flexDirection: "column",
+            mr: 0,
+            border: 0,
+            maxHeight: "600px",
           }}
         >
-          <Box
+          <Tabs
+            orientation="vertical"
+            variant="scrollable"
+            value={value}
+            onChange={handleChange}
+            scrollButtons="auto"
+            allowScrollButtonsMobile
+            aria-label="Vertical tabs example"
             sx={{
-              flexGrow: 0,
-              flexShrink: 0,
-              display: "flex",
-              flexDirection: "column",
-              mr: 0,
-              border: 0,
-            }}
-          >
-            <Tabs
-              orientation="vertical"
-              variant="scrollable"
-              value={value}
-              onChange={handleChange}
-              scrollButtons="hidden"
-              aria-label="Vertical tabs example"
-              sx={{
-                borderRight: 1,
-                borderColor: "divider",
-                width: "80px",
-                height: "900px",
-                // インジケータのスタイルをオーバーライドする
-                "& .MuiTabs-indicator": {
-                  left: 0, // インジケータを左側に配置
-                  right: "auto", // right プロパティの自動設定を解除（デフォルトのスタイルを上書き）
-                },
-              }}
-            >
-              {historyList.map((option) => (
-                <Tab
-                  sx={{ alignItems: "start" }}
-                  label={
-                    <>
-                      <Typography
-                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.light }}
-                        align="left"
-                      >
-                        {option.physicalHitzone} / {option.elementalHitzone}
-                      </Typography>
-                      <Typography
-                        sx={{ fontSize: "14px", color: currentTheme.palette.primary.light }}
-                        align="left"
-                      >
-                        {option.element} {option.maxDamage.split(".")[0]}
-                      </Typography>
-
-                      <Typography
-                        sx={{ fontSize: "10px", color: currentTheme.palette.text.primary }}
-                        align="left"
-                      >
-                        {new Date(option.timeStamp).toLocaleDateString(undefined, {
-                          year: undefined,
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}{" "}
-                        {new Date(option.timeStamp).toLocaleTimeString(undefined, {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: false,
-                        })}
-                      </Typography>
-                    </>
-                  }
-                />
-              ))}
-            </Tabs>
-          </Box>
-          <Divider orientation="vertical" flexItem />
-          <Box
-            sx={{
-              flexGrow: 1, // コンテナの残りのスペースを埋める
-              overflowY: "auto", // 縦方向のスクロールを許可
-              p: 2,
-
-              "&::-webkit-scrollbar": {
-                display: "none", // Webkitブラウザ用のスクロールバーを非表示にする
+              borderRight: 1,
+              borderColor: "divider",
+              width: "80px",
+              ...(matches ? { minHeight: "200px" } : { height: "100%" }),
+              // インジケータのスタイルをオーバーライドする
+              "& .MuiTabs-indicator": {
+                left: 0, // インジケータを左側に配置
+                right: "auto", // right プロパティの自動設定を解除（デフォルトのスタイルを上書き）
               },
-              // MSIEやEdge用の設定
-              "-ms-overflow-style": "none", // IE 10+ スクロールバーを非表示
-              "scrollbar-width": "none", // Firefox スクロールバーを非表示
             }}
           >
-            {historyList.map((option, index) => (
-              <TabPanel value={value} index={index}>
-                <NewlineText text={option.result} />
-              </TabPanel>
+            {historyList.map((option) => (
+              <Tab
+                key={option.timeStamp}
+                sx={{ alignItems: "start" }}
+                label={
+                  <>
+                    <Typography
+                      sx={{ fontSize: "14px", color: theme.vars.palette.primary.light }}
+                      align="left"
+                    >
+                      {option.physicalHitzone} / {option.elementalHitzone}
+                    </Typography>
+                    <Typography
+                      sx={{ fontSize: "14px", color: theme.vars.palette.primary.light }}
+                      align="left"
+                    >
+                      {option.element} {option.maxDamage.split(".")[0]}
+                    </Typography>
+
+                    <Typography
+                      sx={{ fontSize: "10px", color: theme.vars.palette.text.primary }}
+                      align="left"
+                    >
+                      {new Date(option.timeStamp).toLocaleDateString(undefined, {
+                        year: undefined,
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}{" "}
+                      {new Date(option.timeStamp).toLocaleTimeString(undefined, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
+                    </Typography>
+                  </>
+                }
+              />
             ))}
-          </Box>
+          </Tabs>
         </Box>
-      </Paper>
+        <Divider orientation="vertical" flexItem />
+        <Box
+          sx={{
+            flexGrow: 1, // コンテナの残りのスペースを埋める
+            // overflowY: "auto", // 縦方向のスクロールを許可
+            height: "100%",
+            padding: "16px",
+
+            "&::-webkit-scrollbar": {
+              display: "none", // Webkitブラウザ用のスクロールバーを非表示にする
+            },
+            // MSIEやEdge用の設定
+            "msOverflowStyle": "none", // IE 10+ スクロールバーを非表示
+            "scrollbarWidth": "none", // Firefox スクロールバーを非表示
+          }}
+        >
+          {historyList.map((option, index) => (
+            <TabPanel key={index} value={value} index={index} sx={{ height: "100%" }}>
+              <NewlineText text={option.result} sx={{ height: "100%" }} />
+            </TabPanel>
+          ))}
+        </Box>
+      </Box>
     </Grid>
   );
-};
+});
 
 export default DmaxHistory;

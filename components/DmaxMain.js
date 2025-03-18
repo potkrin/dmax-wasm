@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Grid,
   Typography,
@@ -10,7 +10,10 @@ import {
   Autocomplete,
   TextField,
   Divider,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Paper from "@mui/material/Paper";
 import { Skill } from "./Skill";
 import { NonDamageSkill } from "./NonDamageSkill";
@@ -30,11 +33,16 @@ import SaveIcon from "@mui/icons-material/Save";
 import PrintIcon from "@mui/icons-material/Print";
 import ShareIcon from "@mui/icons-material/Share";
 import TuneIcon from "@mui/icons-material/Tune";
+import HelpIcon from "@mui/icons-material/Help";
 
 import { staticSkillData } from "../data/StaticData";
 import { userInputData as defaultUserInputData } from "../data/UserInputData";
 import SkillCard from "./SkillCard";
-// import useCustomStyles from "./CustomStyles";
+import { useTheme } from "@mui/material/styles";
+import { SkillAdditionalInput } from "./SkillAdditionalInput";
+
+import { breakpoints } from "@/src/theme";
+import isEqual from "lodash/isEqual";
 
 export const commonStyles = {
   customHeader: {
@@ -65,6 +73,15 @@ export const commonStyles = {
     display: "inline-block", // インライン要素に
     // borderBottom: "solid 1px #7db4e6", // 下線
   },
+  customHeaderThinNoMargin: {
+    padding: "0.25em 0.5em", // 上下 左右の余白
+    // color: "#494949", // 文字色
+    // background: "transparent", // 背景透明に
+    borderLeft: "solid 3px #8798ef", // 左線
+    // marginTop: "1em", // 上の余白
+    display: "inline-block", // インライン要素に
+    // borderBottom: "solid 1px #7db4e6", // 下線
+  },
   customFontSize: {
     fontSize: "10px !important",
   },
@@ -91,38 +108,34 @@ const actions = [
   { icon: <ShareIcon />, name: "Share" },
 ];
 
-export function DmaxMain({ fabRight, setFabRight }) {
+export const DmaxMain = React.memo(({ fabRight, setFabRight, setValue }) => {
+  const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
+
+  const [userInputData, setUserInputData] = useState(defaultUserInputData);
+  const [additionalSkills, setAdditionalSkills] = useState([]);
+
+  // SSG対応: クライアントサイトでマウントされた後に localstorage から読み込む
   useEffect(() => {
-    return () => {
-      console.log("ChildComponent: DmaxMain がアンマウントされました");
-    };
+    const localStorageUserInputData = localStorage.getItem("userInputData");
+    if (localStorageUserInputData !== null) {
+      setUserInputData(JSON.parse(localStorageUserInputData));
+    }
+    const localStorageAdditionalSkills = localStorage.getItem("additionalSkills");
+    if (localStorageAdditionalSkills !== null) {
+      setAdditionalSkills(JSON.parse(localStorageAdditionalSkills));
+    }
   }, []);
 
-  // const classes = useStyles();
-  // const classes = useCustomStyles();
-  const classes = {};
-  // スキル以外のユーザ入力データを保持
-  const cacheUserInputData = localStorage.getItem("userInputData");
-
-  // localstorage に過去のユーザ入力が保存されていればそれを読み込む (なければ静的ファイルからを読み込む)
-  let initUserInputData;
-  if (cacheUserInputData !== null) {
-    initUserInputData = JSON.parse(cacheUserInputData);
-  } else {
-    initUserInputData = defaultUserInputData;
-  }
-
-  const [userInputData, setUserInputData] = useState(initUserInputData);
-
-  const updateUserInputData = (key, value) => {
+  const updateUserInputData = useCallback((key, value) => {
     setUserInputData((prevData) => ({
       ...prevData,
       [key]: value,
     }));
-  };
+  });
 
   // ユーザが入力するたびに入力データを localstorage に書き込み
   useEffect(() => {
+    if (isEqual(userInputData, defaultUserInputData)) return;
     localStorage.setItem("userInputData", JSON.stringify(userInputData));
   }, [userInputData]);
 
@@ -131,14 +144,6 @@ export function DmaxMain({ fabRight, setFabRight }) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // 追加スキルの管理
-  let initAdditionalSkills = localStorage.getItem("additionalSkills");
-  if (initAdditionalSkills !== null) {
-    initAdditionalSkills = JSON.parse(initAdditionalSkills);
-  } else {
-    initAdditionalSkills = [];
-  }
-  const [additionalSkills, setAdditionalSkills] = useState(initAdditionalSkills);
   const [skillSuggestions, setSkillSuggestions] = useState(
     Object.keys(staticSkillData).filter((key) => staticSkillData[key].type === "NonDamage")
   );
@@ -169,7 +174,7 @@ export function DmaxMain({ fabRight, setFabRight }) {
   // Autoselect のテキストボックスに入力されている値 (onFocus でリセットするために定義)
   const [currentSkill, setCurrentSkill] = useState(null);
 
-  const handleSkillRemove = (indexToRemove) => {
+  const handleSkillRemove = useCallback((indexToRemove) => {
     const skillName = additionalSkills[indexToRemove].name;
     updateUserInputData("スキル", {
       ...userInputData["スキル"],
@@ -180,21 +185,31 @@ export function DmaxMain({ fabRight, setFabRight }) {
     });
 
     setAdditionalSkills((prev) => prev.filter((_, index) => index !== indexToRemove));
-  };
+  }, []);
 
   return (
     <div className="DmaxMain">
       {/* 読み込みデータの検証 */}
       <ValidateData />
 
-      <Box>
+      {/* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/}
+      <DmaxSolver userInputData={userInputData} fabRight={fabRight} />
+
+      <Box marginTop={1}>
         <Paper variant="outlined" sx={{ borderRadius: 1, padding: 2 }}>
           <Grid container alignItems="center">
             <Grid item>
               <TuneIcon sx={{ marginTop: "4px", marginLeft: "4px" }} color="primary" />
             </Grid>
             <Grid item ml={1}>
-              <Typography variant="h6">条件設定</Typography>
+              <Typography variant="h6">
+                条件設定
+                <Tooltip title="ヘルプ" placement="top">
+                  <IconButton aria-label="help" color="primary" onClick={() => setValue(3)}>
+                    <HelpIcon />
+                  </IconButton>
+                </Tooltip>
+              </Typography>
             </Grid>
           </Grid>
           <Box sx={{ marginTop: "8px" }}>
@@ -320,29 +335,60 @@ export function DmaxMain({ fabRight, setFabRight }) {
             sx={commonStyles.customHeader}
           >
             ダメージスキル
+            <Tooltip title="ヘルプ" placement="top">
+              <IconButton aria-label="help" color="primary" onClick={() => setValue(3)}>
+                <HelpIcon />
+              </IconButton>
+            </Tooltip>
           </Typography>
 
-          <Grid container>
+          <Grid container marginBottom={2}>
             {Object.keys(staticSkillData)
               .filter((key) => staticSkillData[key].type === "FixedLevelDamage")
               .map((key) => (
                 <Skill
+                  key={key}
                   staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
+                  setUserInputData={setUserInputData}
+                  userInputDataSkill={userInputData["スキル"][key]}
+                  userInputDataOther={
+                    key === "龍気変換" ||
+                    key === "狂竜症【蝕】" ||
+                    key === "伏魔響命" ||
+                    key === "血氣覚醒"
+                      ? userInputData["その他"]
+                      : null
+                  }
                 />
               ))}
             {Object.keys(staticSkillData)
               .filter((key) => staticSkillData[key].type === "Damage")
               .map((key) => (
                 <Skill
+                  key={key}
                   staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
+                  setUserInputData={setUserInputData}
+                  userInputDataSkill={userInputData["スキル"][key]}
+                  userInputDataOther={
+                    key === "龍気変換" ||
+                    key === "狂竜症【蝕】" ||
+                    key === "伏魔響命" ||
+                    key === "血氣覚醒"
+                      ? userInputData["その他"]
+                      : null
+                  }
                 />
               ))}
           </Grid>
-          <Grid container>
+
+          {matches && (
+            <SkillAdditionalInput
+              setUserInputData={setUserInputData}
+              userInputDataOther={userInputData["その他"]}
+            />
+          )}
+
+          <Grid container paddingTop={3}>
             <Grid item xs={12}>
               <Typography
                 variant="subtitle2"
@@ -360,9 +406,18 @@ export function DmaxMain({ fabRight, setFabRight }) {
               .filter((key) => staticSkillData[key].type === "FreqNonDamage")
               .map((key) => (
                 <Skill
+                  key={key}
                   staticSkillData={staticSkillData[key]}
-                  userInputData={userInputData}
-                  updateUserInputData={updateUserInputData}
+                  setUserInputData={setUserInputData}
+                  userInputDataSkill={userInputData["スキル"][key]}
+                  userInputDataOther={
+                    key === "龍気変換" ||
+                    key === "狂竜症【蝕】" ||
+                    key === "伏魔響命" ||
+                    key === "血氣覚醒"
+                      ? userInputData["その他"]
+                      : null
+                  }
                 />
               ))}
           </Grid>
@@ -378,8 +433,8 @@ export function DmaxMain({ fabRight, setFabRight }) {
           >
             その他スキル
           </Typography>
-          <Grid container marginX={4} marginBottom={6}>
-            <Grid item xs={6} minHeight={"200px"}>
+          <Grid container paddingX={1} paddingBottom={6}>
+            <Grid item xs={12} md={6} minHeight={"200px"}>
               <Autocomplete
                 options={skillSuggestions}
                 onChange={handleSkillSelect}
@@ -410,9 +465,6 @@ export function DmaxMain({ fabRight, setFabRight }) {
         </Paper>
       </Box>
 
-      {/* Dmax API呼び出し, wasm-dmax-solver の呼び出し, 出力表示を行うコンポーネント*/}
-      <DmaxSolver userInputData={userInputData} fabRight={fabRight} />
-
       {/* <Backdrop open={open} /> */}
       {/* <SpeedDial
         ariaLabel="SpeedDial tooltip example"
@@ -438,6 +490,6 @@ export function DmaxMain({ fabRight, setFabRight }) {
       </SpeedDial> */}
     </div>
   );
-}
+});
 
 export default DmaxMain;

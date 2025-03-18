@@ -22,8 +22,10 @@ app.prepare().then(() => {
     return handle(req, res);
   });
 
-  server.listen(3000, (err) => {
+  // localhost ではなく 127.0.0.1 を利用
+  // (DNSに依存せずにホスト名部分を固定できることにより Cookie の同一ホスト制限問題を解決できる)
+  server.listen(3000, "127.0.0.1", (err) => {
     if (err) throw err;
-    console.log("> Ready on http://localhost:3000");
+    console.log("> Ready on http://127.0.0.1:3000");
   });
 });

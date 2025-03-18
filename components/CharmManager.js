@@ -9,6 +9,8 @@ import AddIcon from "@mui/icons-material/Add";
 import { CharmTable } from "./CharmTable";
 import { CharmInput } from "./CharmInput";
 import { commonStyles } from "./DmaxMain";
+import ConfirmDialog from "./ConfirmDialog";
+import CopyToClipboardButton from "./CopyToClipboardButton";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -21,18 +23,25 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 // 体術    ,3,通常弾・連射矢強化,2,3,1,1
 
 export function CharmManager() {
-  // localstorage に保存されている護石データがあれば読み込み
-  let initUserCharmData;
-  const cacheUserInputData = localStorage.getItem("userCharmData");
-  if (cacheUserInputData !== null) {
-    initUserCharmData = JSON.parse(cacheUserInputData);
-  } else {
-    initUserCharmData = [];
-  }
-
   // 護石データを一元管理するデータ
   // このデータを起点に localstorage への保存, csv からの読み込み, csv への書き出し, テーブルへの表示 の処理を行う
-  const [userCharmData, setUserCharmData] = useState(initUserCharmData);
+  const [userCharmData, setUserCharmData] = useState([]);
+
+  // useEffectを使用して、コンポーネントがマウントされた後にlocalStorageからデータを読み込む
+  useEffect(() => {
+    console.log("useEffect called on CharmManager mount.");
+    const localStorageUserInputData = localStorage.getItem("userCharmData");
+    if (localStorageUserInputData !== null) {
+      setUserCharmData(JSON.parse(localStorageUserInputData));
+    }
+  }, []);
+
+  // userCharmData が変更されたら localstorage に保存する
+  useEffect(() => {
+    if (userCharmData.length === 0) return;
+    localStorage.setItem("userCharmData", JSON.stringify(userCharmData));
+    console.log("userCharmData has been changed, and saved to localstorage");
+  }, [userCharmData]);
 
   // ユーザが入力した csv データ
   const [csvData, setCsvData] = useState("");
@@ -110,6 +119,16 @@ export function CharmManager() {
     }
   };
 
+  const handleOpenOverwriteConfirmDialog = () => {
+    setDialogMode("overwrite");
+    setOpenConfirmDialog(true);
+  };
+
+  const handleConfirmOverwrite = () => {
+    readFromCsvData("overwrite");
+    setOpenConfirmDialog(false);
+  };
+
   const writeToCsvData = () => {
     let csv = "";
     for (const charm of userCharmData) {
@@ -134,17 +153,11 @@ export function CharmManager() {
     setCsvData(csv);
   };
 
-  // テーブルで複数選択された護石を userCharmData から削除 (引数は削除対象インデックス)
-  const deleteUserCharms = (deleteTargetIndexes) => {
-    const newCharmData = userCharmData.filter((_, index) => !deleteTargetIndexes.includes(index));
-    setUserCharmData(newCharmData);
-  };
-
-  // userCharmData が変更されたら localstorage に保存する
-  useEffect(() => {
-    localStorage.setItem("userCharmData", JSON.stringify(userCharmData));
-    console.log("userCharmData has been changed, and saved to localstorage");
-  }, [userCharmData]);
+  // // テーブルで複数選択された護石を userCharmData から削除 (引数は削除対象インデックス)
+  // const deleteUserCharms = (deleteTargetIndexes) => {
+  //   const newCharmData = userCharmData.filter((_, index) => !deleteTargetIndexes.includes(index));
+  //   setUserCharmData(newCharmData);
+  // };
 
   // エラー出力用 Snackbar 管理
   const [error, setError] = useState(null);
@@ -153,6 +166,38 @@ export function CharmManager() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  // 削除時に確認ダイアログを表示する
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [dialogMode, setDialogMode] = useState("delete");
+  const [deleteIndexes, setDeleteIndexes] = useState([]);
+
+  const handleOpenDeleteConfirmDialog = (indexes) => {
+    setDeleteIndexes(indexes);
+    setDialogMode("delete");
+    setOpenConfirmDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteUserCharms(deleteIndexes);
+    setOpenConfirmDialog(false);
+  };
+
+  const handleCloseConfirmDialog = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  // テーブルで複数選択された護石を userCharmData から削除 (引数は削除対象インデックス)
+  const deleteUserCharms = (deleteTargetIndexes) => {
+    const newCharmData = userCharmData.filter((_, index) => !deleteTargetIndexes.includes(index));
+    setUserCharmData(newCharmData);
+  };
+
+  // CSVテキストボックスのコピーボタン用
+  const [textToCopy, setTextToCopy] = useState("");
+  useEffect(() => {
+    setTextToCopy(csvData);
+  }, [csvData]);
 
   return (
     <>
@@ -173,6 +218,16 @@ export function CharmManager() {
         </Alert>
       </Snackbar>
 
+      {/* 削除・上書き確認ダイアログ */}
+      <ConfirmDialog
+        openConfirmDialog={openConfirmDialog}
+        handleCloseConfirmDialog={handleCloseConfirmDialog}
+        handleConfirmDelete={handleConfirmDelete}
+        handleConfirmOverwrite={handleConfirmOverwrite}
+        dialogMode={dialogMode}
+        dataType={"護石"}
+      />
+
       <Grid container spacing={3}>
         {/* データ表示 */}
         {/* データ入力欄 */}
@@ -182,8 +237,10 @@ export function CharmManager() {
         <Grid item xs={12} md={6}>
           <Card
             variant="outlined"
-            sx={{ borderRadius: 1, height: "100%" }}
-            backgroundColor="#f5f5f5"
+            sx={{
+              borderRadius: 1,
+              height: "100%",
+            }}
           >
             <Box
               sx={{
@@ -194,15 +251,23 @@ export function CharmManager() {
                 height: "90%",
               }}
             >
-              <Typography
-                variant="subtitle2"
-                gutterBottom
-                align="left"
-                marginBottom={2}
-                sx={commonStyles.customHeaderNoMargin}
-              >
-                CSV 入出力
-              </Typography>
+              <Grid container alignItems="flex-start">
+                <Grid item xs>
+                  <Typography
+                    variant="subtitle2"
+                    gutterBottom
+                    align="left"
+                    marginBottom={2}
+                    sx={commonStyles.customHeaderNoMargin}
+                  >
+                    CSV 入出力
+                  </Typography>
+                </Grid>
+                <Grid item xs={1}>
+                  <CopyToClipboardButton textToCopy={textToCopy} />
+                </Grid>
+              </Grid>
+
               <Box sx={{ height: "100%" }}>
                 <TextField
                   label="CSV"
@@ -240,7 +305,7 @@ export function CharmManager() {
                         variant="contained"
                         color="primary"
                         disabled={csvData === ""}
-                        onClick={() => readFromCsvData("overwrite")}
+                        onClick={handleOpenOverwriteConfirmDialog}
                         sx={{ mr: 1 }}
                         startIcon={<KeyboardDoubleArrowDownIcon />}
                       >
@@ -264,7 +329,11 @@ export function CharmManager() {
         </Grid>
 
         <Grid item xs={12}>
-          <CharmTable userCharmData={userCharmData} deleteUserCharms={deleteUserCharms} />
+          <CharmTable
+            userCharmData={userCharmData}
+            deleteUserCharms={deleteUserCharms}
+            handleOpenDeleteConfirmDialog={handleOpenDeleteConfirmDialog}
+          />
         </Grid>
       </Grid>
     </>

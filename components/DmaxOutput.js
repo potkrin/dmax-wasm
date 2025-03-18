@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Grid,
   Box,
@@ -9,12 +9,25 @@ import {
   FormControlLabel,
   Checkbox,
   Divider,
+  ButtonGroup,
+  Tooltip,
+  useMediaQuery,
+  IconButton,
 } from "@mui/material";
 import MiddleOutput from "./MiddleOutput";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
+import CloudIcon from "@mui/icons-material/Cloud";
+import CloudOffIcon from "@mui/icons-material/CloudOff";
+import DevicesIcon from "@mui/icons-material/Devices";
 import CancelIcon from "@mui/icons-material/Cancel";
+import MemoryIcon from "@mui/icons-material/Memory";
 import { commonStyles, useStyles } from "./DmaxMain";
+import { useLoginContext } from "./LoginContext";
+import { useCharmAndQuriousArmorContext } from "./CharmAndQuriousArmorContext";
+import { useTheme } from "@mui/material/styles";
+import { theme, breakpoints } from "../src/theme";
+import OptimizationOptionButtons from "./OptimizationOptionButtons";
 
 const defaultMiddleOutputInfo = {
   "launch": {
@@ -92,6 +105,13 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
 
     if (line.startsWith("Uncaught Error: SharedArrayBuffer is not defined")) {
       launchMessage += "SharedArrayBuffer が定義されていません\n";
+      launchStatus = "error";
+      loadStatus = "waiting";
+    }
+
+    // oom on 1GB webworker
+    if (line.startsWith("[oom1GB]")) {
+      launchMessage += "予期せぬエラーが発生しました\n" + line;
       launchStatus = "error";
       loadStatus = "waiting";
     }
@@ -196,7 +216,7 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
         scipStatus = "最適化完了";
       } else {
         scipStatus = "未定義";
-        solverEndStatus = "interrupted";
+        solverEndStatus = "error";
       }
 
       if (line.includes("user interrupt")) {
@@ -227,8 +247,6 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
         solverEndStatus = "interrupted";
       }
 
-      solverStartStatus = "complete";
-
       solverEndMessage = `${scipStatus}: ${statusReason}\n`;
       if (scipStatus === "最適化完了") solveStatus = "complete";
     }
@@ -239,7 +257,38 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
       solverEndMessage += `合計処理時間 ${solvingTime}秒`;
     }
 
+    if (line.startsWith("[Aborted(OOM)]")) {
+      solveStatus = "error";
+      solveMessage += "\nメモリ不足のため最適化が中断されました";
+    }
+
     if (line.startsWith("[User Interrupt] optimization stopped")) isInterrupted = true;
+
+    // 予期せぬエラーが発生した場合
+    if (line.includes("[Unexpected Error]")) {
+      solverEndMessage = line;
+      solverEndStatus = "unexpected error";
+
+      // running 状態の status があれば error に更新
+      // ステータスを格納するオブジェクト
+      let statuses = {
+        launchStatus,
+        loadStatus,
+        presolveStatus,
+        solverStartStatus,
+        solveStatus,
+      };
+
+      // 各ステータスをチェックし、"running" 状態のものがあれば "error" に更新
+      Object.keys(statuses).forEach((key) => {
+        if (statuses[key] === "running") {
+          statuses[key] = "error";
+        }
+      });
+
+      // 更新された値を元の変数に反映
+      ({ launchStatus, loadStatus, presolveStatus, solverStartStatus, solveStatus } = statuses);
+    }
   }
 
   const nextMiddleOutputInfo = {
@@ -271,6 +320,7 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
     },
     "solverEnd": {
       ...middleOutputInfo["solverEnd"],
+      "title": solverEndStatus === "unexpected error" ? "予期しないエラーが発生" : "終了処理",
       "status": solverEndStatus,
       "message": solverEndMessage,
     },
@@ -293,156 +343,129 @@ function updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInf
   console.log("print middle=" + JSON.stringify(nextMiddleOutputInfo));
 }
 
-export const DmaxOutput = ({
-  dmaxOutput,
-  resetMiddleOutputInfo,
-  setResetMiddleOutputInfo,
-  startOptimization,
-  stopOptimization,
-  handleToggle,
-  isOptimizing,
-  excludeQuriousArmor,
-  handleExcludeQuriousArmor,
-  excludeCharm,
-  handleExcludeCharm,
-}) => {
-  // const classes = useStyles();
-  const classes = {};
+export const DmaxOutput = React.memo(
+  ({ dmaxOutput, resetMiddleOutputInfo, setResetMiddleOutputInfo, memoryLimit }) => {
+    // const classes = useStyles();
+    const classes = {};
 
-  const initMiddleOutputInfo = JSON.parse(JSON.stringify(defaultMiddleOutputInfo));
-  // dmaxOutput : 最適中の全ての出力をリアルタイム更新
-  // middleOutputInfo : dmaxOutput を解析してリアルタイムで表示する中間出力
-  const [middleOutputInfo, setMiddleOutputInfo] = useState(initMiddleOutputInfo);
+    const initMiddleOutputInfo = JSON.parse(JSON.stringify(defaultMiddleOutputInfo));
+    // dmaxOutput : 最適中の全ての出力をリアルタイム更新
+    // middleOutputInfo : dmaxOutput を解析してリアルタイムで表示する中間出力
+    const [middleOutputInfo, setMiddleOutputInfo] = useState(initMiddleOutputInfo);
 
-  useEffect(() => {
-    updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInfo);
-  }, [dmaxOutput]);
+    const { checkLoginStatus } = useLoginContext();
 
-  useEffect(() => {
-    if (resetMiddleOutputInfo) {
-      setMiddleOutputInfo(initMiddleOutputInfo);
-      setResetMiddleOutputInfo(false);
-    }
-  }, [resetMiddleOutputInfo]);
+    useEffect(() => {
+      updateMiddleOutputInfo(setMiddleOutputInfo, dmaxOutput, middleOutputInfo);
+    }, [dmaxOutput]);
 
-  return (
-    <Grid item xs={12} md={6}>
-      <Card variant="outlined" sx={{ borderRadius: 1 }} backgroundColor="#f5f5f5">
-        <Box
-          style={{
-            height: "610px",
-            overflowY: "auto",
-            padding: "8px",
-            textAlign: "left",
-          }}
-        >
-          <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
-            <Grid item>
-              <TrendingUpIcon sx={{ marginTop: "4px" }} color="primary" />
+    useEffect(() => {
+      if (resetMiddleOutputInfo) {
+        setMiddleOutputInfo(initMiddleOutputInfo);
+        setResetMiddleOutputInfo(false);
+      }
+    }, [resetMiddleOutputInfo]);
+
+    const { handleChangeCharmValue, handleChangeQuriousArmorValue } =
+      useCharmAndQuriousArmorContext();
+
+    const matches = useMediaQuery("(max-width: " + breakpoints.values.sm + "px)"); // 'sm' は600pxに設定されていることが多い
+
+    const useServerCharm = () => {
+      checkLoginStatus();
+      handleChangeCharmValue(null, 1);
+    };
+
+    const useServerQuriousArmor = () => {
+      checkLoginStatus();
+      handleChangeQuriousArmorValue(null, 1);
+    };
+
+    return useMemo(
+      () => (
+        <Grid item xs={12} md={5.9}>
+          <Box
+            style={{
+              minHeight: "400px",
+              height: "100%",
+              // overflowY: "auto",
+              padding: "8px",
+              textAlign: "left",
+              width: "100%",
+            }}
+          >
+            <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
+              <Grid item>
+                <TrendingUpIcon sx={{ marginTop: "4px" }} color="primary" />
+              </Grid>
+              <Grid item xs>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
+                  最適化
+                </Typography>
+              </Grid>
+
+              <Grid item xs container justifyContent="flex-end" sx={{ marginRight: 1 }}>
+                <OptimizationOptionButtons />
+              </Grid>
             </Grid>
-            <Grid item xs>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1, marginLeft: "8px" }}>
-                最適化
-              </Typography>
-            </Grid>
-            <Grid item xs container justifyContent="flex-end" sx={{ marginRight: 1 }}>
-              {isOptimizing ? (
-                <>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleToggle}
-                    startIcon={<CancelIcon />}
-                    size="small"
-                  >
-                    中止
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleToggle}
-                    startIcon={<TrendingUpIcon />}
-                    size="small"
-                  >
-                    実行
-                  </Button>
-                </>
-              )}
-            </Grid>
-          </Grid>
-          <Divider />
-          <Grid container mt={2}>
-            <Grid item xs={12}>
+            <Divider />
+
+            {/* <Grid container marginTop={0}>
+            <Grid
+              item
+              container
+              xs
+              justifyContent="flex-end"
+              alignItems="center"
+              sx={{ marginRight: 1 }}
+            >
               <Typography
-                variant="subtitle2"
-                gutterBottom
-                align="left"
-                marginLeft={2}
-                sx={commonStyles.customHeaderThin}
+                sx={{
+                  color: theme.vars.palette.text.hint,
+                  paddingRight: "0.5rem",
+                  alignItems: "center",
+                }}
               >
-                除外オプション
+                メモリ上限 {memoryLimit}
               </Typography>
+              <MemoryIcon sx={{ color: theme.vars.palette.text.hint }} />
             </Grid>
+          </Grid> */}
 
-            <Grid item xs={0.7}></Grid>
-
-            <Grid item xs={3}>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={excludeQuriousArmor}
-                      onChange={(e, v) => handleExcludeQuriousArmor(e, v)}
-                    />
-                  }
-                  label={<Typography style={{ "fontSize": "12px" }}>傀異錬成除外</Typography>}
-                />
-              </FormGroup>
+            <Grid container marginTop={0}>
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    margin: 1.5,
+                    marginLeft: 2.0,
+                    marginBottom: 4,
+                    marginTop: 2,
+                    minHeight: matches ? "" : "400px",
+                    height: "100%",
+                  }}
+                >
+                  <MiddleOutput middleOutput={middleOutputInfo.launch} memoryLimit={memoryLimit} />
+                  <MiddleOutput middleOutput={middleOutputInfo.load} />
+                  <MiddleOutput middleOutput={middleOutputInfo.preprocess} />
+                  <MiddleOutput middleOutput={middleOutputInfo.solverStart} />
+                  <MiddleOutput middleOutput={middleOutputInfo.solve} />
+                  <MiddleOutput middleOutput={middleOutputInfo.solverEnd} />
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={excludeCharm}
-                      onChange={(e, v) => handleExcludeCharm(e, v)}
-                    />
-                  }
-                  label={<Typography style={{ "fontSize": "12px" }}>護石除外</Typography>}
-                />
-              </FormGroup>
-            </Grid>
-          </Grid>
-
-          <Grid container marginTop={2}>
-            <Grid item xs={12}>
-              <Typography
-                variant="subtitle2"
-                gutterBottom
-                align="left"
-                marginLeft={2}
-                sx={commonStyles.customHeaderThin}
-              >
-                実行状況
-              </Typography>
-            </Grid>
-          </Grid>
-
-          <Box sx={{ margin: 1.5, marginLeft: 2.0 }}>
-            <MiddleOutput middleOutput={middleOutputInfo.launch} />
-            <MiddleOutput middleOutput={middleOutputInfo.load} />
-            <MiddleOutput middleOutput={middleOutputInfo.preprocess} />
-            <MiddleOutput middleOutput={middleOutputInfo.solverStart} />
-            <MiddleOutput middleOutput={middleOutputInfo.solve} />
-            <MiddleOutput middleOutput={middleOutputInfo.solverEnd} />
           </Box>
-        </Box>
-      </Card>
-    </Grid>
-  );
-};
+        </Grid>
+      ),
+      [
+        checkLoginStatus,
+        handleChangeCharmValue,
+        handleChangeQuriousArmorValue,
+        dmaxOutput,
+        memoryLimit,
+        middleOutputInfo,
+      ]
+    );
+  }
+);
 
 export default DmaxOutput;

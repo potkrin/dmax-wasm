@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import { Grid, Paper, Box, Typography, Divider } from "@mui/material";
+import { Grid, Card, Box, Typography, Divider, useMediaQuery } from "@mui/material";
 
 import { armors, decos } from "../data/EquipData";
 import { staticSkillData } from "../data/StaticData";
 import CopyToClipboardButton from "./CopyToClipboardButton";
 import InsightsIcon from "@mui/icons-material/Insights";
+import theme from "../src/theme";
 
 // 秒を読みやすい形式に変換
 function secondsToHumanReadable(seconds) {
@@ -29,8 +30,12 @@ function secondsToHumanReadable(seconds) {
   return result.trim();
 }
 
+// TODO: リファクタリング案
+// outputToResult は DmaxSolver に移動して DmaxResult 表示のみにしたほうがいいかも
+// スマホ表示用にDmaxResultを消して DmaxHistory に一本化したところ、結果が処理されなくなってしまったため
+
 // 全ての中間結果を含む文字列を処理し、最終結果を出力する
-function outputToResult(output, processingUserInputData, processingUserArmorsData) {
+export function outputToResult(output, processingUserInputData, processingUserArmorsData) {
   let result = "";
   let timeStamp = "";
   if (output.includes("SCIP Status") && output.includes("nlobjvar")) {
@@ -286,67 +291,95 @@ function NewlineText({ text }) {
   return <span dangerouslySetInnerHTML={{ __html: newText }} />;
 }
 
-export const DmaxResult = ({
-  allDmaxOutput,
-  processingUserInputData,
-  processingUserArmorsData,
-}) => {
-  const dmaxResult = outputToResult(
-    allDmaxOutput,
-    processingUserInputData,
-    processingUserArmorsData
-  );
+export const DmaxResult = React.memo(
+  ({ allDmaxOutput, processingUserInputData, processingUserArmorsData }) => {
+    const dmaxResult = outputToResult(
+      allDmaxOutput,
+      processingUserInputData,
+      processingUserArmorsData
+    );
 
-  const [textToCopy, setTextToCopy] = React.useState("");
-  useEffect(() => {
-    setTextToCopy(dmaxResult);
-  }, [dmaxResult]);
+    const [textToCopy, setTextToCopy] = React.useState("");
+    useEffect(() => {
+      setTextToCopy(dmaxResult);
+    }, [dmaxResult]);
 
-  return (
-    <Grid item xs={12} md={6}>
-      <Paper elevation={2}>
-        <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
-          <Grid item>
-            <InsightsIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
-          </Grid>
-          <Grid item xs>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, paddingLeft: "6px" }}>
-              結果
-            </Typography>
-          </Grid>
-          <Grid item xs={1}>
-            <CopyToClipboardButton textToCopy={textToCopy} />
-          </Grid>
-        </Grid>
+    const matches = useMediaQuery(theme.breakpoints.down("md")); // 'sm' は600pxに設定されていることが多い
 
-        <Box sx={{ marginX: "8px" }}>
-          <Divider xs={{ margin: "8px" }} />
-        </Box>
-        <Box
-          style={{
-            height: "900px",
-            overflowY: "auto",
-            paddingLeft: "16px",
-            textAlign: "left",
-            fontSize: "14px",
-          }}
+    return (
+      <>
+        <Grid
+          item
+          md={5.9}
           sx={{
-            flexGrow: 1, // コンテナの残りのスペースを埋める
-            overflowY: "auto", // 縦方向のスクロールを許可
-
-            "&::-webkit-scrollbar": {
-              display: "none", // Webkitブラウザ用のスクロールバーを非表示にする
+            "@media (max-width: 960px)": {
+              display: "none",
             },
-            // MSIEやEdge用の設定
-            "-ms-overflow-style": "none", // IE 10+ スクロールバーを非表示
-            "scrollbar-width": "none", // Firefox スクロールバーを非表示
           }}
         >
-          <NewlineText text={dmaxResult} />
-        </Box>
-      </Paper>
-    </Grid>
-  );
-};
+          <Grid container alignItems="center" sx={{ padding: "4px 8px" }}>
+            <Grid item>
+              <InsightsIcon sx={{ marginTop: "4px", marginLeft: "8px" }} color="primary" />
+            </Grid>
+            <Grid item xs>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, paddingLeft: "6px" }}>
+                結果
+              </Typography>
+            </Grid>
+            <Grid item xs={1}>
+              <CopyToClipboardButton textToCopy={textToCopy} />
+            </Grid>
+          </Grid>
+
+          <Box sx={{ marginX: "8px" }}>
+            <Divider xs={{ margin: "8px" }} />
+          </Box>
+          <Box
+            style={{
+              // height: "900px",
+              ...(matches ? { minHeight: "200px" } : { height: "100%" }),
+              overflowY: "auto",
+              paddingLeft: "24px",
+              textAlign: "left",
+              fontSize: "14px",
+            }}
+            sx={{
+              flexGrow: 1, // コンテナの残りのスペースを埋める
+              overflowY: "auto", // 縦方向のスクロールを許可
+              padding: "16px",
+
+              "&::-webkit-scrollbar": {
+                display: "none", // Webkitブラウザ用のスクロールバーを非表示にする
+              },
+              // MSIEやEdge用の設定
+              "msOverflowStyle": "none", // IE 10+ スクロールバーを非表示
+              "scrollbarWidth": "none", // Firefox スクロールバーを非表示
+            }}
+          >
+            <NewlineText text={dmaxResult} />
+          </Box>
+        </Grid>
+
+        <Grid
+          item
+          md={0.2}
+          sx={{
+            "@media (max-width: 960px)": {
+              display: "none",
+            },
+          }}
+        >
+          <Divider
+            orientation="vertical"
+            sx={{
+              height: "98%", // Dividerの高さをコンテナの80%に設定
+              my: "auto", // 上下マージンを自動で設定し、中央に配置
+            }}
+          />
+        </Grid>
+      </>
+    );
+  }
+);
 
 export default DmaxResult;

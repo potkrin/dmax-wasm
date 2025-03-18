@@ -3,7 +3,7 @@ import { TextField } from "@mui/material";
 
 // 注意: NumberTextField の呼び出し元で parseInt すること
 export function NumberTextField(props) {
-  const { min, max, value, ...rest } = props; // min, max, value を分離
+  const { min, max, value, matches, ...rest } = props; // min, max, value を分離
 
   const handleChange = (event) => {
     let newValue = parseInt(event.target.value.replace(/\D/g, "")); // 数字以外を削除
@@ -26,7 +26,12 @@ export function NumberTextField(props) {
       value={value}
       onChange={handleChange}
       type="number"
-      inputProps={{ ...rest.inputProps, min: 0, max: 100 }}
+      // HTML の <input> 要素の属性を指定する
+      inputProps={{ ...rest.inputProps }}
+      // Input コンポーネントの属性を指定する
+      InputProps={{
+        disableUnderline: matches ? false : true, // PC表示では常時下線を非表示にする
+      }}
     />
   );
 }
